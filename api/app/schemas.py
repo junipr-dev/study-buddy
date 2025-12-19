@@ -10,6 +10,7 @@ class UserCreate(BaseModel):
     """Schema for user registration."""
 
     username: str = Field(..., min_length=3, max_length=50)
+    first_name: str = Field(..., min_length=1, max_length=50)
     password: str = Field(..., min_length=8)
 
 
@@ -39,6 +40,7 @@ class UserResponse(BaseModel):
 
     id: int
     username: str
+    first_name: str
     created_at: datetime
 
     class Config:

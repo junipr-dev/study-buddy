@@ -1,9 +1,11 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
 export default function Login() {
   const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -16,7 +18,7 @@ export default function Login() {
 
     try {
       if (isRegistering) {
-        await register({ username, password });
+        await register({ username, first_name: firstName, password });
       } else {
         await login({ username, password });
       }
@@ -29,9 +31,13 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent mb-2">Study Buddy</h1>
-          <p className="text-gray-400">Adaptive Math Quiz Platform</p>
+        <div className="text-center mb-10">
+          <img
+            src="/logo.png"
+            alt="Study Buddy"
+            className="h-32 mx-auto mb-4"
+          />
+          <p className="text-lg text-gray-400">Your Adaptive Learning Companion</p>
         </div>
 
         <div className="card">
@@ -46,6 +52,24 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {isRegistering && (
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium mb-2">
+                  First Name
+                </label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-primary"
+                  placeholder="Enter your first name"
+                  required
+                  minLength={1}
+                />
+              </div>
+            )}
+
             <div>
               <label htmlFor="username" className="block text-sm font-medium mb-2">
                 Username
@@ -93,7 +117,7 @@ export default function Login() {
                 setIsRegistering(!isRegistering);
                 clearError();
               }}
-              className="text-sm text-secondary hover:underline"
+              className="text-sm text-secondary hover:text-white hover:font-semibold transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none border-none focus:ring-0"
             >
               {isRegistering
                 ? 'Already have an account? Sign in'
@@ -103,7 +127,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-8">
-          Pre-Algebra → Precalculus • Adaptive Learning • Free Practice
+          Adaptive Learning • Personalized Practice • Track Your Progress
         </p>
       </div>
     </div>

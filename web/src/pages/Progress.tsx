@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { progressAPI } from '../api/progress';
-import type { ProgressSummary, WeakArea } from '../types';
+import { evaluationAPI } from '../api/evaluation';
+import type { LatestEvaluationResponse, EvaluationSummary } from '../api/evaluation';
 
 export default function Progress() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  const [summary, setSummary] = useState<ProgressSummary | null>(null);
-  const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
+  const [latestData, setLatestData] = useState<LatestEvaluationResponse | null>(null);
+  const [history, setHistory] = useState<EvaluationSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,12 +22,12 @@ export default function Progress() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [summaryData, weakAreasData] = await Promise.all([
-          progressAPI.getSummary(),
-          progressAPI.getWeakAreas(),
+        const [latest, historyData] = await Promise.all([
+          evaluationAPI.getLatest(),
+          evaluationAPI.getHistory(10),
         ]);
-        setSummary(summaryData);
-        setWeakAreas(weakAreasData);
+        setLatestData(latest);
+        setHistory(historyData.evaluations);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load progress');
       } finally {
@@ -48,142 +48,264 @@ export default function Progress() {
     );
   }
 
-  if (error || !summary) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-red-400">{error || 'Failed to load progress'}</div>
-      </div>
-    );
-  }
+  const latest = latestData?.latest;
+  const improvement = latestData?.improvement;
+
+  // Format date for display
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto py-8 px-4">
         {/* Header */}
         <header className="bg-surface border border-gray-800 rounded-t-lg px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent">Your Progress</h1>
-            <button onClick={() => navigate('/quiz')} className="btn-primary">
-              Continue Practicing
+          <div className="flex items-end justify-between">
+            <img src="/logo.png" alt="Study Buddy" className="h-24" />
+            <button onClick={() => navigate('/quiz')} className="btn-secondary">
+              Back to Quiz
             </button>
           </div>
         </header>
 
         <main className="bg-background px-6 py-8 border-x border-b border-gray-800 rounded-b-lg">
-        {/* Overall Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="card">
-            <p className="text-sm text-gray-400 mb-1">Questions Answered</p>
-            <p className="text-3xl font-bold text-primary">{summary.total_questions_answered}</p>
-          </div>
-          <div className="card">
-            <p className="text-sm text-gray-400 mb-1">Overall Accuracy</p>
-            <p className="text-3xl font-bold text-success">{summary.overall_accuracy.toFixed(1)}%</p>
-          </div>
-          <div className="card">
-            <p className="text-sm text-gray-400 mb-1">Skills Practiced</p>
-            <p className="text-3xl font-bold">{summary.skills_practiced}</p>
-          </div>
-          <div className="card">
-            <p className="text-sm text-gray-400 mb-1">Skills Mastered</p>
-            <p className="text-3xl font-bold text-success">{summary.skills_mastered}</p>
-          </div>
-        </div>
+          {error && (
+            <div className="bg-red-500 bg-opacity-10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-6">
+              {error}
+            </div>
+          )}
 
-        {/* Progress Breakdown */}
-        <div className="card mb-8">
-          <h2 className="text-xl font-semibold mb-4">Mastery Breakdown</h2>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm text-gray-400 mb-2">Mastered (≥90%)</p>
-              <div className="bg-success bg-opacity-20 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-success">{summary.skills_mastered}</p>
-              </div>
+          {/* No Evaluations Yet */}
+          {!latest && (
+            <div className="card text-center py-12">
+              <div className="text-6xl mb-4">📊</div>
+              <h2 className="text-2xl font-bold mb-2">No Evaluations Yet</h2>
+              <p className="text-gray-400 mb-6">
+                Take your first evaluation to see your progress and identify areas to improve.
+              </p>
+              <button
+                onClick={() => navigate('/quiz')}
+                className="btn-primary text-lg px-8"
+              >
+                Take Evaluation
+              </button>
             </div>
-            <div>
-              <p className="text-sm text-gray-400 mb-2">In Progress (50-89%)</p>
-              <div className="bg-secondary bg-opacity-20 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-secondary">{summary.skills_in_progress}</p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400 mb-2">Need Work (&lt;50%)</p>
-              <div className="bg-red-500 bg-opacity-20 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-red-400">{summary.skills_weak}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          )}
 
-        {/* Weak Areas */}
-        {weakAreas.length > 0 && (
-          <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Areas Needing Attention</h2>
-            <div className="space-y-3">
-              {weakAreas.map((area) => (
-                <div
-                  key={area.skill_id}
-                  className="bg-background p-4 rounded-lg border border-gray-800"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="font-medium">{area.skill_name}</h3>
-                      <p className="text-sm text-gray-400">{area.subject}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Mastery</p>
-                      <p className="text-lg font-bold text-red-400">
-                        {area.mastery_score.toFixed(0)}%
-                      </p>
-                    </div>
+          {/* Latest Evaluation Summary */}
+          {latest && (
+            <>
+              {/* Main Score Card */}
+              <div className="card mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400">Latest Evaluation</p>
+                    <p className="text-gray-500">{formatDate(latest.completed_at)}</p>
                   </div>
-                  {area.is_prerequisite_gap && (
-                    <div className="mt-2 text-sm">
-                      <p className="text-yellow-400">
-                        ⚠️ Prerequisite Gap - This affects: {area.dependent_skills.join(', ')}
+                  {improvement && (
+                    <div className={`text-right ${improvement.score_change >= 0 ? 'text-success' : 'text-red-400'}`}>
+                      <p className="text-2xl font-bold">
+                        {improvement.score_change >= 0 ? '▲' : '▼'} {Math.abs(improvement.score_change)}%
+                      </p>
+                      <p className="text-sm opacity-75">
+                        vs {improvement.days_between} days ago
                       </p>
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* Skills List */}
-        <div className="card mt-8">
-          <h2 className="text-xl font-semibold mb-4">All Skills</h2>
-          <div className="space-y-2">
-            {summary.mastery_by_skill.map((mastery) => (
-              <div
-                key={mastery.skill_id}
-                className="bg-background p-3 rounded-lg flex items-center justify-between"
-              >
-                <div>
-                  <h3 className="font-medium">{mastery.skill_name}</h3>
-                  <p className="text-sm text-gray-400">
-                    {mastery.subject} • {mastery.total_attempts} attempts
+                {/* Score Display */}
+                <div className="text-center py-6">
+                  <p className="text-6xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent">
+                    {latest.overall_score}%
+                  </p>
+                  <p className="text-gray-400 mt-2">
+                    {latest.total_correct} / {latest.total_questions} correct
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold">{mastery.mastery_score.toFixed(0)}%</p>
-                  <div className="w-24 h-2 bg-gray-800 rounded-full mt-1 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        mastery.mastery_score >= 90
-                          ? 'bg-success'
-                          : mastery.mastery_score >= 50
-                          ? 'bg-secondary'
-                          : 'bg-red-500'
-                      }`}
-                      style={{ width: `${mastery.mastery_score}%` }}
-                    />
+
+                {/* Skill Breakdown */}
+                <div className="grid grid-cols-4 gap-3 mt-4">
+                  <div className="bg-success bg-opacity-10 rounded-lg p-3 text-center border border-success border-opacity-30">
+                    <p className="text-2xl font-bold text-success">{latest.mastered.length}</p>
+                    <p className="text-xs text-gray-400 mt-1">Mastered</p>
+                  </div>
+                  <div className="bg-blue-500 bg-opacity-10 rounded-lg p-3 text-center border border-blue-500 border-opacity-30">
+                    <p className="text-2xl font-bold text-blue-400">{latest.proficient.length}</p>
+                    <p className="text-xs text-gray-400 mt-1">Proficient</p>
+                  </div>
+                  <div className="bg-orange-500 bg-opacity-10 rounded-lg p-3 text-center border border-orange-500 border-opacity-30">
+                    <p className="text-2xl font-bold text-orange-400">{latest.developing.length}</p>
+                    <p className="text-xs text-gray-400 mt-1">Developing</p>
+                  </div>
+                  <div className="bg-red-500 bg-opacity-10 rounded-lg p-3 text-center border border-red-500 border-opacity-30">
+                    <p className="text-2xl font-bold text-red-400">{latest.study.length}</p>
+                    <p className="text-xs text-gray-400 mt-1">Need Study</p>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <button
+                  onClick={() => navigate('/quiz')}
+                  className="btn-primary py-4 text-lg"
+                >
+                  Take New Evaluation
+                </button>
+                <button
+                  onClick={() => navigate('/quiz')}
+                  className="btn-secondary py-4 text-lg"
+                >
+                  Practice Weak Areas
+                </button>
+              </div>
+
+              {/* Areas Needing Study - Failed Level 1 */}
+              {latest.study.length > 0 && (
+                <div className="card mb-6">
+                  <h2 className="text-lg font-semibold mb-4 text-red-400">
+                    📚 Priority Study Areas
+                  </h2>
+                  <div className="space-y-2">
+                    {latest.study.slice(0, 5).map((skill) => (
+                      <div
+                        key={skill.skill_id}
+                        className="bg-background p-3 rounded-lg flex items-center justify-between border border-gray-800"
+                      >
+                        <span>{skill.skill_name}</span>
+                        <span className="text-red-400 font-medium">
+                          {skill.proficiency_score}%
+                        </span>
+                      </div>
+                    ))}
+                    {latest.study.length > 5 && (
+                      <p className="text-sm text-gray-500 text-center pt-2">
+                        +{latest.study.length - 5} more skills need study
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Developing Skills - Passed Level 1 only */}
+              {latest.developing.length > 0 && (
+                <div className="card mb-6">
+                  <h2 className="text-lg font-semibold mb-4 text-orange-400">
+                    🌱 Developing Skills
+                  </h2>
+                  <div className="space-y-2">
+                    {latest.developing.slice(0, 5).map((skill) => (
+                      <div
+                        key={skill.skill_id}
+                        className="bg-background p-3 rounded-lg flex items-center justify-between border border-gray-800"
+                      >
+                        <span>{skill.skill_name}</span>
+                        <span className="text-orange-400 font-medium">
+                          {skill.proficiency_score}%
+                        </span>
+                      </div>
+                    ))}
+                    {latest.developing.length > 5 && (
+                      <p className="text-sm text-gray-500 text-center pt-2">
+                        +{latest.developing.length - 5} more developing skills
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Proficient Skills - Passed Level 2 */}
+              {latest.proficient.length > 0 && (
+                <div className="card mb-6">
+                  <h2 className="text-lg font-semibold mb-4 text-blue-400">
+                    💪 Proficient Skills
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {latest.proficient.map((skill) => (
+                      <span
+                        key={skill.skill_id}
+                        className="bg-blue-500 bg-opacity-10 text-blue-400 px-3 py-1 rounded-full text-sm border border-blue-500 border-opacity-30"
+                      >
+                        {skill.skill_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Mastered Skills */}
+              {latest.mastered.length > 0 && (
+                <div className="card mb-6">
+                  <h2 className="text-lg font-semibold mb-4 text-success">
+                    ✓ Mastered Skills
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {latest.mastered.map((skill) => (
+                      <span
+                        key={skill.skill_id}
+                        className="bg-success bg-opacity-10 text-success px-3 py-1 rounded-full text-sm border border-success border-opacity-30"
+                      >
+                        {skill.skill_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Evaluation History */}
+          {history.length > 1 && (
+            <div className="card">
+              <h2 className="text-lg font-semibold mb-4">Past Evaluations</h2>
+              <div className="space-y-3">
+                {history.slice(1).map((evaluation) => (
+                  <div
+                    key={evaluation.id}
+                    className="bg-background p-4 rounded-lg flex items-center justify-between border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
+                  >
+                    <div>
+                      <p className="font-medium">{formatDate(evaluation.completed_at)}</p>
+                      <p className="text-sm text-gray-400">
+                        {evaluation.total_correct}/{evaluation.total_questions} correct •{' '}
+                        {evaluation.skills_mastered} mastered
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">{evaluation.overall_score}%</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Improvement Chart Placeholder */}
+          {history.length > 1 && (
+            <div className="card mt-6">
+              <h2 className="text-lg font-semibold mb-4">Your Journey</h2>
+              <div className="flex items-end justify-between h-32 px-4">
+                {history.slice().reverse().slice(-6).map((evaluation) => (
+                  <div key={evaluation.id} className="flex flex-col items-center">
+                    <div
+                      className="w-8 bg-gradient-to-t from-[#6B4FFF] to-[#FF6EC7] rounded-t"
+                      style={{ height: `${evaluation.overall_score}%` }}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      {new Date(evaluation.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

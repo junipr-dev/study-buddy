@@ -21,6 +21,15 @@ export default {
         'gradient-primary': 'linear-gradient(135deg, #6B4FFF 0%, #4A2F9A 50%, #8B7FFF 100%)',
         'gradient-synthwave': 'linear-gradient(135deg, #6B4FFF 0%, #FF6EC7 100%)',
       },
+      keyframes: {
+        slideDown: {
+          '0%': { opacity: '0', transform: 'translate(-50%, -100%)' },
+          '100%': { opacity: '1', transform: 'translate(-50%, -50%)' },
+        },
+      },
+      animation: {
+        slideDown: 'slideDown 0.3s ease-out forwards',
+      },
     },
   },
   plugins: [],

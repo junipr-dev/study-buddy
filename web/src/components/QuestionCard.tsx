@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import type { FormEvent } from 'react';
 import { InlineMath } from 'react-katex';
 import type { Question } from '../types';
 
@@ -10,6 +11,14 @@ interface QuestionCardProps {
 
 export default function QuestionCard({ question, onSubmit, isLoading }: QuestionCardProps) {
   const [answer, setAnswer] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus input when question changes
+  useEffect(() => {
+    if (inputRef.current && !isLoading) {
+      inputRef.current.focus();
+    }
+  }, [question.question_id, isLoading]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -46,9 +55,11 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
   return (
     <div className="card">
       <div className="mb-4">
-        <span className="inline-block px-3 py-1 bg-surface border border-gray-700 text-sm rounded-full">
-          <span className="bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent font-medium">
-            {question.skill_name}
+        <span className="inline-block p-[2px] rounded-full bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7]">
+          <span className="inline-block px-3 py-1 bg-surface text-sm rounded-full">
+            <span className="bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent font-medium">
+              {question.skill_name}
+            </span>
           </span>
         </span>
         <span className="ml-2 text-sm text-gray-400">
@@ -66,6 +77,7 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
             Your Answer
           </label>
           <input
+            ref={inputRef}
             id="answer"
             type="text"
             value={answer}
@@ -73,7 +85,6 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
             className="w-full px-4 py-3 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-primary text-lg"
             placeholder="Enter your answer (e.g., 3, 1/2, or 1.5)"
             disabled={isLoading}
-            autoFocus
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"

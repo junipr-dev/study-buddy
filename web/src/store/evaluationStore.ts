@@ -1,20 +1,28 @@
 /**
- * Evaluation mode state management
+ * Evaluation mode state management - Adaptive Testing
  */
 
 import { create } from 'zustand';
-import { evaluationAPI, type EvaluationReport } from '../api/evaluation';
-import type { Question } from '../types';
+import { evaluationAPI } from '../api/evaluation';
+import type { EvaluationReport, EvaluationProgress, EvaluationQuestion } from '../api/evaluation';
 
 interface EvaluationState {
   // Session data
   sessionId: string | null;
+  subjects: string[];
+  skillsPerSubject: Record<string, number>;
   totalSkills: number;
-  currentSkillIndex: number;
   isActive: boolean;
 
+  // Progress tracking
+  progress: EvaluationProgress | null;
+
+  // Section transition
+  sectionChanged: boolean;
+  completedSection: string | null;
+
   // Current question
-  currentQuestion: Question | null;
+  currentQuestion: EvaluationQuestion | null;
   questionStartTime: number | null;
 
   // Results
@@ -28,16 +36,31 @@ interface EvaluationState {
   // Actions
   startEvaluation: () => Promise<void>;
   fetchNextQuestion: () => Promise<void>;
-  submitAnswer: (answer: string) => Promise<boolean>; // Returns true if continue, false if failed
+  submitAnswer: (answer: string) => Promise<boolean>;
   getReport: () => Promise<void>;
+  clearSectionChange: () => void;
   reset: () => void;
 }
 
+const initialProgress: EvaluationProgress = {
+  overall_completed: 0,
+  overall_total: 0,
+  overall_percent: 0,
+  section_name: '',
+  section_completed: 0,
+  section_total: 0,
+  section_percent: 0,
+};
+
 export const useEvaluationStore = create<EvaluationState>((set, get) => ({
   sessionId: null,
+  subjects: [],
+  skillsPerSubject: {},
   totalSkills: 0,
-  currentSkillIndex: 0,
   isActive: false,
+  progress: null,
+  sectionChanged: false,
+  completedSection: null,
   currentQuestion: null,
   questionStartTime: null,
   report: null,
@@ -46,13 +69,23 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
   error: null,
 
   startEvaluation: async () => {
-    set({ isLoading: true, error: null, isActive: true });
+    set({
+      isLoading: true,
+      error: null,
+      isActive: true,
+      showReport: false,
+      report: null,
+      sectionChanged: false,
+      completedSection: null,
+      progress: initialProgress,
+    });
     try {
       const response = await evaluationAPI.start();
       set({
         sessionId: response.session_id,
         totalSkills: response.total_skills,
-        currentSkillIndex: 0,
+        subjects: response.subjects,
+        skillsPerSubject: response.skills_per_subject,
         isLoading: false,
       });
 
@@ -80,18 +113,33 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
       set({
         currentQuestion: question,
         questionStartTime: Date.now(),
+        progress: question.progress,
+        sectionChanged: question.section_changed,
+        completedSection: question.completed_section,
         isLoading: false,
       });
     } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Failed to fetch question',
-        isLoading: false,
-      });
+      // If no more questions, evaluation might be complete
+      const errorMsg = error instanceof Error ? error.message : 'Failed to fetch question';
+      if (errorMsg.includes('complete') || errorMsg.includes('No more')) {
+        // Evaluation complete, fetch report
+        await get().getReport();
+        set({
+          isLoading: false,
+          showReport: true,
+          isActive: false,
+        });
+      } else {
+        set({
+          error: errorMsg,
+          isLoading: false,
+        });
+      }
     }
   },
 
   submitAnswer: async (answer: string) => {
-    const { sessionId, currentQuestion, questionStartTime, currentSkillIndex } = get();
+    const { sessionId, currentQuestion, questionStartTime } = get();
 
     if (!sessionId || !currentQuestion) {
       set({ error: 'No active question' });
@@ -110,6 +158,11 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
         time_taken_seconds: timeTaken,
       });
 
+      // Update progress
+      set({
+        progress: result.progress,
+      });
+
       if (result.evaluation_complete) {
         // Evaluation ended - fetch report
         await get().getReport();
@@ -118,23 +171,13 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
           showReport: true,
           isActive: false,
         });
-        return false; // Stop evaluation
+        return false;
       }
 
-      if (result.is_correct) {
-        // Correct - move to next skill
-        set({
-          currentSkillIndex: currentSkillIndex + 1,
-          isLoading: false,
-        });
-
-        // Fetch next question
-        await get().fetchNextQuestion();
-        return true; // Continue evaluation
-      }
-
-      // This shouldn't happen but handle it
-      return false;
+      // Continue - fetch next question
+      set({ isLoading: false });
+      await get().fetchNextQuestion();
+      return true;
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Failed to submit answer',
@@ -163,11 +206,20 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
     }
   },
 
+  clearSectionChange: () => set({
+    sectionChanged: false,
+    completedSection: null,
+  }),
+
   reset: () => set({
     sessionId: null,
+    subjects: [],
+    skillsPerSubject: {},
     totalSkills: 0,
-    currentSkillIndex: 0,
     isActive: false,
+    progress: null,
+    sectionChanged: false,
+    completedSection: null,
     currentQuestion: null,
     questionStartTime: null,
     report: null,

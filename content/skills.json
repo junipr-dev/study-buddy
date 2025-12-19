@@ -278,6 +278,168 @@
       "khan_url": "https://www.khanacademy.org/math/algebra2/x2ec2f6f830c9fb89:rational-exponents",
       "prerequisites": ["exponent-rules"],
       "difficulty_base": 5
+    },
+    {
+      "slug": "unit-circle-radians",
+      "name": "Unit Circle and Radians",
+      "subject": "Trigonometry",
+      "description": "Convert between degrees and radians, understand the unit circle",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/unit-circle-trig-func",
+      "prerequisites": ["pythagorean-theorem", "graphing-linear-equations"],
+      "difficulty_base": 4
+    },
+    {
+      "slug": "sine-cosine-tangent",
+      "name": "Sine, Cosine, and Tangent",
+      "subject": "Trigonometry",
+      "description": "Define and use the basic trigonometric ratios",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trigonometry-right-triangles",
+      "prerequisites": ["unit-circle-radians", "ratios-proportions"],
+      "difficulty_base": 4
+    },
+    {
+      "slug": "pythagorean-identities",
+      "name": "Pythagorean Identities",
+      "subject": "Trigonometry",
+      "description": "Understand and apply trigonometric identities",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trig-equations-and-identities",
+      "prerequisites": ["sine-cosine-tangent", "pythagorean-theorem"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "graphing-trig-functions",
+      "name": "Graphing Trigonometric Functions",
+      "subject": "Trigonometry",
+      "description": "Graph sine, cosine, and tangent functions with transformations",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trig-function-graphs",
+      "prerequisites": ["sine-cosine-tangent", "graphing-linear-equations"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "inverse-trig-functions",
+      "name": "Inverse Trigonometric Functions",
+      "subject": "Trigonometry",
+      "description": "Evaluate and graph inverse trig functions (arcsin, arccos, arctan)",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trig-equations-and-identities/inverse-trig-functions",
+      "prerequisites": ["sine-cosine-tangent"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "law-of-sines",
+      "name": "Law of Sines",
+      "subject": "Trigonometry",
+      "description": "Solve triangles using the law of sines",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trig-with-general-triangles/law-of-sines",
+      "prerequisites": ["sine-cosine-tangent"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "law-of-cosines",
+      "name": "Law of Cosines",
+      "subject": "Trigonometry",
+      "description": "Solve triangles using the law of cosines",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trig-with-general-triangles/law-of-cosines",
+      "prerequisites": ["sine-cosine-tangent", "pythagorean-theorem"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "trigonometric-equations",
+      "name": "Trigonometric Equations",
+      "subject": "Trigonometry",
+      "description": "Solve equations involving trigonometric functions",
+      "khan_url": "https://www.khanacademy.org/math/trigonometry/trig-equations-and-identities/solving-trig-equations",
+      "prerequisites": ["pythagorean-identities", "inverse-trig-functions"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "function-composition",
+      "name": "Function Composition",
+      "subject": "Precalculus",
+      "description": "Compose functions and evaluate composite functions",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:composite",
+      "prerequisites": ["evaluating-expressions"],
+      "difficulty_base": 4
+    },
+    {
+      "slug": "inverse-functions",
+      "name": "Inverse Functions",
+      "subject": "Precalculus",
+      "description": "Find and verify inverse functions",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:composite/x9e81a4f98389efdf:inv-func-intro",
+      "prerequisites": ["function-composition", "solving-linear-equations"],
+      "difficulty_base": 4
+    },
+    {
+      "slug": "piecewise-functions",
+      "name": "Piecewise Functions",
+      "subject": "Precalculus",
+      "description": "Evaluate and graph piecewise-defined functions",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:functions/x9e81a4f98389efdf:piecewise",
+      "prerequisites": ["graphing-linear-equations", "evaluating-expressions"],
+      "difficulty_base": 4
+    },
+    {
+      "slug": "polynomial-long-division",
+      "name": "Polynomial Long Division",
+      "subject": "Precalculus",
+      "description": "Divide polynomials using long division",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:dividing",
+      "prerequisites": ["polynomial-operations"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "rational-functions",
+      "name": "Rational Functions",
+      "subject": "Precalculus",
+      "description": "Analyze and graph rational functions including asymptotes",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:rational",
+      "prerequisites": ["rational-expressions", "graphing-linear-equations"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "conic-sections",
+      "name": "Conic Sections",
+      "subject": "Precalculus",
+      "description": "Identify and graph circles, ellipses, parabolas, and hyperbolas",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:conics",
+      "prerequisites": ["solving-quadratic-equations", "graphing-linear-equations"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "parametric-equations",
+      "name": "Parametric Equations",
+      "subject": "Precalculus",
+      "description": "Work with equations defined using a parameter",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:parametric",
+      "prerequisites": ["graphing-linear-equations", "sine-cosine-tangent"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "polar-coordinates",
+      "name": "Polar Coordinates",
+      "subject": "Precalculus",
+      "description": "Convert between polar and rectangular coordinates, graph polar equations",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:polar",
+      "prerequisites": ["sine-cosine-tangent", "pythagorean-theorem"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "vectors",
+      "name": "Vectors",
+      "subject": "Precalculus",
+      "description": "Understand vector operations and applications",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:vectors",
+      "prerequisites": ["sine-cosine-tangent", "pythagorean-theorem"],
+      "difficulty_base": 5
+    },
+    {
+      "slug": "matrices",
+      "name": "Matrices",
+      "subject": "Precalculus",
+      "description": "Perform matrix operations and solve systems using matrices",
+      "khan_url": "https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:matrices",
+      "prerequisites": ["systems-of-equations"],
+      "difficulty_base": 5
     }
   ],
   "subjects": {
@@ -307,9 +469,9 @@
     }
   },
   "meta": {
-    "version": "0.2.0",
+    "version": "0.3.0",
     "last_updated": "2024-12-19",
-    "total_skills": 31,
-    "status": "content_integration_phase"
+    "total_skills": 49,
+    "status": "full_curriculum_coverage"
   }
 }

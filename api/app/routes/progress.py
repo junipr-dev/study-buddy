@@ -13,6 +13,105 @@ from app.auth import get_current_user
 router = APIRouter(prefix="/progress", tags=["Progress"])
 
 
+@router.get("/weak-areas", response_model=List[WeakArea])
+def get_weak_areas(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Identify weak areas that need attention.
+
+    Returns skills with low mastery, prioritizing those that are prerequisites
+    for other skills.
+    """
+    # Get weak skills (mastery < 60)
+    weak_mastery = (
+        db.query(UserMastery, Skill)
+        .join(Skill, UserMastery.skill_id == Skill.id)
+        .filter(
+            UserMastery.user_id == current_user.id,
+            UserMastery.mastery_score < 60,
+        )
+        .all()
+    )
+
+    weak_areas = []
+
+    for mastery, skill in weak_mastery:
+        # Check if this skill is a prerequisite for others
+        dependent_skills = (
+            db.query(Skill.name)
+            .join(
+                SkillPrerequisite,
+                Skill.id == SkillPrerequisite.skill_id,
+            )
+            .filter(SkillPrerequisite.prerequisite_id == skill.id)
+            .all()
+        )
+
+        dependent_skill_names = [name for (name,) in dependent_skills]
+        is_prerequisite = len(dependent_skill_names) > 0
+
+        weak_areas.append(
+            WeakArea(
+                skill_id=skill.id,
+                skill_name=skill.name,
+                subject=skill.subject,
+                mastery_score=mastery.mastery_score,
+                is_prerequisite_gap=is_prerequisite,
+                dependent_skills=dependent_skill_names,
+            )
+        )
+
+    # Sort by is_prerequisite (True first) then by mastery score (lowest first)
+    weak_areas.sort(key=lambda x: (not x.is_prerequisite_gap, x.mastery_score))
+
+    return weak_areas
+
+
+@router.get("/next-review", response_model=List[MasteryResponse])
+def get_next_reviews(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get skills that are due for spaced repetition review."""
+    from datetime import datetime
+
+    due_mastery = (
+        db.query(UserMastery, Skill)
+        .join(Skill, UserMastery.skill_id == Skill.id)
+        .filter(
+            UserMastery.user_id == current_user.id,
+            UserMastery.next_review <= datetime.utcnow(),
+        )
+        .all()
+    )
+
+    reviews = []
+    for mastery, skill in due_mastery:
+        accuracy = (
+            (mastery.correct_attempts / mastery.total_attempts * 100)
+            if mastery.total_attempts > 0
+            else 0.0
+        )
+
+        reviews.append(
+            MasteryResponse(
+                skill_id=skill.id,
+                skill_name=skill.name,
+                subject=skill.subject,
+                mastery_score=mastery.mastery_score,
+                total_attempts=mastery.total_attempts,
+                correct_attempts=mastery.correct_attempts,
+                accuracy=accuracy,
+                last_practiced=mastery.last_practiced,
+                next_review=mastery.next_review,
+            )
+        )
+
+    return reviews
+
+
 @router.get("", response_model=ProgressSummary)
 def get_progress_summary(
     current_user: User = Depends(get_current_user),
@@ -144,102 +243,3 @@ def get_skill_progress(
         last_practiced=mastery.last_practiced,
         next_review=mastery.next_review,
     )
-
-
-@router.get("/weak-areas", response_model=List[WeakArea])
-def get_weak_areas(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """
-    Identify weak areas that need attention.
-
-    Returns skills with low mastery, prioritizing those that are prerequisites
-    for other skills.
-    """
-    # Get weak skills (mastery < 60)
-    weak_mastery = (
-        db.query(UserMastery, Skill)
-        .join(Skill, UserMastery.skill_id == Skill.id)
-        .filter(
-            UserMastery.user_id == current_user.id,
-            UserMastery.mastery_score < 60,
-        )
-        .all()
-    )
-
-    weak_areas = []
-
-    for mastery, skill in weak_mastery:
-        # Check if this skill is a prerequisite for others
-        dependent_skills = (
-            db.query(Skill.name)
-            .join(
-                SkillPrerequisite,
-                Skill.id == SkillPrerequisite.skill_id,
-            )
-            .filter(SkillPrerequisite.prerequisite_id == skill.id)
-            .all()
-        )
-
-        dependent_skill_names = [name for (name,) in dependent_skills]
-        is_prerequisite = len(dependent_skill_names) > 0
-
-        weak_areas.append(
-            WeakArea(
-                skill_id=skill.id,
-                skill_name=skill.name,
-                subject=skill.subject,
-                mastery_score=mastery.mastery_score,
-                is_prerequisite_gap=is_prerequisite,
-                dependent_skills=dependent_skill_names,
-            )
-        )
-
-    # Sort by is_prerequisite (True first) then by mastery score (lowest first)
-    weak_areas.sort(key=lambda x: (not x.is_prerequisite_gap, x.mastery_score))
-
-    return weak_areas
-
-
-@router.get("/next-review", response_model=List[MasteryResponse])
-def get_next_reviews(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Get skills that are due for spaced repetition review."""
-    from datetime import datetime
-
-    due_mastery = (
-        db.query(UserMastery, Skill)
-        .join(Skill, UserMastery.skill_id == Skill.id)
-        .filter(
-            UserMastery.user_id == current_user.id,
-            UserMastery.next_review <= datetime.utcnow(),
-        )
-        .all()
-    )
-
-    reviews = []
-    for mastery, skill in due_mastery:
-        accuracy = (
-            (mastery.correct_attempts / mastery.total_attempts * 100)
-            if mastery.total_attempts > 0
-            else 0.0
-        )
-
-        reviews.append(
-            MasteryResponse(
-                skill_id=skill.id,
-                skill_name=skill.name,
-                subject=skill.subject,
-                mastery_score=mastery.mastery_score,
-                total_attempts=mastery.total_attempts,
-                correct_attempts=mastery.correct_attempts,
-                accuracy=accuracy,
-                last_practiced=mastery.last_practiced,
-                next_review=mastery.next_review,
-            )
-        )
-
-    return reviews

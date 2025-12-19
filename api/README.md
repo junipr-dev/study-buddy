@@ -1,6 +1,6 @@
 # Study Buddy API
 
-FastAPI backend for Study Buddy adaptive math quiz platform.
+FastAPI backend for Study Buddy adaptive learning platform.
 
 ## Setup
 

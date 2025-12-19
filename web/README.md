@@ -1,6 +1,6 @@
 # Study Buddy Web App
 
-React + TypeScript web application for Study Buddy adaptive math quiz platform.
+React + TypeScript web application for Study Buddy adaptive learning platform.
 
 ## Features
 
@@ -77,7 +77,7 @@ web/
 ## Components
 
 ### QuestionCard
-Displays math question with answer input. Supports LaTeX rendering via KaTeX.
+Displays question with answer input. Supports LaTeX rendering via KaTeX for math content.
 
 ### FeedbackModal
 Shows answer feedback with:

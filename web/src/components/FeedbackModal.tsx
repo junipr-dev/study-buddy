@@ -12,38 +12,51 @@ export default function FeedbackModal({ feedback, onContinue }: FeedbackModalPro
 
   // Render a step that may contain mixed text and LaTeX
   const renderStep = (step: string) => {
-    // Check if step starts with ** (bold markdown)
-    const isBold = step.startsWith('**') && step.includes('**', 2);
-    let content = step;
-    let boldClass = '';
+    // Handle bold markdown: **text** becomes bold, but keep content after closing **
+    const boldMatch = step.match(/^\*\*(.+?)\*\*(.*)$/);
 
-    if (isBold) {
-      // Extract content between **...**
-      const match = step.match(/\*\*(.+?)\*\*/);
-      if (match) {
-        content = match[1];
-        boldClass = 'font-bold text-primary';
-      }
+    if (boldMatch) {
+      const boldText = boldMatch[1];  // Text inside **...**
+      const remainder = boldMatch[2]; // Text after closing **
+
+      // Render the remainder (which may contain LaTeX)
+      const renderContent = (text: string) => {
+        const parts = text.split(/(\$[^$]+\$)/g);
+        return parts.map((part, index) => {
+          if (part.startsWith('$') && part.endsWith('$')) {
+            const math = part.slice(1, -1);
+            return (
+              <span key={index} className="inline-block align-middle">
+                <InlineMath math={math} />
+              </span>
+            );
+          }
+          return <span key={index}>{part}</span>;
+        });
+      };
+
+      return (
+        <div>
+          <span className="font-bold text-primary">{boldText}</span>
+          {renderContent(remainder)}
+        </div>
+      );
     }
 
-    // Split by LaTeX delimiters
-    const parts = content.split(/(\$[^$]+\$)/g);
+    // No bold markdown - just render with LaTeX support
+    const parts = step.split(/(\$[^$]+\$)/g);
+    const isOnlyLatex = parts.length === 1 && parts[0].startsWith('$') && parts[0].endsWith('$');
 
     return (
-      <div className={boldClass}>
+      <div className={isOnlyLatex ? 'text-xl' : ''}>
         {parts.map((part, index) => {
           if (part.startsWith('$') && part.endsWith('$')) {
             const math = part.slice(1, -1);
-            // Check if it contains fraction or complex expression - use block math
-            if (math.includes('\\frac') || math.includes('=') && math.length > 10) {
-              return (
-                <div key={index} className="my-2">
-                  <BlockMath math={math} />
-                </div>
-              );
-            }
-            // Otherwise use inline
-            return <InlineMath key={index} math={math} />;
+            return (
+              <span key={index} className="inline-block align-middle">
+                <InlineMath math={math} />
+              </span>
+            );
           }
           return <span key={index}>{part}</span>;
         })}
@@ -112,11 +125,11 @@ export default function FeedbackModal({ feedback, onContinue }: FeedbackModalPro
               <h3 className="text-lg font-semibold mb-3">Solution Steps:</h3>
               <div className="bg-background p-6 rounded-lg space-y-4">
                 {feedback.steps.map((step, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <span className="inline-flex items-center justify-center w-7 h-7 bg-primary bg-opacity-20 text-primary rounded-full text-sm font-semibold flex-shrink-0 mt-1">
+                  <div key={index} className="flex items-center gap-3">
+                    <span className="inline-flex items-center justify-center w-7 h-7 bg-primary bg-opacity-20 text-primary rounded-full text-sm font-semibold flex-shrink-0">
                       {index + 1}
                     </span>
-                    <div className="text-gray-200 flex-1 leading-relaxed">
+                    <div className="text-gray-200 flex-1">
                       {renderStep(step)}
                     </div>
                   </div>

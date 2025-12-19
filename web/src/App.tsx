@@ -7,11 +7,20 @@ import Progress from './pages/Progress';
 import './styles/globals.css';
 
 function App() {
-  const { checkAuth, user } = useAuthStore();
+  const { checkAuth, user, isLoading } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>

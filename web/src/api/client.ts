@@ -30,12 +30,22 @@ class APIClient {
     if (!response.ok) {
       try {
         const error = await response.json();
-        const message = typeof error === 'string'
-          ? error
-          : error.detail || error.message || `HTTP ${response.status}`;
+        let message: string;
+        if (typeof error === 'string') {
+          message = error;
+        } else if (typeof error.detail === 'string') {
+          message = error.detail;
+        } else if (Array.isArray(error.detail)) {
+          // FastAPI validation errors return an array
+          message = error.detail.map((e: { msg?: string }) => e.msg || 'Validation error').join(', ');
+        } else if (typeof error.message === 'string') {
+          message = error.message;
+        } else {
+          message = `HTTP ${response.status}`;
+        }
         throw new Error(message);
       } catch (e) {
-        if (e instanceof Error && e.message !== 'HTTP') {
+        if (e instanceof Error && e.message && !e.message.startsWith('Unexpected')) {
           throw e;
         }
         throw new Error(`HTTP ${response.status}`);

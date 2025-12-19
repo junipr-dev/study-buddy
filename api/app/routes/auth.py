@@ -36,7 +36,11 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
     # Create new user
     hashed_password = hash_password(user_data.password)
-    new_user = User(username=user_data.username, password_hash=hashed_password)
+    new_user = User(
+        username=user_data.username,
+        first_name=user_data.first_name,
+        password_hash=hashed_password
+    )
 
     db.add(new_user)
     db.commit()

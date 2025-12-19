@@ -3,6 +3,7 @@
 export interface User {
   id: number;
   username: string;
+  first_name: string;
   created_at: string;
 }
 
@@ -13,6 +14,7 @@ export interface LoginCredentials {
 
 export interface RegisterData {
   username: string;
+  first_name: string;
   password: string;
 }
 

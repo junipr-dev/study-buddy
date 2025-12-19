@@ -20,7 +20,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isLoading: false,
+  isLoading: true, // Start true to wait for auth check
   error: null,
 
   login: async (credentials) => {
@@ -61,11 +61,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   checkAuth: async () => {
     if (!authAPI.isAuthenticated()) {
-      set({ user: null });
+      set({ user: null, isLoading: false });
       return;
     }
-
-    set({ isLoading: true });
     try {
       const user = await authAPI.getCurrentUser();
       set({ user, isLoading: false });

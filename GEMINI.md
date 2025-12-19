@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Study Buddy** is an adaptive learning platform for math education (pre-algebra through precalculus). This is a school project that demonstrates:
+**Study Buddy** is an adaptive learning platform for a broad range of study topics. Currently features math content (pre-algebra through precalculus), with more subjects to come. This is a school project that demonstrates:
 - Adaptive learning algorithms (spaced repetition, mastery tracking, difficulty scaling)
 - Full-stack development (FastAPI backend + React frontend)
 - Cost-efficient AI strategy (programmatic questions, pre-written content)
@@ -43,7 +43,7 @@
 
 **FOR CODEX/GEMINI AGENTS:**
 
-You have been delegated the task of writing educational explainers for math skills.
+You have been delegated the task of writing educational explainers (currently math skills, more subjects coming).
 
 **What to do:**
 1. Read `/home/jesse/school/study-buddy/content/DELEGATION-BRIEF.md` for complete instructions

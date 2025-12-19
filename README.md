@@ -1,6 +1,6 @@
 # Study Buddy
 
-An adaptive math quiz platform for college prep covering pre-algebra through precalculus.
+An adaptive learning platform for a broad range of study topics. Currently features math content (pre-algebra through precalculus), with more subjects coming.
 
 ## Features
 

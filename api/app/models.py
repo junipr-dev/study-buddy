@@ -13,12 +13,14 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False, index=True)
+    first_name = Column(String(50), nullable=False)
     password_hash = Column(String(255), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
     mastery = relationship("UserMastery", back_populates="user")
     question_history = relationship("QuestionHistory", back_populates="user")
+    evaluations = relationship("Evaluation", back_populates="user", order_by="desc(Evaluation.completed_at)")
 
 
 class Skill(Base):
@@ -103,3 +105,44 @@ class QuestionHistory(Base):
     user = relationship("User", back_populates="question_history")
     skill = relationship("Skill", back_populates="question_history")
     template = relationship("QuestionTemplate", back_populates="question_history")
+
+
+class Evaluation(Base):
+    """Saved evaluation/assessment results."""
+
+    __tablename__ = "evaluations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    started_at = Column(DateTime(timezone=True), nullable=False)
+    completed_at = Column(DateTime(timezone=True), server_default=func.now())
+    overall_score = Column(Float, nullable=False)
+    total_questions = Column(Integer, nullable=False)
+    total_correct = Column(Integer, nullable=False)
+    skills_mastered = Column(Integer, nullable=False, default=0)
+    skills_review = Column(Integer, nullable=False, default=0)
+    skills_study = Column(Integer, nullable=False, default=0)
+
+    # Relationships
+    user = relationship("User", back_populates="evaluations")
+    skill_results = relationship("EvaluationSkillResult", back_populates="evaluation", cascade="all, delete-orphan")
+
+
+class EvaluationSkillResult(Base):
+    """Individual skill results within an evaluation."""
+
+    __tablename__ = "evaluation_skill_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"), nullable=False)
+    skill_id = Column(Integer, ForeignKey("skills.id"), nullable=False)
+    skill_name = Column(String(200), nullable=False)
+    subject = Column(String(50), nullable=False)
+    proficiency_score = Column(Float, nullable=False)
+    proficiency_level = Column(String(20), nullable=False)  # mastered, review, study
+    questions_correct = Column(Integer, nullable=False)
+    questions_total = Column(Integer, nullable=False)
+
+    # Relationships
+    evaluation = relationship("Evaluation", back_populates="skill_results")
+    skill = relationship("Skill")
