@@ -25,6 +25,13 @@ from app.generators.simple_interest import generate_simple_interest
 from app.generators.pythagorean_theorem import generate_pythagorean_theorem
 from app.generators.factoring_quadratics import generate_factoring_quadratics
 from app.generators.factoring_polynomials import generate_factoring_polynomials
+from app.generators.equations_variables_both_sides import generate_equations_variables_both_sides
+from app.generators.graphing_linear_equations import generate_graphing_linear_equations
+from app.generators.point_slope_form import generate_point_slope_form
+from app.generators.quadratic_formula import generate_quadratic_formula
+from app.generators.scientific_notation import generate_scientific_notation
+from app.generators.rational_expressions import generate_rational_expressions
+from app.generators.radical_expressions import generate_radical_expressions
 
 # Registry of generator functions by template type
 GENERATORS: Dict[str, Callable[[int], Dict[str, Any]]] = {
@@ -52,6 +59,13 @@ GENERATORS: Dict[str, Callable[[int], Dict[str, Any]]] = {
     "pythagorean_theorem": generate_pythagorean_theorem,
     "factoring_quadratics": generate_factoring_quadratics,
     "factoring_polynomials": generate_factoring_polynomials,
+    "equations_variables_both_sides": generate_equations_variables_both_sides,
+    "graphing_linear_equations": generate_graphing_linear_equations,
+    "point_slope_form": generate_point_slope_form,
+    "quadratic_formula": generate_quadratic_formula,
+    "scientific_notation": generate_scientific_notation,
+    "rational_expressions": generate_rational_expressions,
+    "radical_expressions": generate_radical_expressions,
 }
 
 
