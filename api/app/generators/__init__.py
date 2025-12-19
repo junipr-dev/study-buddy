@@ -32,6 +32,24 @@ from app.generators.quadratic_formula import generate_quadratic_formula
 from app.generators.scientific_notation import generate_scientific_notation
 from app.generators.rational_expressions import generate_rational_expressions
 from app.generators.radical_expressions import generate_radical_expressions
+from app.generators.function_composition import generate_function_composition
+from app.generators.inverse_functions import generate_inverse_functions
+from app.generators.piecewise_functions import generate_piecewise_functions
+from app.generators.polynomial_long_division import generate_polynomial_long_division
+from app.generators.rational_functions import generate_rational_functions
+from app.generators.conic_sections import generate_conic_sections
+from app.generators.parametric_equations import generate_parametric_equations
+from app.generators.polar_coordinates import generate_polar_coordinates
+from app.generators.vectors import generate_vectors
+from app.generators.matrices import generate_matrices
+from app.generators.unit_circle_radians import generate_unit_circle_radians
+from app.generators.sine_cosine_tangent import generate_sine_cosine_tangent
+from app.generators.pythagorean_identities import generate_pythagorean_identities
+from app.generators.graphing_trig_functions import generate_graphing_trig_functions
+from app.generators.inverse_trig_functions import generate_inverse_trig_functions
+from app.generators.law_of_sines import generate_law_of_sines
+from app.generators.law_of_cosines import generate_law_of_cosines
+from app.generators.trigonometric_equations import generate_trigonometric_equations
 
 # Registry of generator functions by template type
 GENERATORS: Dict[str, Callable[[int], Dict[str, Any]]] = {
@@ -66,6 +84,24 @@ GENERATORS: Dict[str, Callable[[int], Dict[str, Any]]] = {
     "scientific_notation": generate_scientific_notation,
     "rational_expressions": generate_rational_expressions,
     "radical_expressions": generate_radical_expressions,
+    "function_composition": generate_function_composition,
+    "inverse_functions": generate_inverse_functions,
+    "piecewise_functions": generate_piecewise_functions,
+    "polynomial_long_division": generate_polynomial_long_division,
+    "rational_functions": generate_rational_functions,
+    "conic_sections": generate_conic_sections,
+    "parametric_equations": generate_parametric_equations,
+    "polar_coordinates": generate_polar_coordinates,
+    "vectors": generate_vectors,
+    "matrices": generate_matrices,
+    "unit_circle_radians": generate_unit_circle_radians,
+    "sine_cosine_tangent": generate_sine_cosine_tangent,
+    "pythagorean_identities": generate_pythagorean_identities,
+    "graphing_trig_functions": generate_graphing_trig_functions,
+    "inverse_trig_functions": generate_inverse_trig_functions,
+    "law_of_sines": generate_law_of_sines,
+    "law_of_cosines": generate_law_of_cosines,
+    "trigonometric_equations": generate_trigonometric_equations,
 }
 
 
