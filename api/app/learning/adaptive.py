@@ -64,10 +64,22 @@ def get_adaptive_difficulty(user_id: int, skill_id: int, db: Session) -> int:
 
 def get_due_reviews(user_id: int, db: Session) -> List[int]:
     """Get list of skill IDs that are due for spaced repetition review."""
+    # Get skills with available templates
+    skills_with_templates = (
+        db.query(QuestionTemplate.skill_id)
+        .distinct()
+        .all()
+    )
+    template_skill_ids = [skill_id for (skill_id,) in skills_with_templates]
+
+    if not template_skill_ids:
+        return []
+
     due_skills = (
         db.query(UserMastery.skill_id)
         .filter(
             UserMastery.user_id == user_id,
+            UserMastery.skill_id.in_(template_skill_ids),
             UserMastery.next_review <= datetime.utcnow(),
         )
         .all()
@@ -90,11 +102,23 @@ def get_weak_prerequisites(user_id: int, db: Session, threshold: float = 50.0) -
     Returns:
         List of skill IDs that are weak prerequisites
     """
+    # Get skills with available templates
+    skills_with_templates = (
+        db.query(QuestionTemplate.skill_id)
+        .distinct()
+        .all()
+    )
+    template_skill_ids = [skill_id for (skill_id,) in skills_with_templates]
+
+    if not template_skill_ids:
+        return []
+
     # Get all weak skills (mastery < threshold)
     weak_skills = (
         db.query(UserMastery.skill_id)
         .filter(
             UserMastery.user_id == user_id,
+            UserMastery.skill_id.in_(template_skill_ids),
             UserMastery.mastery_score < threshold,
         )
         .all()
@@ -114,10 +138,17 @@ def get_weak_prerequisites(user_id: int, db: Session, threshold: float = 50.0) -
 
 
 def get_unpracticed_skills(user_id: int, db: Session) -> List[int]:
-    """Get skills that have never been practiced."""
-    # Get all skill IDs
-    all_skills = db.query(Skill.id).all()
-    all_skill_ids = [skill_id for (skill_id,) in all_skills]
+    """Get skills that have never been practiced (and have question templates)."""
+    # Get skills with available templates
+    skills_with_templates = (
+        db.query(QuestionTemplate.skill_id)
+        .distinct()
+        .all()
+    )
+    template_skill_ids = [skill_id for (skill_id,) in skills_with_templates]
+
+    if not template_skill_ids:
+        return []
 
     # Get practiced skill IDs
     practiced = (
@@ -127,8 +158,8 @@ def get_unpracticed_skills(user_id: int, db: Session) -> List[int]:
     )
     practiced_ids = [skill_id for (skill_id,) in practiced]
 
-    # Return unpracticed
-    return [sid for sid in all_skill_ids if sid not in practiced_ids]
+    # Return unpracticed skills that have templates
+    return [sid for sid in template_skill_ids if sid not in practiced_ids]
 
 
 def weighted_random_skill(user_id: int, db: Session) -> Optional[int]:
@@ -144,9 +175,23 @@ def weighted_random_skill(user_id: int, db: Session) -> Optional[int]:
     Returns:
         Skill ID or None if no skills available
     """
+    # Get skills with available templates
+    skills_with_templates = (
+        db.query(QuestionTemplate.skill_id)
+        .distinct()
+        .all()
+    )
+    template_skill_ids = [skill_id for (skill_id,) in skills_with_templates]
+
+    if not template_skill_ids:
+        return None
+
     mastery_records = (
         db.query(UserMastery)
-        .filter(UserMastery.user_id == user_id)
+        .filter(
+            UserMastery.user_id == user_id,
+            UserMastery.skill_id.in_(template_skill_ids)
+        )
         .all()
     )
 
