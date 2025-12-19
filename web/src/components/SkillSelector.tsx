@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiClient } from '../lib/api';
+import { api } from '../api/client';
 
 interface Skill {
   id: number;
@@ -26,8 +26,8 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
 
   const fetchSkills = async () => {
     try {
-      const response = await apiClient.get('/skills');
-      setSkills(response.data.skills);
+      const response = await api.get<{ skills: Skill[] }>('/skills');
+      setSkills(response.skills);
     } catch (error) {
       console.error('Failed to fetch skills:', error);
     } finally {
