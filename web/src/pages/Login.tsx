@@ -67,6 +67,7 @@ export default function Login() {
                   required
                   minLength={1}
                 />
+                <p className="text-xs text-gray-500 mt-1">This cannot be changed later</p>
               </div>
             )}
 
