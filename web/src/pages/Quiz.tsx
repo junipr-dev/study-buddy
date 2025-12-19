@@ -57,24 +57,27 @@ export default function Quiz() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-surface border-b border-gray-800">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary">Study Buddy</h1>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/progress')}
-              className="btn-secondary text-sm"
-            >
-              View Progress
-            </button>
-            <span className="text-gray-400">Hi, {user.username}</span>
+      <div className="max-w-3xl mx-auto py-8 px-4">
+        {/* Header */}
+        <header className="bg-surface border border-gray-800 rounded-t-lg px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent">
+              Study Buddy
+            </h1>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate('/progress')}
+                className="btn-secondary text-sm"
+              >
+                View Progress
+              </button>
+              <span className="text-gray-400">Hi, {user.username}</span>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-4 py-8">
+        {/* Main Content */}
+        <main className="bg-background px-6 py-8 border-x border-b border-gray-800 rounded-b-lg">
         {/* Skill Selector */}
         <SkillSelector
           onSelectSkill={handleSelectSkill}
@@ -111,12 +114,13 @@ export default function Quiz() {
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>💡 Tip: The more you practice, the better the adaptive algorithm gets at finding your weak spots!</p>
         </div>
-      </main>
+        </main>
 
-      {/* Feedback Modal */}
-      {feedback && (
-        <FeedbackModal feedback={feedback} onContinue={handleContinue} />
-      )}
+        {/* Feedback Modal */}
+        {feedback && (
+          <FeedbackModal feedback={feedback} onContinue={handleContinue} />
+        )}
+      </div>
     </div>
   );
 }

@@ -58,17 +58,18 @@ export default function Progress() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-surface border-b border-gray-800">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary">Your Progress</h1>
-          <button onClick={() => navigate('/quiz')} className="btn-primary">
-            Continue Practicing
-          </button>
-        </div>
-      </header>
+      <div className="max-w-3xl mx-auto py-8 px-4">
+        {/* Header */}
+        <header className="bg-surface border border-gray-800 rounded-t-lg px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent">Your Progress</h1>
+            <button onClick={() => navigate('/quiz')} className="btn-primary">
+              Continue Practicing
+            </button>
+          </div>
+        </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+        <main className="bg-background px-6 py-8 border-x border-b border-gray-800 rounded-b-lg">
         {/* Overall Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="card">
@@ -183,7 +184,8 @@ export default function Progress() {
             ))}
           </div>
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

@@ -98,6 +98,7 @@ class AnswerFeedback(BaseModel):
     """Schema for answer feedback."""
 
     is_correct: bool
+    user_answer: str
     correct_answer: str
     explanation: Optional[str] = None
     steps: Optional[List[str]] = None

@@ -50,6 +50,7 @@ export interface AnswerSubmit {
 
 export interface AnswerFeedback {
   is_correct: boolean;
+  user_answer: string;
   correct_answer: string;
   explanation?: string;
   steps?: string[];

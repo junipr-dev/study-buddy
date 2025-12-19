@@ -51,33 +51,53 @@ def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
     # Wrap in LaTeX
     latex_question = f"${question}$"
 
-    # Generate solution steps
+    # Generate solution steps with LaTeX
     steps = []
+
+    # Step 0: Show the original equation
+    steps.append(f"Start with the equation: ${question}$")
 
     # Step 1: Isolate ax
     if b != 0:
         new_c = c - b
-        steps.append(f"Subtract {b} from both sides" if b > 0 else f"Add {abs(b)} to both sides")
+        operation = f"subtract ${abs(b)}$" if b > 0 else f"add ${abs(b)}$"
+        steps.append(f"To isolate the variable term, {operation} from both sides")
+
+        # Show the new equation
         if a == 1:
-            steps.append(f"x = {new_c}")
+            new_eq = f"x = {new_c}"
         elif a == -1:
-            steps.append(f"-x = {new_c}")
+            new_eq = f"-x = {new_c}"
         else:
-            steps.append(f"{a}x = {new_c}")
+            new_eq = f"{a}x = {new_c}"
+        steps.append(f"${new_eq}$")
     else:
         new_c = c
 
     # Step 2: Divide by a
     if a != 1:
-        steps.append(f"Divide both sides by {a}")
-        steps.append(f"x = {new_c}/{a}")
+        steps.append(f"Divide both sides by ${a}$ to solve for $x$")
+
+        # Show division
+        if new_c < 0 and a < 0:
+            # Both negative
+            steps.append(f"$x = \\frac{{{new_c}}}{{{a}}} = \\frac{{{abs(new_c)}}}{{{abs(a)}}}$")
+        else:
+            steps.append(f"$x = \\frac{{{new_c}}}{{{a}}}$")
 
         # Simplify if needed
         if new_c % a == 0:
-            steps.append(f"x = {x_solution}")
+            steps.append(f"Simplify: $x = {x_solution}$")
         else:
             # Show as decimal
-            steps.append(f"x = {new_c/a:.2f}")
+            steps.append(f"Simplify: $x = {new_c/a:.2f}$")
+    else:
+        # Already solved
+        if b != 0:
+            steps.append(f"The equation is already solved: $x = {x_solution}$")
+
+    # Final answer
+    steps.append(f"**Final Answer:** $x = {x_solution}$")
 
     return {
         "question": f"Solve for $x$: {latex_question}",

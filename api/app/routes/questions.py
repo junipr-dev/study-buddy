@@ -14,6 +14,7 @@ from app.learning.adaptive import select_next_skill, get_adaptive_difficulty
 from app.learning.mastery import calculate_mastery
 from app.learning.spaced_repetition import calculate_next_review
 from app.generators import get_generator
+from app.utils.answer_validation import answers_are_equivalent
 
 router = APIRouter(prefix="/questions", tags=["Questions"])
 
@@ -126,16 +127,8 @@ def submit_answer(
             detail="Question not found or expired",
         )
 
-    # Validate answer
-    is_correct = answer_data.answer.strip() == question["correct_answer"].strip()
-
-    # Also try numeric comparison if available
-    if not is_correct and question.get("answer_numeric") is not None:
-        try:
-            user_numeric = float(answer_data.answer)
-            is_correct = abs(user_numeric - question["answer_numeric"]) < 0.01
-        except ValueError:
-            pass
+    # Validate answer (handles fractions, decimals, mixed numbers, etc.)
+    is_correct = answers_are_equivalent(answer_data.answer, question["correct_answer"])
 
     # Record attempt in history
     attempt = QuestionHistory(
@@ -199,6 +192,7 @@ def submit_answer(
 
     return {
         "is_correct": is_correct,
+        "user_answer": answer_data.answer,
         "correct_answer": question["correct_answer"],
         "explanation": skill.explanation if skill else None,
         "steps": question.get("steps"),

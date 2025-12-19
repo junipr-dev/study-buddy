@@ -32,7 +32,7 @@
 /* Custom components */
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-gradient-to-r from-[#6B4FFF] via-[#4A2F9A] to-[#8B7FFF] text-white rounded-lg hover:opacity-90 transition-all shadow-lg shadow-primary/30;
+    @apply px-4 py-2 bg-gradient-to-r from-[#5B3FDD] via-[#4A2F9A] to-[#6B4FFF] text-white rounded-lg hover:opacity-90 transition-all shadow-lg shadow-[#5B3FDD]/40;
   }
 
   .btn-secondary {
@@ -42,4 +42,47 @@
   .card {
     @apply bg-surface border border-gray-800 rounded-lg p-6 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/20;
   }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes correctFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  54% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  85% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-correctFlash {
+  animation: correctFlash 1.3s ease-in-out forwards;
 }

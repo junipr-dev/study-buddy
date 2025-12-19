@@ -24,30 +24,39 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
     const parts = question.question.split(/(\$[^$]+\$)/g);
 
     return (
-      <p className="text-xl font-medium">
+      <div className="text-xl font-medium leading-relaxed">
         {parts.map((part, index) => {
           if (part.startsWith('$') && part.endsWith('$')) {
             const math = part.slice(1, -1);
-            return <InlineMath key={index} math={math} />;
+            // Check if previous part ends with ":" to add more space before equation
+            const prevPart = index > 0 ? parts[index - 1] : '';
+            const spacingClass = prevPart.trim().endsWith(':') ? 'ml-4' : 'ml-1';
+            return (
+              <span key={index} className={`inline-block ${spacingClass} text-2xl`}>
+                <InlineMath math={math} />
+              </span>
+            );
           }
           return <span key={index}>{part}</span>;
         })}
-      </p>
+      </div>
     );
   };
 
   return (
     <div className="card">
       <div className="mb-4">
-        <span className="inline-block px-3 py-1 bg-primary bg-opacity-20 text-primary text-sm rounded-full">
-          {question.skill_name}
+        <span className="inline-block px-3 py-1 bg-surface border border-gray-700 text-sm rounded-full">
+          <span className="bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent font-medium">
+            {question.skill_name}
+          </span>
         </span>
         <span className="ml-2 text-sm text-gray-400">
           Difficulty: {question.difficulty}/5
         </span>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 py-5">
         {renderQuestion()}
       </div>
 

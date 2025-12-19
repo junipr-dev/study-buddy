@@ -28,7 +28,8 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         frac2 = Fraction(num2, denominator)
 
         question = f"$\\frac{{{num1}}}{{{denominator}}} + \\frac{{{num2}}}{{{denominator}}}$"
-        steps.append(f"Same denominator, add numerators:")
+        steps.append(f"Start with the expression: {question}")
+        steps.append(f"Both fractions have the same denominator (${denominator}$), so we can add the numerators directly")
         steps.append(f"$\\frac{{{num1} + {num2}}}{{{denominator}}} = \\frac{{{num1 + num2}}}{{{denominator}}}$")
 
     else:
@@ -54,9 +55,12 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
 
         question = f"$\\frac{{{num1}}}{{{denom1}}} + \\frac{{{num2}}}{{{denom2}}}$"
 
+        steps.append(f"Start with the expression: {question}")
+
         # Find LCD
         lcm = (denom1 * denom2) // gcd(denom1, denom2)
-        steps.append(f"Find common denominator: LCD = ${lcm}$")
+        steps.append(f"The denominators are different (${denom1}$ and ${denom2}$), so find the least common denominator (LCD)")
+        steps.append(f"LCD of ${denom1}$ and ${denom2}$ is ${lcm}$")
 
         # Convert fractions
         mult1 = lcm // denom1
@@ -64,22 +68,32 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         new_num1 = num1 * mult1
         new_num2 = num2 * mult2
 
-        steps.append(f"$\\frac{{{num1}}}{{{denom1}}} = \\frac{{{new_num1}}}{{{lcm}}}$")
-        steps.append(f"$\\frac{{{num2}}}{{{denom2}}} = \\frac{{{new_num2}}}{{{lcm}}}$")
-        steps.append(f"Add: $\\frac{{{new_num1}}}{{{lcm}}} + \\frac{{{new_num2}}}{{{lcm}}} = \\frac{{{new_num1 + new_num2}}}{{{lcm}}}$")
+        steps.append(f"Convert each fraction to have denominator ${lcm}$:")
+        steps.append(f"$\\frac{{{num1}}}{{{denom1}}} \\times \\frac{{{mult1}}}{{{mult1}}} = \\frac{{{new_num1}}}{{{lcm}}}$")
+        steps.append(f"$\\frac{{{num2}}}{{{denom2}}} \\times \\frac{{{mult2}}}{{{mult2}}} = \\frac{{{new_num2}}}{{{lcm}}}$")
+        steps.append(f"Now add the fractions with the same denominator:")
+        steps.append(f"$\\frac{{{new_num1}}}{{{lcm}}} + \\frac{{{new_num2}}}{{{lcm}}} = \\frac{{{new_num1 + new_num2}}}{{{lcm}}}$")
 
     # Calculate result
     result = frac1 + frac2
 
     # Simplify if needed
-    if result.denominator != (num1 + num2 if difficulty == 1 else new_num1 + new_num2):
-        steps.append(f"Simplify: $\\frac{{{result.numerator}}}{{{result.denominator}}}$")
+    if difficulty == 1:
+        sum_numerator = num1 + num2
+    else:
+        sum_numerator = new_num1 + new_num2
+
+    if result.numerator != sum_numerator or result.denominator != (denominator if difficulty == 1 else lcm):
+        steps.append(f"Simplify the fraction by dividing both numerator and denominator by their GCD:")
+        steps.append(f"$\\frac{{{result.numerator}}}{{{result.denominator}}}$")
 
     # Format answer
     if result.denominator == 1:
         answer_str = str(result.numerator)
+        steps.append(f"**Final Answer:** ${result.numerator}$")
     else:
         answer_str = f"{result.numerator}/{result.denominator}"
+        steps.append(f"**Final Answer:** $\\frac{{{result.numerator}}}{{{result.denominator}}}$")
 
     return {
         "question": f"Calculate: {question}",

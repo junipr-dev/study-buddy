@@ -30,7 +30,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-2">Study Buddy</h1>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent mb-2">Study Buddy</h1>
           <p className="text-gray-400">Adaptive Math Quiz Platform</p>
         </div>
 
