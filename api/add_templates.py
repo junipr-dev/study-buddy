@@ -31,6 +31,11 @@ def add_templates():
             'pythagorean-theorem': ('pythagorean_theorem', [1, 2, 3]),
             'factoring-quadratics': ('factoring_quadratics', [1, 2, 3]),
             'factoring-polynomials': ('factoring_polynomials', [1, 2, 3]),
+            'equations-with-variables-both-sides': ('equations_variables_both_sides', [1, 2, 3]),
+            'graphing-linear-equations': ('graphing_linear_equations', [1, 2, 3]),
+            'point-slope-form': ('point_slope_form', [1, 2, 3]),
+            'quadratic-formula': ('quadratic_formula', [1, 2, 3]),
+            'scientific-notation': ('scientific_notation', [1, 2, 3]),
         }
 
         templates_added = 0
