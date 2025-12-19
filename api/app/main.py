@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import get_settings, engine, Base
-from app.routes import auth
+from app.routes import auth, questions, progress, skills
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -31,6 +31,9 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix=settings.api_prefix)
+app.include_router(questions.router, prefix=settings.api_prefix)
+app.include_router(progress.router, prefix=settings.api_prefix)
+app.include_router(skills.router, prefix=settings.api_prefix)
 
 
 @app.get("/")
