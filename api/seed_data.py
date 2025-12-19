@@ -4,7 +4,7 @@ import json
 import os
 from pathlib import Path
 
-from app.database import SessionLocal
+from app.database import SessionLocal, engine, Base
 from app.models import Skill, QuestionTemplate, SkillPrerequisite
 
 
@@ -62,6 +62,11 @@ def load_explainer(skill_slug, subject):
 
 def seed_database():
     """Seed the database with skills from JSON file."""
+    # Create tables
+    print("Creating database tables...")
+    Base.metadata.create_all(bind=engine)
+    print("✅ Tables created!")
+
     db = SessionLocal()
 
     try:
