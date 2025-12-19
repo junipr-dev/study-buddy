@@ -1,0 +1,81 @@
+{
+  "skills": [
+    {
+      "slug": "order-of-operations",
+      "name": "Order of Operations",
+      "subject": "Pre-Algebra",
+      "description": "Apply PEMDAS/BODMAS to evaluate expressions",
+      "khan_url": "https://www.khanacademy.org/math/pre-algebra/pre-algebra-arith-prop/pre-algebra-order-of-operations/v/introduction-to-order-of-operations",
+      "prerequisites": [],
+      "difficulty_base": 1
+    },
+    {
+      "slug": "fraction-addition",
+      "name": "Adding Fractions",
+      "subject": "Pre-Algebra",
+      "description": "Add and subtract fractions with different denominators",
+      "khan_url": "https://www.khanacademy.org/math/pre-algebra/pre-algebra-fractions/pre-algebra-add-sub-fractions/v/adding-fractions-with-unlike-denominators",
+      "prerequisites": ["order-of-operations"],
+      "difficulty_base": 2
+    },
+    {
+      "slug": "combining-like-terms",
+      "name": "Combining Like Terms",
+      "subject": "Algebra Basics",
+      "description": "Simplify expressions by combining like terms",
+      "khan_url": "https://www.khanacademy.org/math/algebra-basics/alg-basics-algebraic-expressions/alg-basics-combining-like-terms/v/combining-like-terms",
+      "prerequisites": ["order-of-operations"],
+      "difficulty_base": 1
+    },
+    {
+      "slug": "solving-linear-equations",
+      "name": "Solving Linear Equations",
+      "subject": "Algebra Basics",
+      "description": "Solve equations of the form ax + b = c",
+      "khan_url": "https://www.khanacademy.org/math/algebra-basics/alg-basics-algebraic-expressions/alg-basics-one-step-equations/v/why-we-do-the-same-thing-to-both-sides-one-step-equations",
+      "prerequisites": ["combining-like-terms"],
+      "difficulty_base": 2
+    },
+    {
+      "slug": "multi-step-equations",
+      "name": "Multi-Step Equations",
+      "subject": "Algebra I",
+      "description": "Solve equations requiring multiple steps",
+      "khan_url": "https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:solve-equations/x2f8bb11595b61c86:multi-step-equations/v/multi-step-equations",
+      "prerequisites": ["solving-linear-equations", "combining-like-terms"],
+      "difficulty_base": 3
+    }
+  ],
+  "subjects": {
+    "Pre-Algebra": {
+      "description": "Foundation skills for algebra",
+      "order": 1
+    },
+    "Algebra Basics": {
+      "description": "Introduction to algebraic thinking",
+      "order": 2
+    },
+    "Algebra I": {
+      "description": "Core algebra concepts",
+      "order": 3
+    },
+    "Algebra II": {
+      "description": "Advanced algebra topics",
+      "order": 4
+    },
+    "Trigonometry": {
+      "description": "Angles, triangles, and circular functions",
+      "order": 5
+    },
+    "Precalculus": {
+      "description": "Preparation for calculus",
+      "order": 6
+    }
+  },
+  "meta": {
+    "version": "0.1.0",
+    "last_updated": "2024-12-19",
+    "total_skills": 5,
+    "status": "initial_seed"
+  }
+}
