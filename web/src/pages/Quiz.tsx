@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore';
 import { useQuizStore } from '../store/quizStore';
 import QuestionCard from '../components/QuestionCard';
 import FeedbackModal from '../components/FeedbackModal';
+import SkillSelector from '../components/SkillSelector';
 
 export default function Quiz() {
   const { user } = useAuthStore();
@@ -12,9 +13,11 @@ export default function Quiz() {
     feedback,
     isLoading,
     error,
+    selectedSkillId,
     fetchNextQuestion,
     submitAnswer,
     clearFeedback,
+    setSelectedSkill,
   } = useQuizStore();
 
   const navigate = useNavigate();
@@ -42,6 +45,12 @@ export default function Quiz() {
     }
   };
 
+  const handleSelectSkill = (skillId: number | null) => {
+    setSelectedSkill(skillId);
+    // Fetch new question with selected skill
+    fetchNextQuestion(skillId);
+  };
+
   if (!user) {
     return null; // Redirecting
   }
@@ -66,6 +75,12 @@ export default function Quiz() {
 
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 py-8">
+        {/* Skill Selector */}
+        <SkillSelector
+          onSelectSkill={handleSelectSkill}
+          selectedSkillId={selectedSkillId}
+        />
+
         {error && (
           <div className="bg-red-500 bg-opacity-10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-6">
             {error}

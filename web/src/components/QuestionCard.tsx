@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { BlockMath } from 'react-katex';
+import { InlineMath } from 'react-katex';
 import type { Question } from '../types';
 
 interface QuestionCardProps {
@@ -19,8 +19,22 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
     }
   };
 
-  // Check if question contains LaTeX (starts with $ or \)
-  const hasLatex = question.question.includes('$') || question.question.includes('\\');
+  // Parse and render text with LaTeX
+  const renderQuestion = () => {
+    const parts = question.question.split(/(\$[^$]+\$)/g);
+
+    return (
+      <p className="text-xl font-medium">
+        {parts.map((part, index) => {
+          if (part.startsWith('$') && part.endsWith('$')) {
+            const math = part.slice(1, -1);
+            return <InlineMath key={index} math={math} />;
+          }
+          return <span key={index}>{part}</span>;
+        })}
+      </p>
+    );
+  };
 
   return (
     <div className="card">
@@ -34,11 +48,7 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
       </div>
 
       <div className="mb-6">
-        {hasLatex ? (
-          <BlockMath math={question.question.replace(/\$/g, '')} />
-        ) : (
-          <p className="text-xl font-medium">{question.question}</p>
-        )}
+        {renderQuestion()}
       </div>
 
       <form onSubmit={handleSubmit}>

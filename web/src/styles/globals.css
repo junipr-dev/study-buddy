@@ -32,14 +32,14 @@
 /* Custom components */
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all;
+    @apply px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all shadow-lg shadow-primary/30;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 border border-secondary text-secondary rounded-lg hover:bg-secondary hover:text-background transition-all;
+    @apply px-4 py-2 border-2 border-accent text-accent rounded-lg hover:bg-accent hover:text-background transition-all;
   }
 
   .card {
-    @apply bg-surface border border-gray-800 rounded-lg p-6 hover:border-primary transition-all;
+    @apply bg-surface border border-gray-800 rounded-lg p-6 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/20;
   }
 }

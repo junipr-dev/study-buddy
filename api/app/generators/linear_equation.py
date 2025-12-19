@@ -34,7 +34,7 @@ def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
     # Calculate c to ensure known solution
     c = a * x_solution + b
 
-    # Format question
+    # Format question with LaTeX
     # Handle signs properly
     sign_b = "+" if b >= 0 else "-"
     abs_b = abs(b)
@@ -47,6 +47,9 @@ def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
         question = f"{a}x {sign_b} {abs_b} = {c}"
 
     question = question.replace("+ 0", "").replace("- 0", "").strip()
+
+    # Wrap in LaTeX
+    latex_question = f"${question}$"
 
     # Generate solution steps
     steps = []
@@ -77,7 +80,7 @@ def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
             steps.append(f"x = {new_c/a:.2f}")
 
     return {
-        "question": f"Solve for x: {question}",
+        "question": f"Solve for $x$: {latex_question}",
         "answer": str(x_solution),
         "answer_numeric": x_solution,
         "steps": steps,

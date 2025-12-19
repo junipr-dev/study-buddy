@@ -27,9 +27,9 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         frac1 = Fraction(num1, denominator)
         frac2 = Fraction(num2, denominator)
 
-        question = f"{num1}/{denominator} + {num2}/{denominator}"
+        question = f"$\\frac{{{num1}}}{{{denominator}}} + \\frac{{{num2}}}{{{denominator}}}$"
         steps.append(f"Same denominator, add numerators:")
-        steps.append(f"({num1} + {num2})/{denominator} = {num1 + num2}/{denominator}")
+        steps.append(f"$\\frac{{{num1} + {num2}}}{{{denominator}}} = \\frac{{{num1 + num2}}}{{{denominator}}}$")
 
     else:
         # Medium/Hard: Different denominators
@@ -52,11 +52,11 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         frac1 = Fraction(num1, denom1)
         frac2 = Fraction(num2, denom2)
 
-        question = f"{num1}/{denom1} + {num2}/{denom2}"
+        question = f"$\\frac{{{num1}}}{{{denom1}}} + \\frac{{{num2}}}{{{denom2}}}$"
 
         # Find LCD
         lcm = (denom1 * denom2) // gcd(denom1, denom2)
-        steps.append(f"Find common denominator: LCD = {lcm}")
+        steps.append(f"Find common denominator: LCD = ${lcm}$")
 
         # Convert fractions
         mult1 = lcm // denom1
@@ -64,16 +64,16 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         new_num1 = num1 * mult1
         new_num2 = num2 * mult2
 
-        steps.append(f"{num1}/{denom1} = {new_num1}/{lcm}")
-        steps.append(f"{num2}/{denom2} = {new_num2}/{lcm}")
-        steps.append(f"Add: {new_num1}/{lcm} + {new_num2}/{lcm} = {new_num1 + new_num2}/{lcm}")
+        steps.append(f"$\\frac{{{num1}}}{{{denom1}}} = \\frac{{{new_num1}}}{{{lcm}}}$")
+        steps.append(f"$\\frac{{{num2}}}{{{denom2}}} = \\frac{{{new_num2}}}{{{lcm}}}$")
+        steps.append(f"Add: $\\frac{{{new_num1}}}{{{lcm}}} + \\frac{{{new_num2}}}{{{lcm}}} = \\frac{{{new_num1 + new_num2}}}{{{lcm}}}$")
 
     # Calculate result
     result = frac1 + frac2
 
     # Simplify if needed
     if result.denominator != (num1 + num2 if difficulty == 1 else new_num1 + new_num2):
-        steps.append(f"Simplify: {result.numerator}/{result.denominator}")
+        steps.append(f"Simplify: $\\frac{{{result.numerator}}}{{{result.denominator}}}$")
 
     # Format answer
     if result.denominator == 1:

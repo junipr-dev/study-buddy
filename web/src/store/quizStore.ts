@@ -12,10 +12,12 @@ interface QuizState {
   isLoading: boolean;
   error: string | null;
   questionStartTime: number | null;
+  selectedSkillId: number | null;
 
-  fetchNextQuestion: () => Promise<void>;
+  fetchNextQuestion: (skillId?: number | null) => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
   clearFeedback: () => void;
+  setSelectedSkill: (skillId: number | null) => void;
   reset: () => void;
 }
 
@@ -25,11 +27,16 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   isLoading: false,
   error: null,
   questionStartTime: null,
+  selectedSkillId: null,
 
-  fetchNextQuestion: async () => {
+  fetchNextQuestion: async (skillId?: number | null) => {
     set({ isLoading: true, error: null, feedback: null });
     try {
-      const question = await questionsAPI.getNext();
+      const useSkillId = skillId !== undefined ? skillId : get().selectedSkillId;
+      const question = useSkillId
+        ? await questionsAPI.practiceSkill(useSkillId)
+        : await questionsAPI.getNext();
+
       set({
         currentQuestion: question,
         questionStartTime: Date.now(),
@@ -41,6 +48,10 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         isLoading: false,
       });
     }
+  },
+
+  setSelectedSkill: (skillId: number | null) => {
+    set({ selectedSkillId: skillId });
   },
 
   submitAnswer: async (answer: string) => {
