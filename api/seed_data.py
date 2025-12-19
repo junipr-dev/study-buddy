@@ -1,10 +1,67 @@
-"""Seed script to populate initial skills and question templates."""
+"""Seed script to populate initial skills and question templates from JSON."""
+
+import json
+import os
+from pathlib import Path
 
 from app.database import SessionLocal
 from app.models import Skill, QuestionTemplate, SkillPrerequisite
 
+
+def load_skills_json():
+    """Load skills from content/skills.json."""
+    content_dir = Path(__file__).parent.parent / "content"
+    skills_file = content_dir / "skills.json"
+
+    if not skills_file.exists():
+        raise FileNotFoundError(f"Skills file not found: {skills_file}")
+
+    with open(skills_file, 'r') as f:
+        return json.load(f)
+
+
+def load_explainer(skill_slug, subject):
+    """Load explainer content for a skill."""
+    content_dir = Path(__file__).parent.parent / "content" / "explainers"
+
+    # Convert subject to directory name (e.g., "Algebra I" -> "algebra-1")
+    subject_dir_map = {
+        "Pre-Algebra": "pre-algebra",
+        "Algebra Basics": "algebra-basics",
+        "Algebra I": "algebra-1",
+        "Algebra II": "algebra-2",
+        "Trigonometry": "trigonometry",
+        "Precalculus": "precalculus",
+    }
+
+    subject_dir = subject_dir_map.get(subject, subject.lower().replace(" ", "-"))
+    explainer_file = content_dir / subject_dir / f"{skill_slug}.md"
+
+    if explainer_file.exists():
+        with open(explainer_file, 'r') as f:
+            content = f.read()
+            # Extract just the "What is..." section as a brief explanation
+            lines = content.split('\n')
+            explanation_lines = []
+            in_what_is = False
+
+            for line in lines:
+                if line.startswith('## What is'):
+                    in_what_is = True
+                    continue
+                elif line.startswith('##'):
+                    break
+                elif in_what_is and line.strip():
+                    explanation_lines.append(line.strip())
+
+            explanation = ' '.join(explanation_lines)[:500]  # Limit to 500 chars
+            return explanation if explanation else f"Learn about {skill_slug.replace('-', ' ')}"
+
+    return f"Learn about {skill_slug.replace('-', ' ')}"
+
+
 def seed_database():
-    """Seed the database with initial skills and templates."""
+    """Seed the database with skills from JSON file."""
     db = SessionLocal()
 
     try:
@@ -14,156 +71,106 @@ def seed_database():
             print(f"Database already has {existing_skills} skills. Skipping seed.")
             return
 
-        print("Seeding database with initial skills and templates...")
+        print("Loading skills from skills.json...")
+        data = load_skills_json()
 
-        # Create Pre-Algebra skills
-        order_of_operations = Skill(
-            slug="order-of-operations",
-            name="Order of Operations",
-            subject="Pre-Algebra",
-            description="Apply PEMDAS/BODMAS to evaluate expressions",
-            khan_url="https://www.khanacademy.org/math/pre-algebra/pre-algebra-arith-prop/pre-algebra-order-of-operations/v/introduction-to-order-of-operations",
-            explanation="Order of operations (PEMDAS) tells us the correct sequence: Parentheses, Exponents, Multiplication/Division (left to right), Addition/Subtraction (left to right).",
-            difficulty_base=1,
-        )
-        db.add(order_of_operations)
+        print(f"Found {len(data['skills'])} skills to seed")
+        print("Creating skills...")
 
-        fraction_addition = Skill(
-            slug="fraction-addition",
-            name="Adding Fractions",
-            subject="Pre-Algebra",
-            description="Add and subtract fractions with different denominators",
-            khan_url="https://www.khanacademy.org/math/pre-algebra/pre-algebra-fractions/pre-algebra-add-sub-fractions/v/adding-fractions-with-unlike-denominators",
-            explanation="To add fractions: 1) Find common denominator (LCD), 2) Convert fractions, 3) Add numerators, 4) Simplify if needed.",
-            difficulty_base=2,
-        )
-        db.add(fraction_addition)
+        # Create skills first (without prerequisites)
+        skill_objects = {}
+        for skill_data in data['skills']:
+            explanation = load_explainer(skill_data['slug'], skill_data['subject'])
 
-        # Create Algebra Basics skills
-        combining_like_terms = Skill(
-            slug="combining-like-terms",
-            name="Combining Like Terms",
-            subject="Algebra Basics",
-            description="Simplify expressions by combining like terms",
-            khan_url="https://www.khanacademy.org/math/algebra-basics/alg-basics-algebraic-expressions/alg-basics-combining-like-terms/v/combining-like-terms",
-            explanation="Like terms have the same variable and exponent. Combine by adding/subtracting their coefficients. Example: 3x + 5x = 8x",
-            difficulty_base=1,
-        )
-        db.add(combining_like_terms)
-
-        solving_linear = Skill(
-            slug="solving-linear-equations",
-            name="Solving Linear Equations",
-            subject="Algebra Basics",
-            description="Solve equations of the form ax + b = c",
-            khan_url="https://www.khanacademy.org/math/algebra-basics/alg-basics-algebraic-expressions/alg-basics-one-step-equations/v/why-we-do-the-same-thing-to-both-sides-one-step-equations",
-            explanation="To solve linear equations: 1) Isolate the variable term, 2) Use inverse operations, 3) Always do the same operation to both sides.",
-            difficulty_base=2,
-        )
-        db.add(solving_linear)
-
-        # Create Algebra I skills
-        multi_step_equations = Skill(
-            slug="multi-step-equations",
-            name="Multi-Step Equations",
-            subject="Algebra I",
-            description="Solve equations requiring multiple steps",
-            khan_url="https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:solve-equations/x2f8bb11595b61c86:multi-step-equations/v/multi-step-equations",
-            explanation="Multi-step equations require combining like terms, using distributive property, and isolating the variable through multiple operations.",
-            difficulty_base=3,
-        )
-        db.add(multi_step_equations)
+            skill = Skill(
+                slug=skill_data['slug'],
+                name=skill_data['name'],
+                subject=skill_data['subject'],
+                description=skill_data['description'],
+                khan_url=skill_data['khan_url'],
+                explanation=explanation,
+                difficulty_base=skill_data['difficulty_base'],
+            )
+            db.add(skill)
+            skill_objects[skill_data['slug']] = {
+                'object': skill,
+                'prerequisites': skill_data.get('prerequisites', [])
+            }
 
         db.commit()
-        print("Skills created successfully!")
+        print(f"✅ Created {len(skill_objects)} skills!")
 
-        # Get skill IDs
-        db.refresh(order_of_operations)
-        db.refresh(fraction_addition)
-        db.refresh(combining_like_terms)
-        db.refresh(solving_linear)
-        db.refresh(multi_step_equations)
+        # Refresh all skills to get their IDs
+        for slug, data in skill_objects.items():
+            db.refresh(data['object'])
 
-        # Create skill prerequisites
-        # Solving linear equations requires combining like terms
-        prereq1 = SkillPrerequisite(
-            skill_id=solving_linear.id,
-            prerequisite_id=combining_like_terms.id,
-        )
-        db.add(prereq1)
-
-        # Multi-step equations require solving linear equations
-        prereq2 = SkillPrerequisite(
-            skill_id=multi_step_equations.id,
-            prerequisite_id=solving_linear.id,
-        )
-        db.add(prereq2)
-
-        # Multi-step equations require combining like terms
-        prereq3 = SkillPrerequisite(
-            skill_id=multi_step_equations.id,
-            prerequisite_id=combining_like_terms.id,
-        )
-        db.add(prereq3)
+        # Create prerequisites
+        print("Creating skill prerequisites...")
+        prereq_count = 0
+        for slug, data in skill_objects.items():
+            skill = data['object']
+            for prereq_slug in data['prerequisites']:
+                if prereq_slug in skill_objects:
+                    prereq = SkillPrerequisite(
+                        skill_id=skill.id,
+                        prerequisite_id=skill_objects[prereq_slug]['object'].id,
+                    )
+                    db.add(prereq)
+                    prereq_count += 1
+                else:
+                    print(f"⚠️  Warning: Prerequisite '{prereq_slug}' not found for skill '{slug}'")
 
         db.commit()
-        print("Prerequisites created successfully!")
+        print(f"✅ Created {prereq_count} prerequisites!")
 
-        # Create question templates
-        templates = [
-            # Linear equation templates
-            QuestionTemplate(
-                skill_id=solving_linear.id,
-                template_type="linear_equation",
-                template_data={"difficulty": 1},
-                difficulty=1,
-            ),
-            QuestionTemplate(
-                skill_id=solving_linear.id,
-                template_type="linear_equation",
-                template_data={"difficulty": 2},
-                difficulty=2,
-            ),
-            QuestionTemplate(
-                skill_id=solving_linear.id,
-                template_type="linear_equation",
-                template_data={"difficulty": 3},
-                difficulty=3,
-            ),
-            # Fraction templates
-            QuestionTemplate(
-                skill_id=fraction_addition.id,
-                template_type="fraction_addition",
-                template_data={"difficulty": 1},
-                difficulty=1,
-            ),
-            QuestionTemplate(
-                skill_id=fraction_addition.id,
-                template_type="fraction_addition",
-                template_data={"difficulty": 2},
-                difficulty=2,
-            ),
-            QuestionTemplate(
-                skill_id=fraction_addition.id,
-                template_type="fraction_addition",
-                template_data={"difficulty": 3},
-                difficulty=3,
-            ),
-        ]
+        # Create question templates for skills with generators
+        print("Creating question templates...")
+        templates = []
+
+        # Linear equation templates (solving-linear-equations)
+        if 'solving-linear-equations' in skill_objects:
+            linear_skill = skill_objects['solving-linear-equations']['object']
+            for difficulty in [1, 2, 3]:
+                templates.append(QuestionTemplate(
+                    skill_id=linear_skill.id,
+                    template_type="linear_equation",
+                    template_data={"difficulty": difficulty},
+                    difficulty=difficulty,
+                ))
+
+        # Fraction addition templates
+        if 'fraction-addition' in skill_objects:
+            fraction_skill = skill_objects['fraction-addition']['object']
+            for difficulty in [1, 2, 3]:
+                templates.append(QuestionTemplate(
+                    skill_id=fraction_skill.id,
+                    template_type="fraction_addition",
+                    template_data={"difficulty": difficulty},
+                    difficulty=difficulty,
+                ))
 
         for template in templates:
             db.add(template)
 
         db.commit()
-        print(f"Created {len(templates)} question templates successfully!")
+        print(f"✅ Created {len(templates)} question templates!")
 
-        print("\n✅ Database seeded successfully!")
+        print("\n🎉 Database seeded successfully!")
         print(f"   - {db.query(Skill).count()} skills")
         print(f"   - {db.query(SkillPrerequisite).count()} prerequisites")
         print(f"   - {db.query(QuestionTemplate).count()} question templates")
 
+        # Show skills by subject
+        print("\n📚 Skills by subject:")
+        for subject_name in ["Pre-Algebra", "Algebra Basics", "Algebra I", "Algebra II", "Trigonometry", "Precalculus"]:
+            count = db.query(Skill).filter(Skill.subject == subject_name).count()
+            if count > 0:
+                print(f"   - {subject_name}: {count} skills")
+
     except Exception as e:
-        print(f"Error seeding database: {e}")
+        print(f"❌ Error seeding database: {e}")
+        import traceback
+        traceback.print_exc()
         db.rollback()
     finally:
         db.close()
