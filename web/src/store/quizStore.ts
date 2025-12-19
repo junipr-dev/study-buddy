@@ -41,11 +41,13 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         currentQuestion: question,
         questionStartTime: Date.now(),
         isLoading: false,
+        error: null, // Explicitly clear error on success
       });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Failed to fetch question',
         isLoading: false,
+        currentQuestion: null, // Clear question on error
       });
     }
   },
@@ -84,7 +86,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     }
   },
 
-  clearFeedback: () => set({ feedback: null }),
+  clearFeedback: () => set({ feedback: null, error: null }),
 
   reset: () => set({
     currentQuestion: null,

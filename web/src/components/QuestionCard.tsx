@@ -74,6 +74,12 @@ export default function QuestionCard({ question, onSubmit, isLoading }: Question
             placeholder="Enter your answer (e.g., 3, 1/2, or 1.5)"
             disabled={isLoading}
             autoFocus
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            name="quiz-answer"
+            data-form-type="other"
           />
           <p className="text-sm text-gray-500 mt-2">
             For fractions, use format: 3/4 or 1/2

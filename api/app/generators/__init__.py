@@ -18,6 +18,13 @@ from app.generators.absolute_value import generate_absolute_value
 from app.generators.fractions_multiplication import generate_fractions_multiplication
 from app.generators.fractions_division import generate_fractions_division
 from app.generators.percentages import generate_percentages
+from app.generators.decimals_operations import generate_decimals_operations
+from app.generators.ratios_proportions import generate_ratios_proportions
+from app.generators.unit_conversions import generate_unit_conversions
+from app.generators.simple_interest import generate_simple_interest
+from app.generators.pythagorean_theorem import generate_pythagorean_theorem
+from app.generators.factoring_quadratics import generate_factoring_quadratics
+from app.generators.factoring_polynomials import generate_factoring_polynomials
 
 # Registry of generator functions by template type
 GENERATORS: Dict[str, Callable[[int], Dict[str, Any]]] = {
@@ -38,6 +45,13 @@ GENERATORS: Dict[str, Callable[[int], Dict[str, Any]]] = {
     "fractions_multiplication": generate_fractions_multiplication,
     "fractions_division": generate_fractions_division,
     "percentages": generate_percentages,
+    "decimals_operations": generate_decimals_operations,
+    "ratios_proportions": generate_ratios_proportions,
+    "unit_conversions": generate_unit_conversions,
+    "simple_interest": generate_simple_interest,
+    "pythagorean_theorem": generate_pythagorean_theorem,
+    "factoring_quadratics": generate_factoring_quadratics,
+    "factoring_polynomials": generate_factoring_polynomials,
 }
 
 

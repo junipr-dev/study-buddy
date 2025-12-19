@@ -28,10 +28,18 @@ class APIClient {
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        detail: 'An error occurred',
-      }));
-      throw new Error(error.detail || `HTTP ${response.status}`);
+      try {
+        const error = await response.json();
+        const message = typeof error === 'string'
+          ? error
+          : error.detail || error.message || `HTTP ${response.status}`;
+        throw new Error(message);
+      } catch (e) {
+        if (e instanceof Error && e.message !== 'HTTP') {
+          throw e;
+        }
+        throw new Error(`HTTP ${response.status}`);
+      }
     }
 
     return response.json();
