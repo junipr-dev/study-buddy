@@ -132,27 +132,38 @@ def seed_database():
         print("Creating question templates...")
         templates = []
 
-        # Linear equation templates (solving-linear-equations)
-        if 'solving-linear-equations' in skill_objects:
-            linear_skill = skill_objects['solving-linear-equations']['object']
-            for difficulty in [1, 2, 3]:
-                templates.append(QuestionTemplate(
-                    skill_id=linear_skill.id,
-                    template_type="linear_equation",
-                    template_data={"difficulty": difficulty},
-                    difficulty=difficulty,
-                ))
+        # Map skill slugs to generator types and difficulty ranges
+        skill_generator_map = {
+            'solving-linear-equations': ('linear_equation', [1, 2, 3]),
+            'fraction-addition': ('fraction_addition', [1, 2, 3]),
+            'solving-quadratic-equations': ('quadratic_equation', [1, 2, 3, 4, 5]),
+            'systems-of-equations': ('system_of_equations', [1, 2, 3]),
+            'polynomial-operations': ('polynomial_operation', [1, 2, 3]),
+            'order-of-operations': ('order_of_operations', [1, 2, 3]),
+            'distributive-property': ('distributive_property', [1, 2, 3]),
+            'combining-like-terms': ('combining_like_terms', [1, 2, 3]),
+            'evaluating-expressions': ('evaluating_expressions', [1, 2, 3]),
+            'solving-inequalities': ('inequality', [1, 2, 3]),
+            'exponent-rules': ('exponent_rules', [1, 2, 3]),
+            'slope-intercept-form': ('slope_intercept', [1, 2, 3]),
+            'integers-operations': ('integers_operations', [1, 2, 3]),
+            'absolute-value': ('absolute_value', [1, 2, 3]),
+            'fractions-multiplication': ('fractions_multiplication', [1, 2, 3]),
+            'fractions-division': ('fractions_division', [1, 2, 3]),
+            'percentages': ('percentages', [1, 2, 3]),
+        }
 
-        # Fraction addition templates
-        if 'fraction-addition' in skill_objects:
-            fraction_skill = skill_objects['fraction-addition']['object']
-            for difficulty in [1, 2, 3]:
-                templates.append(QuestionTemplate(
-                    skill_id=fraction_skill.id,
-                    template_type="fraction_addition",
-                    template_data={"difficulty": difficulty},
-                    difficulty=difficulty,
-                ))
+        # Create templates for each skill
+        for skill_slug, (generator_type, difficulties) in skill_generator_map.items():
+            if skill_slug in skill_objects:
+                skill = skill_objects[skill_slug]['object']
+                for difficulty in difficulties:
+                    templates.append(QuestionTemplate(
+                        skill_id=skill.id,
+                        template_type=generator_type,
+                        template_data={"difficulty": difficulty},
+                        difficulty=difficulty,
+                    ))
 
         for template in templates:
             db.add(template)
