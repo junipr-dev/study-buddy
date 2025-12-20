@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { colors, fontSize } from '../theme';
@@ -11,6 +11,8 @@ interface MathViewProps {
  * Renders text with LaTeX math expressions using KaTeX in a WebView
  */
 export default function MathView({ content }: MathViewProps) {
+  const [webviewHeight, setWebviewHeight] = useState<number>(60);
+
   // Check if content has any LaTeX ($ delimiters)
   const hasLatex = content.includes('$');
 
@@ -70,16 +72,28 @@ export default function MathView({ content }: MathViewProps) {
     </html>
   `;
 
+  const handleWebViewMessage = (event: any) => {
+    try {
+      const message = JSON.parse(event.nativeEvent.data);
+      if (message.height) {
+        setWebviewHeight(message.height);
+      }
+    } catch (error) {
+      console.error('Failed to parse WebView message:', error);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { minHeight: webviewHeight }]}>
       <WebView
         source={{ html }}
-        style={styles.webview}
+        style={[styles.webview, { height: webviewHeight }]}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         originWhitelist={['*']}
         javaScriptEnabled
+        onMessage={handleWebViewMessage}
       />
     </View>
   );
