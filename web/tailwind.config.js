@@ -26,9 +26,14 @@ export default {
           '0%': { opacity: '0', transform: 'translate(-50%, -100%)' },
           '100%': { opacity: '1', transform: 'translate(-50%, -50%)' },
         },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         slideDown: 'slideDown 0.3s ease-out forwards',
+        fadeIn: 'fadeIn 0.2s ease-out forwards',
       },
     },
   },

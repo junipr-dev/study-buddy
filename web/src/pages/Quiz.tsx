@@ -7,8 +7,11 @@ import QuestionCard from '../components/QuestionCard';
 import FeedbackModal from '../components/FeedbackModal';
 import SkillSelector from '../components/SkillSelector';
 import ReportCard from '../components/ReportCard';
+import Tutorial from '../components/Tutorial';
 
 type Mode = 'practice' | 'evaluation';
+
+const TUTORIAL_STORAGE_KEY = 'study-buddy-tutorial-completed';
 
 export default function Quiz() {
   const { user, logout } = useAuthStore();
@@ -16,6 +19,7 @@ export default function Quiz() {
   const [showSectionToast, setShowSectionToast] = useState(false);
   const [completedSectionName, setCompletedSectionName] = useState<string | null>(null);
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Practice mode store
@@ -25,6 +29,32 @@ export default function Quiz() {
   const evaluationStore = useEvaluationStore();
 
   const navigate = useNavigate();
+
+  // Check if tutorial should be shown (new user)
+  useEffect(() => {
+    if (user) {
+      const tutorialCompleted = localStorage.getItem(TUTORIAL_STORAGE_KEY);
+      if (!tutorialCompleted) {
+        // Small delay to let the UI render first
+        const timer = setTimeout(() => setShowTutorial(true), 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user]);
+
+  const handleTutorialComplete = () => {
+    localStorage.setItem(TUTORIAL_STORAGE_KEY, 'true');
+    setShowTutorial(false);
+  };
+
+  const handleTutorialSkip = () => {
+    localStorage.setItem(TUTORIAL_STORAGE_KEY, 'true');
+    setShowTutorial(false);
+  };
+
+  const handleShowTutorial = () => {
+    setShowTutorial(true);
+  };
 
   // Handle section change toast
   useEffect(() => {
@@ -71,6 +101,9 @@ export default function Quiz() {
     // If there's a pending session, wait for user choice
     if (evaluationStore.hasPendingSession) return;
 
+    // Don't start if tutorial is showing
+    if (showTutorial) return;
+
     // Start evaluation on mount if in evaluation mode and not already active
     if (mode === 'evaluation' && !evaluationStore.isActive && !evaluationStore.showReport && !evaluationStore.isLoading) {
       evaluationStore.startEvaluation();
@@ -80,7 +113,7 @@ export default function Quiz() {
     if (mode === 'practice' && !quizStore.currentQuestion && !quizStore.feedback) {
       quizStore.fetchNextQuestion();
     }
-  }, [user, mode, hasCheckedSession, evaluationStore, quizStore]);
+  }, [user, mode, hasCheckedSession, evaluationStore, quizStore, showTutorial]);
 
   // Resume prompt handlers
   const handleResumeEvaluation = async () => {
@@ -147,13 +180,26 @@ export default function Quiz() {
         {/* Header */}
         <header className="bg-surface border border-gray-800 rounded-t-lg px-6 py-4">
           <div className="flex items-end justify-between mb-4">
-            <img src="/logo.png" alt="Study Buddy" className="h-24" />
+            <img
+              src="/logo.png"
+              alt="Study Buddy"
+              className="h-24"
+              data-tutorial="logo"
+            />
             <div className="flex items-center gap-4">
+              <button
+                onClick={handleShowTutorial}
+                className="px-2 py-1.5 text-sm text-gray-500 hover:text-gray-300 hover:bg-white/5 rounded-lg transition-all outline-none"
+                title="Show tutorial"
+              >
+                ?
+              </button>
               <button
                 onClick={() => navigate('/progress')}
                 className="px-3 py-1.5 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-gray-500 rounded-lg transition-all outline-none"
+                data-tutorial="progress-button"
               >
-                📊 Progress
+                Progress
               </button>
               <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
                 <span className="text-white font-medium">{user.first_name}</span>
@@ -169,7 +215,7 @@ export default function Quiz() {
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" data-tutorial="mode-switcher">
             <div className="flex bg-background rounded-lg p-1 border border-gray-700">
               <button
                 onClick={handleStartEvaluation}
@@ -179,6 +225,7 @@ export default function Quiz() {
                     ? 'bg-secondary text-white'
                     : 'text-gray-400 hover:text-gray-200'
                 }`}
+                data-tutorial="evaluation-mode"
               >
                 Evaluation Mode
               </button>
@@ -190,6 +237,7 @@ export default function Quiz() {
                     ? 'bg-primary text-white'
                     : 'text-gray-400 hover:text-gray-200'
                 }`}
+                data-tutorial="practice-mode"
               >
                 Practice Mode
               </button>
@@ -205,7 +253,10 @@ export default function Quiz() {
         </header>
 
         {/* Sub-header - Fixed height area for mode-specific controls */}
-        <div className="bg-surface border-x border-gray-800 px-6 py-4 h-[120px] flex items-center justify-center relative">
+        <div
+          className="bg-surface border-x border-gray-800 px-6 py-4 h-[120px] flex items-center justify-center relative"
+          data-tutorial="progress-bar"
+        >
           {/* Section Complete Toast */}
           {showSectionToast && completedSectionName && (
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 animate-slideDown">
@@ -269,30 +320,32 @@ export default function Quiz() {
             </div>
           )}
 
-          {isLoading && !currentQuestion ? (
-            <div className="card text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-gray-400">
-                {mode === 'evaluation' ? 'Starting evaluation...' : 'Loading next question...'}
-              </p>
-            </div>
-          ) : currentQuestion ? (
-            <QuestionCard
-              question={currentQuestion}
-              onSubmit={mode === 'practice' ? handlePracticeSubmit : handleEvaluationSubmit}
-              isLoading={isLoading}
-            />
-          ) : (
-            <div className="card text-center py-12">
-              <p className="text-gray-400 mb-4">No questions available</p>
-              <button
-                onClick={() => mode === 'practice' ? quizStore.fetchNextQuestion() : handleStartEvaluation()}
-                className="btn-primary"
-              >
-                {mode === 'practice' ? 'Start Practicing' : 'Start Evaluation'}
-              </button>
-            </div>
-          )}
+          <div data-tutorial="question-card">
+            {isLoading && !currentQuestion ? (
+              <div className="card text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-gray-400">
+                  {mode === 'evaluation' ? 'Starting evaluation...' : 'Loading next question...'}
+                </p>
+              </div>
+            ) : currentQuestion ? (
+              <QuestionCard
+                question={currentQuestion}
+                onSubmit={mode === 'practice' ? handlePracticeSubmit : handleEvaluationSubmit}
+                isLoading={isLoading}
+              />
+            ) : (
+              <div className="card text-center py-12">
+                <p className="text-gray-400 mb-4">No questions available</p>
+                <button
+                  onClick={() => mode === 'practice' ? quizStore.fetchNextQuestion() : handleStartEvaluation()}
+                  className="btn-primary"
+                >
+                  {mode === 'practice' ? 'Start Practicing' : 'Start Evaluation'}
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Help Text */}
           <div className="mt-8 text-center text-sm text-gray-500">
@@ -343,6 +396,11 @@ export default function Quiz() {
               </p>
             </div>
           </div>
+        )}
+
+        {/* Tutorial Overlay */}
+        {showTutorial && (
+          <Tutorial onComplete={handleTutorialComplete} onSkip={handleTutorialSkip} />
         )}
       </div>
     </div>
