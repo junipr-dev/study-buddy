@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Study Buddy** is an adaptive learning platform for a broad range of study topics. Currently features math content (pre-algebra through precalculus), with more subjects to come. This is a school project that demonstrates:
+**Study Buddy** is an adaptive learning platform for a broad range of study topics. This is a school project that demonstrates:
 - Adaptive learning algorithms (spaced repetition, mastery tracking, difficulty scaling)
 - Full-stack development (FastAPI backend + React frontend)
 - Cost-efficient AI strategy (programmatic questions, pre-written content)
@@ -35,7 +35,7 @@
 ### What's Pending
 - [ ] **DELEGATED TO CODEX/GEMINI:** Write 45-95 skill explainers (see DELEGATION-BRIEF.md)
 - [ ] Test full stack locally (backend + web app)
-- [ ] Add more question generators (quadratics, trig, etc.)
+- [ ] Add more question generators for additional subjects
 - [ ] Deploy to study.junipr.io (Phase 4)
 - [ ] Build Android mobile app (Phase 5)
 
@@ -43,7 +43,7 @@
 
 **FOR CODEX/GEMINI AGENTS:**
 
-You have been delegated the task of writing educational explainers (currently math skills, more subjects coming).
+You have been delegated the task of writing educational explainers for various skills.
 
 **What to do:**
 1. Read `/home/jesse/school/study-buddy/content/DELEGATION-BRIEF.md` for complete instructions

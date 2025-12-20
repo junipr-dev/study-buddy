@@ -1,6 +1,6 @@
 # Study Buddy
 
-An adaptive learning platform for a broad range of study topics. Currently features math content (pre-algebra through precalculus), with more subjects coming.
+An adaptive learning platform for a broad range of study topics.
 
 ## Features
 
@@ -15,7 +15,7 @@ An adaptive learning platform for a broad range of study topics. Currently featu
 - **Web**: React 18 + TypeScript + Vite + Tailwind CSS
 - **Mobile**: React Native + TypeScript (Android)
 - **Backend**: FastAPI + PostgreSQL + SQLAlchemy
-- **Math Rendering**: KaTeX
+- **Equation Rendering**: KaTeX
 - **Deployment**: study.junipr.io (VPS)
 
 ## Project Structure

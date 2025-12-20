@@ -187,7 +187,7 @@ The app is **fully functional** as an MVP:
 
 ### Long Term
 - Build Android mobile app (React Native)
-- Add more subjects beyond math
+- Add more subjects
 - Export progress to PDF
 - Integration with other learning platforms
 
@@ -297,13 +297,12 @@ See `PROJECT-STATUS.md` for:
 
 **Built by:** Claude Code (Sonnet 4.5)
 **For:** Jesse (college prep)
-**Purpose:** Study Buddy adaptive math quiz platform
-**Timeline:** Pre-algebra → Precalculus
+**Purpose:** Study Buddy adaptive quiz platform
 
 **Tech Stack:**
 - Backend: FastAPI + PostgreSQL + SQLAlchemy
 - Frontend: React + TypeScript + Vite + Tailwind
-- Math: KaTeX + SymPy
+- Equations: KaTeX + SymPy
 - State: Zustand
 - Auth: JWT
 
@@ -311,7 +310,7 @@ See `PROJECT-STATUS.md` for:
 
 ## 🎉 Congratulations!
 
-You now have a **production-ready MVP** for an adaptive math learning platform!
+You now have a **production-ready MVP** for an adaptive learning platform!
 
 **What makes this special:**
 - Truly adaptive (not just random questions)

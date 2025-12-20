@@ -24,7 +24,7 @@ class User(Base):
 
 
 class Skill(Base):
-    """Math skill/topic model."""
+    """Skill/topic model."""
 
     __tablename__ = "skills"
 

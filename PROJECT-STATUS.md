@@ -6,7 +6,7 @@
 
 ## 📋 Project Overview
 
-**Goal:** Adaptive learning platform for a broad range of study topics (currently math: pre-algebra → precalculus)
+**Goal:** Adaptive learning platform for a broad range of study topics
 
 **Tech Stack:**
 - Backend: FastAPI + PostgreSQL + SQLAlchemy

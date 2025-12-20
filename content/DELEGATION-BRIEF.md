@@ -1,7 +1,7 @@
 # Content Writing Delegation Brief
 
 **For:** Codex or Gemini Agent
-**Task:** Write educational explainers for math skills (pre-algebra → precalculus)
+**Task:** Write educational explainers for skills
 **Format:** Markdown files following template
 **Quantity:** 45-95 skill explainers
 **Timeline:** Async (can be done in batches)
@@ -12,7 +12,7 @@
 
 ### What to Do
 
-Write clear, educational explainers for math skills covering:
+Write clear, educational explainers for skills covering:
 - Pre-Algebra (15-20 skills)
 - Algebra Basics (10-15 skills)
 - Algebra I (15-20 skills)
@@ -46,7 +46,7 @@ Each explainer must include:
 - **Reading Level:** 8th-10th grade
 - **Length:** 200-400 words (excluding examples)
 - **Tone:** Clear, friendly, educational
-- **Math Notation:** Use code blocks for equations
+- **Equations:** Use code blocks for equations
 - **Formatting:** Use bold, bullets, headers
 - **Language:** Simple, avoid jargon
 
@@ -219,7 +219,7 @@ Once explainers are written:
 ## Questions?
 
 If unclear about:
-- Math concepts → reference Khan Academy or ask
+- Concepts → reference Khan Academy or ask
 - Template usage → see examples
 - File structure → see existing files
 - Prerequisites → logical ordering

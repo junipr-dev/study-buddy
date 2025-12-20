@@ -1,6 +1,6 @@
 # Study Buddy Content
 
-Pre-written educational content for math skills.
+Pre-written educational content for skills.
 
 ## Structure
 

@@ -13,7 +13,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     target: '[data-tutorial="logo"]',
     title: 'Welcome to Study Buddy!',
-    content: 'Your adaptive math learning companion. This tutorial will show you around in about 30 seconds.',
+    content: 'Your adaptive learning companion. This tutorial will show you around in about 30 seconds.',
     position: 'bottom',
     align: 'start',
   },
@@ -27,7 +27,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     target: '[data-tutorial="evaluation-mode"]',
     title: 'Evaluation Mode',
-    content: 'Take a comprehensive assessment across all math topics. See your strengths and areas to improve.',
+    content: 'Take a comprehensive assessment across all topics. See your strengths and areas to improve.',
     position: 'bottom',
     align: 'start',
   },

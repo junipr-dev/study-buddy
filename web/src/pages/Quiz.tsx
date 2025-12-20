@@ -11,7 +11,7 @@ import Tutorial from '../components/Tutorial';
 
 type Mode = 'practice' | 'evaluation';
 
-const TUTORIAL_STORAGE_KEY = 'study-buddy-tutorial-completed';
+const TUTORIAL_STORAGE_KEY_PREFIX = 'study-buddy-tutorial-completed-';
 
 export default function Quiz() {
   const { user, logout } = useAuthStore();
@@ -30,10 +30,13 @@ export default function Quiz() {
 
   const navigate = useNavigate();
 
-  // Check if tutorial should be shown (new user)
+  // Get user-specific tutorial storage key
+  const getTutorialStorageKey = () => `${TUTORIAL_STORAGE_KEY_PREFIX}${user?.id}`;
+
+  // Check if tutorial should be shown (first login for this user)
   useEffect(() => {
     if (user) {
-      const tutorialCompleted = localStorage.getItem(TUTORIAL_STORAGE_KEY);
+      const tutorialCompleted = localStorage.getItem(getTutorialStorageKey());
       if (!tutorialCompleted) {
         // Small delay to let the UI render first
         const timer = setTimeout(() => setShowTutorial(true), 500);
@@ -43,12 +46,12 @@ export default function Quiz() {
   }, [user]);
 
   const handleTutorialComplete = () => {
-    localStorage.setItem(TUTORIAL_STORAGE_KEY, 'true');
+    localStorage.setItem(getTutorialStorageKey(), 'true');
     setShowTutorial(false);
   };
 
   const handleTutorialSkip = () => {
-    localStorage.setItem(TUTORIAL_STORAGE_KEY, 'true');
+    localStorage.setItem(getTutorialStorageKey(), 'true');
     setShowTutorial(false);
   };
 
