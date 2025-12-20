@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '../api/client';
 
 interface Skill {
@@ -19,10 +19,25 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const selectedItemRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     fetchSkills();
   }, []);
+
+  // Scroll to selected item when dropdown opens
+  useEffect(() => {
+    if (isOpen && selectedItemRef.current && dropdownRef.current) {
+      // Small delay to ensure DOM is ready
+      requestAnimationFrame(() => {
+        selectedItemRef.current?.scrollIntoView({
+          block: 'center',
+          behavior: 'instant',
+        });
+      });
+    }
+  }, [isOpen]);
 
   const fetchSkills = async () => {
     try {
@@ -80,8 +95,12 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
         </button>
 
         {isOpen && (
-          <div className="absolute z-10 w-full mt-2 bg-surface border-2 border-gray-700 rounded-lg shadow-2xl max-h-96 overflow-y-auto">
+          <div
+            ref={dropdownRef}
+            className="absolute z-10 w-full mt-2 bg-surface border-2 border-gray-700 rounded-lg shadow-2xl max-h-96 overflow-y-auto"
+          >
             <button
+              ref={!selectedSkillId ? selectedItemRef : null}
               onClick={() => {
                 onSelectSkill(null);
                 setIsOpen(false);
@@ -104,6 +123,7 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
                 {subjectSkills.map(skill => (
                   <button
                     key={skill.id}
+                    ref={selectedSkillId === skill.id ? selectedItemRef : null}
                     onClick={() => {
                       onSelectSkill(skill.id);
                       setIsOpen(false);

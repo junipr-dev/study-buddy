@@ -15,6 +15,7 @@ export default function Quiz() {
   const [mode, setMode] = useState<Mode>('evaluation');
   const [showSectionToast, setShowSectionToast] = useState(false);
   const [completedSectionName, setCompletedSectionName] = useState<string | null>(null);
+  const [hasCheckedSession, setHasCheckedSession] = useState(false);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Practice mode store
@@ -50,26 +51,51 @@ export default function Quiz() {
     };
   }, [evaluationStore.sectionChanged, evaluationStore.completedSection, evaluationStore]);
 
+  // Check for pending session on mount
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // Start evaluation on mount if in evaluation mode
-    if (mode === 'evaluation' && !evaluationStore.isActive && !evaluationStore.showReport) {
+    if (mode === 'evaluation' && !hasCheckedSession) {
+      evaluationStore.checkForPendingSession();
+      setHasCheckedSession(true);
+    }
+  }, [user, navigate, mode, hasCheckedSession, evaluationStore]);
+
+  // Start evaluation or practice after session check (only if no pending session)
+  useEffect(() => {
+    if (!user || !hasCheckedSession) return;
+
+    // If there's a pending session, wait for user choice
+    if (evaluationStore.hasPendingSession) return;
+
+    // Start evaluation on mount if in evaluation mode and not already active
+    if (mode === 'evaluation' && !evaluationStore.isActive && !evaluationStore.showReport && !evaluationStore.isLoading) {
       evaluationStore.startEvaluation();
     }
+
     // Fetch first question on mount in practice mode
     if (mode === 'practice' && !quizStore.currentQuestion && !quizStore.feedback) {
       quizStore.fetchNextQuestion();
     }
-  }, [user, navigate, mode, quizStore, evaluationStore]);
+  }, [user, mode, hasCheckedSession, evaluationStore, quizStore]);
+
+  // Resume prompt handlers
+  const handleResumeEvaluation = async () => {
+    await evaluationStore.resumeEvaluation();
+  };
+
+  const handleStartNewEvaluation = async () => {
+    evaluationStore.dismissPendingSession();
+    await evaluationStore.startEvaluation();
+  };
 
   // Mode switching handlers
   const handleStartEvaluation = async () => {
     setMode('evaluation');
-    await evaluationStore.startEvaluation();
+    setHasCheckedSession(false); // Re-check for pending session
   };
 
   const handleExitEvaluation = () => {
@@ -271,9 +297,9 @@ export default function Quiz() {
           {/* Help Text */}
           <div className="mt-8 text-center text-sm text-gray-500">
             {mode === 'practice' ? (
-              <p>💡 Tip: The more you practice, the better the adaptive algorithm gets at finding your weak spots!</p>
+              <p>Tip: The more you practice, the better the adaptive algorithm gets at finding your weak spots!</p>
             ) : (
-              <p>🎯 Evaluation Mode: Testing each skill at multiple difficulty levels to assess your proficiency</p>
+              <p>Evaluation Mode: Testing each skill at multiple difficulty levels to assess your proficiency</p>
             )}
           </div>
         </main>
@@ -286,6 +312,37 @@ export default function Quiz() {
         {/* Report Card - Only in Evaluation Mode */}
         {mode === 'evaluation' && evaluationStore.showReport && evaluationStore.report && (
           <ReportCard report={evaluationStore.report} onClose={handleCloseReport} />
+        )}
+
+        {/* Resume Evaluation Prompt */}
+        {mode === 'evaluation' && evaluationStore.hasPendingSession && (
+          <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface border border-gray-700 rounded-xl max-w-md w-full p-6">
+              <h2 className="text-xl font-bold text-white mb-2">Resume Evaluation?</h2>
+              <p className="text-gray-400 mb-6">
+                You have an unfinished evaluation. Would you like to continue where you left off or start a new one?
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleResumeEvaluation}
+                  className="w-full btn-primary py-3 text-lg"
+                >
+                  Resume Evaluation
+                </button>
+                <button
+                  onClick={handleStartNewEvaluation}
+                  className="w-full btn-secondary py-3"
+                >
+                  Start New Evaluation
+                </button>
+              </div>
+
+              <p className="text-xs text-gray-500 mt-4 text-center">
+                Starting a new evaluation will discard your previous progress
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </div>

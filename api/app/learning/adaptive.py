@@ -14,8 +14,13 @@ def get_adaptive_difficulty(user_id: int, skill_id: int, db: Session) -> int:
     """
     Adjust difficulty based on recent performance.
 
+    Difficulty Levels (standardized to 3):
+    - Level 1: Foundations
+    - Level 2: Proficient
+    - Level 3: Mastery
+
     Rules:
-    - 3+ correct in a row → increase difficulty
+    - 3+ correct in a row at current level → increase difficulty
     - 2+ incorrect in a row → decrease difficulty
     - Otherwise maintain current level
 
@@ -25,8 +30,10 @@ def get_adaptive_difficulty(user_id: int, skill_id: int, db: Session) -> int:
         db: Database session
 
     Returns:
-        Difficulty level (1-5)
+        Difficulty level (1-3)
     """
+    MAX_DIFFICULTY = 3
+
     recent_results = get_recent_results(user_id, skill_id, db, limit=3)
 
     # Get current difficulty (from last attempt or base difficulty)
@@ -44,9 +51,10 @@ def get_adaptive_difficulty(user_id: int, skill_id: int, db: Session) -> int:
 
     if mastery and recent_results:
         # Estimate current difficulty from mastery score
-        if mastery.mastery_score >= 80:
+        # Using 3-level system: 67%+ mastery = level 3, 33%+ = level 2, else = level 1
+        if mastery.mastery_score >= 67:
             current_diff = 3
-        elif mastery.mastery_score >= 60:
+        elif mastery.mastery_score >= 33:
             current_diff = 2
         else:
             current_diff = 1
@@ -54,7 +62,7 @@ def get_adaptive_difficulty(user_id: int, skill_id: int, db: Session) -> int:
         # Adjust based on recent performance
         if len(recent_results) >= 3 and all(recent_results[:3]):
             # All correct - increase difficulty
-            current_diff = min(current_diff + 1, 5)
+            current_diff = min(current_diff + 1, MAX_DIFFICULTY)
         elif len(recent_results) >= 2 and not any(recent_results[:2]):
             # Last 2 incorrect - decrease difficulty
             current_diff = max(current_diff - 1, 1)

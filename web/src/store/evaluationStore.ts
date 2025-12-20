@@ -6,6 +6,16 @@ import { create } from 'zustand';
 import { evaluationAPI } from '../api/evaluation';
 import type { EvaluationReport, EvaluationProgress, EvaluationQuestion } from '../api/evaluation';
 
+const STORAGE_KEY = 'study-buddy-evaluation-session';
+
+interface StoredSession {
+  sessionId: string;
+  subjects: string[];
+  skillsPerSubject: Record<string, number>;
+  totalSkills: number;
+  timestamp: number;
+}
+
 interface EvaluationState {
   // Session data
   sessionId: string | null;
@@ -13,6 +23,10 @@ interface EvaluationState {
   skillsPerSubject: Record<string, number>;
   totalSkills: number;
   isActive: boolean;
+
+  // Resume prompt state
+  hasPendingSession: boolean;
+  pendingSessionId: string | null;
 
   // Progress tracking
   progress: EvaluationProgress | null;
@@ -34,7 +48,10 @@ interface EvaluationState {
   error: string | null;
 
   // Actions
+  checkForPendingSession: () => void;
+  resumeEvaluation: () => Promise<void>;
   startEvaluation: () => Promise<void>;
+  dismissPendingSession: () => void;
   fetchNextQuestion: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<boolean>;
   getReport: () => Promise<void>;
@@ -52,12 +69,53 @@ const initialProgress: EvaluationProgress = {
   section_percent: 0,
 };
 
+// Helper to save session to localStorage
+function saveSession(session: StoredSession): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+  } catch {
+    // localStorage might be unavailable
+  }
+}
+
+// Helper to load session from localStorage
+function loadSession(): StoredSession | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+
+    const session = JSON.parse(stored) as StoredSession;
+
+    // Check if session is less than 24 hours old
+    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+    if (Date.now() - session.timestamp > maxAge) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+// Helper to clear session from localStorage
+function clearStoredSession(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // localStorage might be unavailable
+  }
+}
+
 export const useEvaluationStore = create<EvaluationState>((set, get) => ({
   sessionId: null,
   subjects: [],
   skillsPerSubject: {},
   totalSkills: 0,
   isActive: false,
+  hasPendingSession: false,
+  pendingSessionId: null,
   progress: null,
   sectionChanged: false,
   completedSection: null,
@@ -68,7 +126,32 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  startEvaluation: async () => {
+  checkForPendingSession: () => {
+    const stored = loadSession();
+    if (stored) {
+      set({
+        hasPendingSession: true,
+        pendingSessionId: stored.sessionId,
+        subjects: stored.subjects,
+        skillsPerSubject: stored.skillsPerSubject,
+        totalSkills: stored.totalSkills,
+      });
+    } else {
+      set({
+        hasPendingSession: false,
+        pendingSessionId: null,
+      });
+    }
+  },
+
+  resumeEvaluation: async () => {
+    const { pendingSessionId, subjects, skillsPerSubject, totalSkills } = get();
+
+    if (!pendingSessionId) {
+      set({ error: 'No session to resume' });
+      return;
+    }
+
     set({
       isLoading: true,
       error: null,
@@ -77,10 +160,67 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
       report: null,
       sectionChanged: false,
       completedSection: null,
+      hasPendingSession: false,
+      sessionId: pendingSessionId,
+      subjects,
+      skillsPerSubject,
+      totalSkills,
+      progress: initialProgress,
+    });
+
+    try {
+      // Try to fetch next question from existing session
+      await get().fetchNextQuestion();
+    } catch (error) {
+      // Session might have expired on backend, start fresh
+      clearStoredSession();
+      set({
+        error: 'Session expired. Starting new evaluation...',
+        isLoading: false,
+        isActive: false,
+        sessionId: null,
+        hasPendingSession: false,
+        pendingSessionId: null,
+      });
+    }
+  },
+
+  dismissPendingSession: () => {
+    clearStoredSession();
+    set({
+      hasPendingSession: false,
+      pendingSessionId: null,
+    });
+  },
+
+  startEvaluation: async () => {
+    // Clear any existing session
+    clearStoredSession();
+
+    set({
+      isLoading: true,
+      error: null,
+      isActive: true,
+      showReport: false,
+      report: null,
+      sectionChanged: false,
+      completedSection: null,
+      hasPendingSession: false,
+      pendingSessionId: null,
       progress: initialProgress,
     });
     try {
       const response = await evaluationAPI.start();
+
+      // Save session to localStorage
+      saveSession({
+        sessionId: response.session_id,
+        subjects: response.subjects,
+        skillsPerSubject: response.skills_per_subject,
+        totalSkills: response.total_skills,
+        timestamp: Date.now(),
+      });
+
       set({
         sessionId: response.session_id,
         totalSkills: response.total_skills,
@@ -122,12 +262,22 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
       // If no more questions, evaluation might be complete
       const errorMsg = error instanceof Error ? error.message : 'Failed to fetch question';
       if (errorMsg.includes('complete') || errorMsg.includes('No more')) {
-        // Evaluation complete, fetch report
+        // Evaluation complete, fetch report and clear stored session
+        clearStoredSession();
         await get().getReport();
         set({
           isLoading: false,
           showReport: true,
           isActive: false,
+        });
+      } else if (errorMsg.includes('not found') || errorMsg.includes('expired')) {
+        // Session no longer valid
+        clearStoredSession();
+        set({
+          error: 'Session expired',
+          isLoading: false,
+          isActive: false,
+          sessionId: null,
         });
       } else {
         set({
@@ -164,7 +314,8 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
       });
 
       if (result.evaluation_complete) {
-        // Evaluation ended - fetch report
+        // Evaluation ended - fetch report and clear stored session
+        clearStoredSession();
         await get().getReport();
         set({
           isLoading: false,
@@ -211,19 +362,24 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
     completedSection: null,
   }),
 
-  reset: () => set({
-    sessionId: null,
-    subjects: [],
-    skillsPerSubject: {},
-    totalSkills: 0,
-    isActive: false,
-    progress: null,
-    sectionChanged: false,
-    completedSection: null,
-    currentQuestion: null,
-    questionStartTime: null,
-    report: null,
-    showReport: false,
-    error: null,
-  }),
+  reset: () => {
+    clearStoredSession();
+    set({
+      sessionId: null,
+      subjects: [],
+      skillsPerSubject: {},
+      totalSkills: 0,
+      isActive: false,
+      hasPendingSession: false,
+      pendingSessionId: null,
+      progress: null,
+      sectionChanged: false,
+      completedSection: null,
+      currentQuestion: null,
+      questionStartTime: null,
+      report: null,
+      showReport: false,
+      error: null,
+    });
+  },
 }));
