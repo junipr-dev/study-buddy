@@ -1,5 +1,12 @@
 # Study Buddy - Project Context (Codex)
 
+## Debugging & Screenshots
+
+**Screenshot Location:** `/mnt/c/Users/jesse/Desktop/1.png`
+- When user says "check the screenshot", always read from this path
+- User updates this file with new screenshots for debugging
+- Always check this first when troubleshooting UI issues
+
 ## Project Overview
 
 **Study Buddy** is an adaptive learning platform for a broad range of study topics. This is a school project that demonstrates:
