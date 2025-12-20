@@ -205,7 +205,7 @@ export default function Quiz() {
         </header>
 
         {/* Sub-header - Fixed height area for mode-specific controls */}
-        <div className="bg-surface border-x border-gray-800 px-6 py-4 min-h-[100px] flex items-center justify-center relative">
+        <div className="bg-surface border-x border-gray-800 px-6 py-4 h-[120px] flex items-center justify-center relative">
           {/* Section Complete Toast */}
           {showSectionToast && completedSectionName && (
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 animate-slideDown">
@@ -217,16 +217,16 @@ export default function Quiz() {
           )}
 
           {mode === 'evaluation' && evaluationStore.isActive && evaluationStore.progress ? (
-            <div className="w-full space-y-3">
+            <div className="w-full space-y-4">
               {/* Overall Progress */}
               <div>
-                <div className="flex items-center justify-between text-sm text-gray-400 mb-1">
+                <div className="flex items-center justify-between text-sm text-gray-400 mb-1.5">
                   <span>Overall Progress</span>
                   <span>{Math.round(evaluationStore.progress.overall_percent)}%</span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-gray-700 rounded-full h-2.5">
                   <div
-                    className="bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] h-2 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${evaluationStore.progress.overall_percent}%` }}
                   />
                 </div>
@@ -234,15 +234,15 @@ export default function Quiz() {
 
               {/* Section Progress */}
               <div>
-                <div className="flex items-center justify-between text-sm text-gray-400 mb-1">
+                <div className="flex items-center justify-between text-sm text-gray-400 mb-1.5">
                   <span className="font-medium text-gray-300">{evaluationStore.progress.section_name}</span>
                   <span>
                     {evaluationStore.progress.section_completed} / {evaluationStore.progress.section_total} skills
                   </span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-1.5">
+                <div className="w-full bg-gray-700 rounded-full h-2">
                   <div
-                    className="bg-primary h-1.5 rounded-full transition-all duration-500"
+                    className="bg-primary h-2 rounded-full transition-all duration-500"
                     style={{ width: `${evaluationStore.progress.section_percent}%` }}
                   />
                 </div>

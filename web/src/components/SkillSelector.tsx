@@ -69,19 +69,19 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
   }
 
   return (
-    <div className="mb-6">
+    <div>
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full px-4 py-3 bg-surface border-2 border-gray-700 rounded-lg flex items-center justify-between hover:border-primary transition-all"
+          className="w-full px-4 py-2 bg-surface border border-gray-700 rounded-lg flex items-center justify-between hover:border-primary transition-all"
         >
           <div className="text-left">
-            <div className="text-xs text-gray-500 mb-1">Practice Mode</div>
-            <div className="font-medium">
+            <div className="text-xs text-gray-500">Practice Mode</div>
+            <div className="font-medium text-sm">
               {selectedSkill ? selectedSkill.name : 'Adaptive (Recommended)'}
             </div>
             {selectedSkill && (
-              <div className="text-xs text-gray-400 mt-1">{selectedSkill.subject}</div>
+              <div className="text-xs text-gray-400">{selectedSkill.subject}</div>
             )}
           </div>
           <svg
@@ -149,11 +149,12 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
         )}
       </div>
 
-      {selectedSkill && (
-        <div className="mt-2 text-xs text-gray-500 text-center">
-          You're practicing a specific skill. Switch to Adaptive Mode to let the algorithm choose for you.
-        </div>
-      )}
+      <div className="mt-2 text-xs text-gray-500 text-center">
+        {selectedSkill
+          ? "You're practicing a specific skill. Switch to Adaptive Mode to let the algorithm choose for you."
+          : "The algorithm will choose the best skill based on your progress."
+        }
+      </div>
     </div>
   );
 }
