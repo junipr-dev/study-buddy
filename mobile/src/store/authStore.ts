@@ -29,13 +29,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const isAuth = await authAPI.isAuthenticated();
       if (isAuth) {
-        const user = await authAPI.getCurrentUser();
+        // Add timeout to prevent hanging on network issues
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Request timeout')), 5000)
+        );
+
+        const user = await Promise.race([
+          authAPI.getCurrentUser(),
+          timeoutPromise
+        ]);
+
         set({ user, isInitialized: true });
       } else {
         set({ isInitialized: true });
       }
-    } catch {
-      set({ isInitialized: true });
+    } catch (error) {
+      // Clear any stale tokens on error
+      await authAPI.logout();
+      set({ user: null, isInitialized: true });
     }
   },
 
