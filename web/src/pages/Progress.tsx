@@ -62,19 +62,19 @@ export default function Progress() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto py-8 px-4">
+    <div className="min-h-screen bg-background safe-area-inset">
+      <div className="max-w-3xl mx-auto py-4 sm:py-8 px-3 sm:px-4">
         {/* Header */}
-        <header className="bg-surface border border-gray-800 rounded-t-lg px-6 py-4">
-          <div className="flex items-end justify-between">
-            <img src="/logo.png" alt="Study Buddy" className="h-24" />
-            <button onClick={() => navigate('/quiz')} className="btn-secondary">
+        <header className="bg-surface border border-gray-800 rounded-t-lg px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-3">
+            <img src="/logo.png" alt="Study Buddy" className="h-16 sm:h-24" />
+            <button onClick={() => navigate('/quiz')} className="btn-secondary w-full sm:w-auto">
               Back to Quiz
             </button>
           </div>
         </header>
 
-        <main className="bg-background px-6 py-8 border-x border-b border-gray-800 rounded-b-lg">
+        <main className="bg-background px-3 sm:px-6 py-4 sm:py-8 border-x border-b border-gray-800 rounded-b-lg">
           {error && (
             <div className="bg-red-500 bg-opacity-10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-6">
               {error}
@@ -131,7 +131,7 @@ export default function Progress() {
                 </div>
 
                 {/* Skill Breakdown */}
-                <div className="grid grid-cols-4 gap-3 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-4">
                   <div className="bg-success bg-opacity-10 rounded-lg p-3 text-center border border-success border-opacity-30">
                     <p className="text-2xl font-bold text-success">{latest.mastered.length}</p>
                     <p className="text-xs text-gray-400 mt-1">Mastered</p>
@@ -152,16 +152,16 @@ export default function Progress() {
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
                 <button
                   onClick={() => navigate('/quiz')}
-                  className="btn-primary py-4 text-lg"
+                  className="btn-primary py-3 sm:py-4 text-base sm:text-lg"
                 >
                   Take New Evaluation
                 </button>
                 <button
-                  onClick={() => navigate('/quiz')}
-                  className="btn-secondary py-4 text-lg"
+                  onClick={() => navigate('/quiz?mode=practice')}
+                  className="btn-secondary py-3 sm:py-4 text-base sm:text-lg"
                 >
                   Practice Weak Areas
                 </button>
@@ -269,7 +269,7 @@ export default function Progress() {
                 {history.slice(1).map((evaluation) => (
                   <div
                     key={evaluation.id}
-                    className="bg-background p-4 rounded-lg flex items-center justify-between border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
+                    className="bg-background p-4 rounded-lg flex items-center justify-between border border-gray-800"
                   >
                     <div>
                       <p className="font-medium">{formatDate(evaluation.completed_at)}</p>

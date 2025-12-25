@@ -4,6 +4,7 @@ import { useAuthStore } from './store/authStore';
 import Login from './pages/Login';
 import Quiz from './pages/Quiz';
 import Progress from './pages/Progress';
+import Admin from './pages/Admin';
 import './styles/globals.css';
 
 function App() {
@@ -33,6 +34,10 @@ function App() {
         <Route
           path="/progress"
           element={user ? <Progress /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/admin"
+          element={user ? <Admin /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/"

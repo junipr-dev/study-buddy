@@ -45,15 +45,15 @@ export default function ReportCard({ report, onClose }: ReportCardProps) {
   const allMastered = studyCount === 0 && developingCount === 0;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
-      <div className="bg-surface border-2 border-primary rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-8">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-2 sm:p-4 z-50 safe-area-inset">
+      <div className="bg-surface border-2 border-primary rounded-2xl max-w-3xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto touch-scroll">
+        <div className="p-4 sm:p-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent mb-2">
+          <div className="text-center mb-4 sm:mb-8">
+            <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] bg-clip-text text-transparent mb-2">
               Evaluation Report Card
             </h1>
-            <p className="text-gray-400">Comprehensive skill assessment results</p>
+            <p className="text-sm sm:text-base text-gray-400">Comprehensive skill assessment results</p>
           </div>
 
           {/* Overall Score */}
@@ -74,7 +74,7 @@ export default function ReportCard({ report, onClose }: ReportCardProps) {
           </div>
 
           {/* Results Summary Grid - 4 columns for 4 proficiency levels */}
-          <div className="grid grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
             <div className="bg-success bg-opacity-10 border border-success rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-success mb-1">
                 {masteredCount}

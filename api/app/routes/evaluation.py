@@ -2,10 +2,12 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 import uuid
 import random
+import threading
+import time
 
 from app.database import get_db
 from app.models import User, Skill, QuestionTemplate, Evaluation, EvaluationSkillResult
@@ -16,8 +18,41 @@ from app.utils.answer_validation import answers_are_equivalent
 
 router = APIRouter(prefix="/evaluation", tags=["Evaluation"])
 
-# In-memory storage for evaluation sessions
+# In-memory storage for evaluation sessions with TTL
 evaluation_sessions: Dict[str, Dict[str, Any]] = {}
+SESSION_TTL_HOURS = 24  # Sessions expire after 24 hours
+
+
+def cleanup_expired_sessions():
+    """Remove expired sessions from memory."""
+    now = datetime.utcnow()
+    expired = []
+    for session_id, session in evaluation_sessions.items():
+        started_at = session.get("started_at")
+        if started_at and (now - started_at) > timedelta(hours=SESSION_TTL_HOURS):
+            expired.append(session_id)
+        # Also clean up completed sessions older than 1 hour
+        if session.get("completed") and started_at:
+            if (now - started_at) > timedelta(hours=1):
+                expired.append(session_id)
+
+    for session_id in expired:
+        evaluation_sessions.pop(session_id, None)
+
+
+def start_cleanup_thread():
+    """Start background thread to periodically clean up sessions."""
+    def cleanup_loop():
+        while True:
+            time.sleep(3600)  # Run every hour
+            cleanup_expired_sessions()
+
+    thread = threading.Thread(target=cleanup_loop, daemon=True)
+    thread.start()
+
+
+# Start cleanup on module load
+start_cleanup_thread()
 
 # Difficulty levels (standardized to 3)
 LEVELS = {

@@ -48,6 +48,9 @@ build/
 # Session notes
 .session-notes.md
 
+# Admin credentials (sensitive)
+ADMIN-CREDENTIALS.md
+
 # Logs
 *.log
 logs/

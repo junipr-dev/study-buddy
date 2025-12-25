@@ -15,6 +15,8 @@ class User(Base):
     username = Column(String(50), unique=True, nullable=False, index=True)
     first_name = Column(String(50), nullable=False)
     password_hash = Column(String(255), nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
+    admin_level = Column(String(20), default=None, nullable=True)  # 'full' or 'readonly'
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships

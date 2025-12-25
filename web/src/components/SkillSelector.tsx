@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { api } from '../api/client';
 
 interface Skill {
@@ -19,12 +19,31 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     fetchSkills();
   }, []);
+
+  // Click outside handler
+  const handleClickOutside = useCallback((event: MouseEvent | TouchEvent) => {
+    if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen, handleClickOutside]);
 
   // Scroll to selected item when dropdown opens
   useEffect(() => {
@@ -69,7 +88,7 @@ export default function SkillSelector({ onSelectSkill, selectedSkillId }: SkillS
   }
 
   return (
-    <div>
+    <div ref={containerRef}>
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}

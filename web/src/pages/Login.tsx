@@ -29,15 +29,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 safe-area-inset">
       <div className="max-w-md w-full">
-        <div className="text-center mb-10">
+        <div className="text-center mb-6 sm:mb-10">
           <img
             src="/logo.png"
             alt="Study Buddy"
-            className="h-32 mx-auto mb-4"
+            className="h-20 sm:h-32 mx-auto mb-3 sm:mb-4"
           />
-          <p className="text-lg text-gray-400">Your Adaptive Learning Companion</p>
+          <p className="text-base sm:text-lg text-gray-400">Your Adaptive Learning Companion</p>
         </div>
 
         <div className="card">

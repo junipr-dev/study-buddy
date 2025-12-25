@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useQuizStore } from '../store/quizStore';
 import { useEvaluationStore } from '../store/evaluationStore';
@@ -15,11 +15,14 @@ const TUTORIAL_STORAGE_KEY_PREFIX = 'study-buddy-tutorial-completed-';
 
 export default function Quiz() {
   const { user, logout } = useAuthStore();
-  const [mode, setMode] = useState<Mode>('evaluation');
+  const [searchParams] = useSearchParams();
+  const initialMode = searchParams.get('mode') === 'practice' ? 'practice' : 'evaluation';
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [showSectionToast, setShowSectionToast] = useState(false);
   const [completedSectionName, setCompletedSectionName] = useState<string | null>(null);
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showNewEvalConfirm, setShowNewEvalConfirm] = useState(false);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Practice mode store
@@ -124,8 +127,17 @@ export default function Quiz() {
   };
 
   const handleStartNewEvaluation = async () => {
+    setShowNewEvalConfirm(false);
     evaluationStore.dismissPendingSession();
     await evaluationStore.startEvaluation();
+  };
+
+  const handleConfirmNewEvaluation = () => {
+    setShowNewEvalConfirm(true);
+  };
+
+  const handleCancelNewEvaluation = () => {
+    setShowNewEvalConfirm(false);
   };
 
   // Mode switching handlers
@@ -178,38 +190,39 @@ export default function Quiz() {
   const error = mode === 'practice' ? quizStore.error : evaluationStore.error;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto py-8 px-4">
+    <div className="min-h-screen bg-background safe-area-inset">
+      <div className="max-w-3xl mx-auto py-4 sm:py-8 px-3 sm:px-4">
         {/* Header */}
-        <header className="bg-surface border border-gray-800 rounded-t-lg px-6 py-4">
-          <div className="flex items-end justify-between mb-4">
+        <header className="bg-surface border border-gray-800 rounded-t-lg px-3 sm:px-6 py-3 sm:py-4">
+          {/* Mobile: Stack logo and buttons */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
             <img
               src="/logo.png"
               alt="Study Buddy"
-              className="h-24"
+              className="h-16 sm:h-24 self-center sm:self-auto"
               data-tutorial="logo"
             />
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-4">
               <button
                 onClick={handleShowTutorial}
-                className="px-2 py-1.5 text-sm text-gray-500 hover:text-gray-300 hover:bg-white/5 rounded-lg transition-all outline-none"
+                className="p-2 text-sm text-gray-500 hover:text-gray-300 hover:bg-white/5 rounded-lg transition-all outline-none no-select"
                 title="Show tutorial"
               >
                 ?
               </button>
               <button
                 onClick={() => navigate('/progress')}
-                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-gray-500 rounded-lg transition-all outline-none"
+                className="px-3 py-2 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-gray-500 rounded-lg transition-all outline-none no-select"
                 data-tutorial="progress-button"
               >
                 Progress
               </button>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
-                <span className="text-white font-medium">{user.first_name}</span>
-                <span className="text-gray-600">|</span>
+              <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg">
+                <span className="text-white font-medium text-sm sm:text-base">{user.first_name}</span>
+                <span className="text-gray-600 hidden sm:inline">|</span>
                 <button
                   onClick={() => { logout(); navigate('/login'); }}
-                  className="text-sm text-gray-400 hover:text-red-400 transition-colors outline-none focus:outline-none focus-visible:outline-none border-none focus:ring-0"
+                  className="text-sm text-gray-400 hover:text-red-400 transition-colors outline-none focus:outline-none focus-visible:outline-none border-none focus:ring-0 no-select"
                 >
                   Logout
                 </button>
@@ -217,36 +230,36 @@ export default function Quiz() {
             </div>
           </div>
 
-          {/* Mode Switcher */}
-          <div className="flex items-center gap-3" data-tutorial="mode-switcher">
-            <div className="flex bg-background rounded-lg p-1 border border-gray-700">
+          {/* Mode Switcher - Stack on mobile */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3" data-tutorial="mode-switcher">
+            <div className="flex bg-background rounded-lg p-1 border border-gray-700 w-full sm:w-auto">
               <button
                 onClick={handleStartEvaluation}
                 disabled={mode === 'evaluation' || evaluationStore.isActive}
-                className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded text-xs sm:text-sm font-medium transition-colors no-select ${
                   mode === 'evaluation'
                     ? 'bg-secondary text-white'
                     : 'text-gray-400 hover:text-gray-200'
                 }`}
                 data-tutorial="evaluation-mode"
               >
-                Evaluation Mode
+                Evaluation
               </button>
               <button
                 onClick={() => mode === 'evaluation' && handleExitEvaluation()}
                 disabled={mode === 'practice'}
-                className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded text-xs sm:text-sm font-medium transition-colors no-select ${
                   mode === 'practice'
                     ? 'bg-primary text-white'
                     : 'text-gray-400 hover:text-gray-200'
                 }`}
                 data-tutorial="practice-mode"
               >
-                Practice Mode
+                Practice
               </button>
             </div>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
               {mode === 'practice'
                 ? 'Adaptive practice with personalized questions'
                 : 'Quick assessment to find your knowledge level'
@@ -257,7 +270,7 @@ export default function Quiz() {
 
         {/* Sub-header - Fixed height area for mode-specific controls */}
         <div
-          className="bg-surface border-x border-gray-800 px-6 py-4 h-[120px] flex items-center justify-center relative"
+          className="bg-surface border-x border-gray-800 px-3 sm:px-6 py-3 sm:py-4 min-h-[100px] sm:h-[120px] flex items-center justify-center relative"
           data-tutorial="progress-bar"
         >
           {/* Section Complete Toast */}
@@ -315,7 +328,7 @@ export default function Quiz() {
         </div>
 
         {/* Main Content */}
-        <main className="bg-background px-6 py-8 border-x border-b border-gray-800 rounded-b-lg">
+        <main className="bg-background px-3 sm:px-6 py-4 sm:py-8 border-x border-b border-gray-800 rounded-b-lg">
 
           {error && (
             <div className="bg-red-500 bg-opacity-10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-6">
@@ -387,16 +400,39 @@ export default function Quiz() {
                   Resume Evaluation
                 </button>
                 <button
-                  onClick={handleStartNewEvaluation}
+                  onClick={handleConfirmNewEvaluation}
                   className="w-full btn-secondary py-3"
                 >
                   Start New Evaluation
                 </button>
               </div>
+            </div>
+          </div>
+        )}
 
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                Starting a new evaluation will discard your previous progress
+        {/* Confirm New Evaluation Dialog */}
+        {showNewEvalConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface border border-gray-700 rounded-xl max-w-md w-full p-6">
+              <h2 className="text-xl font-bold text-white mb-2">Start New Evaluation?</h2>
+              <p className="text-gray-400 mb-6">
+                This will discard your previous progress. Are you sure you want to start over?
               </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleStartNewEvaluation}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition-colors"
+                >
+                  Yes, Start New
+                </button>
+                <button
+                  onClick={handleCancelNewEvaluation}
+                  className="w-full btn-secondary py-3"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}
