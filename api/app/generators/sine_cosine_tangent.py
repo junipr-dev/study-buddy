@@ -4,6 +4,45 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world word problem contexts for trigonometric ratios
+WORD_PROBLEMS = [
+    # Architecture contexts
+    {
+        "context": "An architect is designing a building. A support beam makes an angle with the ground. To find the height of the wall the beam reaches, knowing the beam length and angle.",
+        "scenario": "A construction support beam of {length} feet leans against a building at an angle of {angle}° from the ground.",
+        "question": "How high up the building does the beam reach?",
+        "setup": "Use sine: sin(angle) = height/hypotenuse"
+    },
+    # Navigation contexts
+    {
+        "context": "A ship captain needs to navigate. Using the angle of the stars or landmarks, they determine distances.",
+        "scenario": "A ship travels at an angle of {angle}° and travels {length} miles. How far north (vertical component) did it travel?",
+        "question": "What is the northward displacement?",
+        "setup": "Use sine: vertical = hypotenuse × sin(angle)"
+    },
+    # Engineering contexts
+    {
+        "context": "A bridge engineer designs a ramp. The incline angle and length are known, and they need the height difference.",
+        "scenario": "A bridge ramp has a length of {length} feet and rises at {angle}° from horizontal.",
+        "question": "What is the total height change?",
+        "setup": "Use sine for vertical rise"
+    },
+    # Sports contexts
+    {
+        "context": "A basketball player shoots from an angle. The trajectory involves understanding the vertical component of motion.",
+        "scenario": "A basketball shot travels {length} feet at an angle of {angle}° upward.",
+        "question": "What is the vertical height component of the shot?",
+        "setup": "Use sine: height = distance × sin(angle)"
+    },
+    # Shadow problems (sun angle contexts)
+    {
+        "context": "The sun casts shadows at different times of day. The angle of elevation and shadow length determine object height.",
+        "scenario": "A flagpole casts a shadow. The sun's rays make an angle of {angle}° with the ground. A nearby tree is {length} feet away.",
+        "question": "How tall is the object if the sun angle is {angle}°?",
+        "setup": "Use tangent: tan(angle) = height/distance"
+    },
+]
+
 
 def generate_sine_cosine_tangent(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -120,6 +159,7 @@ def generate_sine_cosine_tangent(difficulty: int = 1) -> Dict[str, Any]:
 
     else:
         # Hard: Right triangle word problems
+        use_word_problem = random.random() < 0.4  # 40% of time use engaging contexts
         problem_types = ["ladder", "ramp", "height"]
         problem_type = random.choice(problem_types)
 
@@ -138,16 +178,29 @@ def generate_sine_cosine_tangent(difficulty: int = 1) -> Dict[str, Any]:
                 height = length * math.sqrt(3)/2
                 height_str = f"{length} \\cdot \\frac{{\\sqrt{{3}}}}{{2}} \\approx {round(height, 2)}"
 
-            question = f"A {length}-foot ladder leans against a wall at an angle of ${angle}°$ from the ground. How high up the wall does the ladder reach?"
+            if use_word_problem:
+                question = f"**Construction Problem:** A {length}-foot support beam leans against a building at ${angle}°$ from the ground. This is a common scenario in architecture where engineers need to calculate how high a support structure will reach. How high up the wall does the beam reach?"
+            else:
+                question = f"A {length}-foot ladder leans against a wall at an angle of ${angle}°$ from the ground. How high up the wall does the ladder reach?"
 
             steps = [
-                "Draw a right triangle where:",
-                f"- Hypotenuse = ladder length = ${length}$ feet",
-                "- Height = opposite side to the angle",
-                f"Use the sine ratio: $\\sin(\\theta) = \\frac{{\\text{{opposite}}}}{{\\text{{hypotenuse}}}}$",
-                f"Substitute: $\\sin({angle}°) = \\frac{{h}}{{{length}}}$",
-                f"Solve for height: $h = {length} \\cdot \\sin({angle}°)$",
-                f"Calculate: $h = {height_str}$ feet",
+                f"**Setup:** Draw a right triangle with the {length}-foot beam as the hypotenuse.",
+                "The angle of ${angle}°$ is measured from the ground.",
+                f"The height we're solving for is the **opposite** side to this angle.",
+                "",
+                f"**Identify the right trigonometric ratio:**",
+                f"We have the hypotenuse ({length} ft) and need the opposite side (height).",
+                f"Use sine: $\\sin(\\theta) = \\frac{{\\text{{opposite}}}}{{\\text{{hypotenuse}}}}$",
+                "",
+                f"**Apply the formula:**",
+                f"$\\sin({angle}°) = \\frac{{h}}{{{length}}}$",
+                "",
+                f"**Solve for the unknown:**",
+                f"Multiply both sides by ${length}$: $h = {length} \\cdot \\sin({angle}°)$",
+                "",
+                f"**Calculate the result:**",
+                f"$h = {height_str}$ feet",
+                "",
                 f"**Final Answer:** ${round(height, 2)}$ feet"
             ]
 
@@ -161,24 +214,37 @@ def generate_sine_cosine_tangent(difficulty: int = 1) -> Dict[str, Any]:
             # Using sin(angle) = height/length
             length = height / math.sin(math.radians(angle))
 
-            question = f"A wheelchair ramp must rise ${height}$ feet at an angle of ${angle}°$. How long must the ramp be?"
+            if use_word_problem:
+                question = f"**Accessibility Engineering:** A wheelchair ramp must safely rise ${height}$ feet at an angle of ${angle}°$ (which meets ADA compliance standards). Engineers must calculate the required length to ensure safe accessibility. How long must the ramp be?"
+            else:
+                question = f"A wheelchair ramp must rise ${height}$ feet at an angle of ${angle}°$. How long must the ramp be?"
 
             steps = [
-                "Draw a right triangle where:",
-                f"- Height (rise) = ${height}$ feet",
-                f"- Angle = ${angle}°$",
-                "- Length of ramp = hypotenuse",
-                f"Use the sine ratio: $\\sin(\\theta) = \\frac{{\\text{{opposite}}}}{{\\text{{hypotenuse}}}}$",
-                f"Substitute: $\\sin({angle}°) = \\frac{{{height}}}{{L}}$",
-                f"Solve for length: $L = \\frac{{{height}}}{{\\sin({angle}°)}}$",
-                f"Calculate: $L \\approx {round(length, 2)}$ feet",
+                f"**Setup:** The ramp forms a right triangle where:",
+                f"- Vertical rise (opposite) = ${height}$ feet",
+                f"- Ramp angle from horizontal = ${angle}°$",
+                "- Ramp length = hypotenuse (what we're finding)",
+                "",
+                f"**Identify the right trigonometric ratio:**",
+                f"We have the opposite side and need the hypotenuse.",
+                f"Use sine: $\\sin(\\theta) = \\frac{{\\text{{opposite}}}}{{\\text{{hypotenuse}}}}$",
+                "",
+                f"**Apply the formula:**",
+                f"$\\sin({angle}°) = \\frac{{{height}}}{{L}}$",
+                "",
+                f"**Solve for the unknown:**",
+                f"Rearrange: $L = \\frac{{{height}}}{{\\sin({angle}°)}}$",
+                "",
+                f"**Calculate the result:**",
+                f"$L = \\frac{{{height}}}{{\\sin({angle}°)}} \\approx {round(length, 2)}$ feet",
+                "",
                 f"**Final Answer:** ${round(length, 2)}$ feet"
             ]
 
             answer_numeric = round(length, 2)
 
         else:  # height
-            # Tree height from distance and angle
+            # Tree height from distance and angle (or building, flagpole, etc.)
             distance = random.choice([30, 40, 50, 60])
             angle = random.choice([30, 45, 60])
 
@@ -192,17 +258,30 @@ def generate_sine_cosine_tangent(difficulty: int = 1) -> Dict[str, Any]:
                 height = distance * math.sqrt(3)
                 height_str = f"{distance}\\sqrt{{3}} \\approx {round(height, 2)}"
 
-            question = f"From a point ${distance}$ feet from the base of a tree, the angle of elevation to the top is ${angle}°$. How tall is the tree?"
+            if use_word_problem:
+                question = f"**Surveying Problem:** A surveyor stands ${distance}$ feet away from the base of a building or tree. Using a surveying instrument, they measure the angle of elevation to the top as ${angle}°$. This angle measurement is a fundamental technique in land surveying and construction. How tall is the structure?"
+            else:
+                question = f"From a point ${distance}$ feet from the base of a tree, the angle of elevation to the top is ${angle}°$. How tall is the tree?"
 
             steps = [
-                "Draw a right triangle where:",
-                f"- Base = distance from tree = ${distance}$ feet",
-                "- Height = tree height",
-                f"- Angle of elevation = ${angle}°$",
-                f"Use the tangent ratio: $\\tan(\\theta) = \\frac{{\\text{{opposite}}}}{{\\text{{adjacent}}}}$",
-                f"Substitute: $\\tan({angle}°) = \\frac{{h}}{{{distance}}}$",
-                f"Solve for height: $h = {distance} \\cdot \\tan({angle}°)$",
-                f"Calculate: $h = {height_str}$ feet",
+                f"**Setup:** The observer, tree base, and tree top form a right triangle where:",
+                f"- Distance from tree (adjacent) = ${distance}$ feet",
+                "- Tree height (opposite) = unknown",
+                f"- Angle of elevation = ${angle}°$ (angle looking up from horizontal)",
+                "",
+                f"**Identify the right trigonometric ratio:**",
+                f"We have the adjacent side and need the opposite side.",
+                f"Use tangent: $\\tan(\\theta) = \\frac{{\\text{{opposite}}}}{{\\text{{adjacent}}}}$",
+                "",
+                f"**Apply the formula:**",
+                f"$\\tan({angle}°) = \\frac{{h}}{{{distance}}}$",
+                "",
+                f"**Solve for the unknown:**",
+                f"Multiply both sides by ${distance}$: $h = {distance} \\cdot \\tan({angle}°)$",
+                "",
+                f"**Calculate the result:**",
+                f"$h = {height_str}$ feet",
+                "",
                 f"**Final Answer:** ${round(height, 2)}$ feet"
             ]
 

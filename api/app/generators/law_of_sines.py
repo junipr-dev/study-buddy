@@ -4,6 +4,30 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world contexts for Law of Sines problems
+WORD_PROBLEMS = [
+    {
+        "context": "Navigation and surveying: Finding distances between landmarks or waypoints.",
+        "application": "Calculating distances in land surveying using angle measurements"
+    },
+    {
+        "context": "Aviation: Flight path calculations and distance determinations.",
+        "application": "Navigation between waypoints and distance calculations for flight planning"
+    },
+    {
+        "context": "Rescue operations: Determining distances in search and rescue scenarios.",
+        "application": "Calculating distances to locate missing persons or objects"
+    },
+    {
+        "context": "Astronomy and celestial mechanics: Determining distances to celestial objects.",
+        "application": "Parallax method for measuring astronomical distances"
+    },
+    {
+        "context": "Construction and engineering: Layout and distance calculations for structures.",
+        "application": "Calculating support structure dimensions and placements"
+    },
+]
+
 
 def generate_law_of_sines(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -18,6 +42,7 @@ def generate_law_of_sines(difficulty: int = 1) -> Dict[str, Any]:
     if difficulty == 1:
         # Easy: Find a side using Law of Sines (AAS case)
         # Two angles and one side known
+        use_word_problem = random.random() < 0.4
         angle_A = random.choice([30, 45, 60])
         angle_B = random.choice([30, 45, 60, 75])
 
@@ -33,16 +58,34 @@ def generate_law_of_sines(difficulty: int = 1) -> Dict[str, Any]:
         # Calculate side b using Law of Sines
         side_b = side_a * math.sin(math.radians(angle_B)) / math.sin(math.radians(angle_A))
 
-        question = f"In triangle $ABC$, angle $A = {angle_A}°$, angle $B = {angle_B}°$, and side $a = {side_a}$. Find side $b$."
+        if use_word_problem:
+            question = f"**Land Surveying:** A surveyor measures two angles in a triangular land plot: angle $A = {angle_A}°$ and angle $B = {angle_B}°$. The distance along one side is $a = {side_a}$ meters. Find the length of side $b$ opposite to angle $B$."
+        else:
+            question = f"In triangle $ABC$, angle $A = {angle_A}°$, angle $B = {angle_B}°$, and side $a = {side_a}$. Find side $b$."
 
         steps = [
-            "Use the Law of Sines: $\\frac{a}{\\sin(A)} = \\frac{b}{\\sin(B)} = \\frac{c}{\\sin(C)}$",
-            f"We have: $A = {angle_A}°$, $B = {angle_B}°$, $a = {side_a}$",
-            f"Set up the equation: $\\frac{{{side_a}}}{{\\sin({angle_A}°)}} = \\frac{{b}}{{\\sin({angle_B}°)}}$",
-            f"Solve for $b$: $b = \\frac{{{side_a} \\cdot \\sin({angle_B}°)}}{{\\sin({angle_A}°)}}$",
-            f"Calculate: $b = \\frac{{{side_a} \\cdot {round(math.sin(math.radians(angle_B)), 4)}}}{{{round(math.sin(math.radians(angle_A)), 4)}}}$",
-            f"$b \\approx {round(side_b, 2)}$",
-            f"**Final Answer:** $b \\approx {round(side_b, 2)}$"
+            f"**Step 1 - Recall the Law of Sines:**",
+            f"This law states: $\\frac{{a}}{{\\sin(A)}} = \\frac{{b}}{{\\sin(B)}} = \\frac{{c}}{{\\sin(C)}}$",
+            f"It relates sides and their opposite angles in ANY triangle.",
+            "",
+            f"**Step 2 - Identify what we know:**",
+            f"- Angle $A = {angle_A}°$ (opposite to side $a$)",
+            f"- Angle $B = {angle_B}°$ (opposite to side $b$, which we're finding)",
+            f"- Side $a = {side_a}$ units",
+            "",
+            f"**Step 3 - Set up the equation using Law of Sines:**",
+            f"$\\frac{{{side_a}}}{{\\sin({angle_A}°)}} = \\frac{{b}}{{\\sin({angle_B}°)}}$",
+            "",
+            f"**Step 4 - Solve for $b$ by multiplying both sides:**",
+            f"$b = \\frac{{{side_a} \\cdot \\sin({angle_B}°)}}{{\\sin({angle_A}°)}}$",
+            "",
+            f"**Step 5 - Calculate using angle values:**",
+            f"$\\sin({angle_A}°) \\approx {round(math.sin(math.radians(angle_A)), 4)}$",
+            f"$\\sin({angle_B}°) \\approx {round(math.sin(math.radians(angle_B)), 4)}$",
+            f"",
+            f"$b = \\frac{{{side_a} \\times {round(math.sin(math.radians(angle_B)), 4)}}}{{{round(math.sin(math.radians(angle_A)), 4)}}} \\approx {round(side_b, 2)}$",
+            "",
+            f"**Final Answer:** $b \\approx {round(side_b, 2)}$ units"
         ]
 
         answer_numeric = round(side_b, 2)

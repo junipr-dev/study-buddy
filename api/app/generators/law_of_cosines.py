@@ -4,6 +4,30 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world contexts for Law of Cosines problems
+WORD_PROBLEMS = [
+    {
+        "context": "Navigation: Ships and aircraft determining distances when they have changed direction.",
+        "application": "Finding distance from starting point after traveling at an angle"
+    },
+    {
+        "context": "Surveying: Determining distances between points when angles and distances are known.",
+        "application": "Calculating distances in complex terrain"
+    },
+    {
+        "context": "Hiking and outdoor activities: Finding distances between waypoints.",
+        "application": "Trail distance calculations and route planning"
+    },
+    {
+        "context": "Construction: Calculating diagonal distances and checking square corners.",
+        "application": "Verifying structural integrity and material specifications"
+    },
+    {
+        "context": "Sports: Calculating distances in ball trajectories and field positions.",
+        "application": "Analyzing throw distances and field geometry"
+    },
+]
+
 
 def generate_law_of_cosines(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -17,6 +41,7 @@ def generate_law_of_cosines(difficulty: int = 1) -> Dict[str, Any]:
     """
     if difficulty == 1:
         # Easy: Find the third side given two sides and included angle (SAS)
+        use_word_problem = random.random() < 0.4
         side_a = random.choice([8, 10, 12, 15])
         side_b = random.choice([10, 12, 15, 18])
         angle_C = random.choice([60, 90, 120])
@@ -26,21 +51,37 @@ def generate_law_of_cosines(difficulty: int = 1) -> Dict[str, Any]:
         side_c_squared = side_a**2 + side_b**2 - 2*side_a*side_b*cos_C
         side_c = math.sqrt(side_c_squared)
 
-        question = f"In triangle $ABC$, side $a = {side_a}$, side $b = {side_b}$, and angle $C = {angle_C}°$. Find side $c$."
+        if use_word_problem:
+            question = f"**Navigation Problem:** A boat travels {side_a} miles in one direction, then turns and travels {side_b} miles at an angle of {angle_C}° from its original path. What is the straight-line distance from the starting point to the final location?"
+        else:
+            question = f"In triangle $ABC$, side $a = {side_a}$, side $b = {side_b}$, and angle $C = {angle_C}°$. Find side $c$."
 
         steps = [
-            "Use the Law of Cosines: $c^2 = a^2 + b^2 - 2ab\\cos(C)$",
-            f"Substitute the known values:",
-            f"$c^2 = {side_a}^2 + {side_b}^2 - 2({side_a})({side_b})\\cos({angle_C}°)$",
-            f"Calculate each term:",
-            f"$c^2 = {side_a**2} + {side_b**2} - {2*side_a*side_b}\\cos({angle_C}°)$",
+            f"**Step 1 - Recall the Law of Cosines:**",
+            f"This law is used when you know two sides and the included angle (SAS case).",
+            f"Formula: $c^2 = a^2 + b^2 - 2ab\\cos(C)$",
+            "",
+            f"**Step 2 - Identify the known values:**",
+            f"- Side $a = {side_a}$",
+            f"- Side $b = {side_b}$",
+            f"- Included angle $C = {angle_C}°$ (the angle between sides $a$ and $b$)",
+            f"- We need to find: Side $c$ (opposite to angle $C$)",
+            "",
+            f"**Step 3 - Substitute into the formula:**",
+            f"$c^2 = ({side_a})^2 + ({side_b})^2 - 2({side_a})({side_b})\\cos({angle_C}°)$",
+            "",
+            f"**Step 4 - Calculate the components:**",
+            f"$c^2 = {side_a**2} + {side_b**2} - {2*side_a*side_b} \\cdot \\cos({angle_C}°)$",
             f"$\\cos({angle_C}°) = {round(cos_C, 4)}$",
-            f"$c^2 = {side_a**2} + {side_b**2} - {2*side_a*side_b} \\cdot {round(cos_C, 4)}$",
+            "",
+            f"**Step 5 - Complete the arithmetic:**",
             f"$c^2 = {side_a**2} + {side_b**2} - {round(2*side_a*side_b*cos_C, 2)}$",
             f"$c^2 = {round(side_c_squared, 2)}$",
-            f"Take the square root: $c = \\sqrt{{{round(side_c_squared, 2)}}}$",
-            f"$c \\approx {round(side_c, 2)}$",
-            f"**Final Answer:** $c \\approx {round(side_c, 2)}$"
+            "",
+            f"**Step 6 - Take the square root:**",
+            f"$c = \\sqrt{{{round(side_c_squared, 2)}}} \\approx {round(side_c, 2)}$",
+            "",
+            f"**Final Answer:** $c \\approx {round(side_c, 2)}$ units"
         ]
 
         answer_numeric = round(side_c, 2)

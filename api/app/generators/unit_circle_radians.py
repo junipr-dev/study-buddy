@@ -4,6 +4,30 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world contexts for unit circle and radians
+WORD_PROBLEMS = [
+    {
+        "context": "Rotational motion: Angles of rotation in machinery, wheels, and rotating systems.",
+        "application": "Measuring angular displacement in radians for mechanical systems"
+    },
+    {
+        "context": "Physics and calculus: Angular velocity and acceleration calculations.",
+        "application": "Analyzing rotational motion dynamics"
+    },
+    {
+        "context": "Computer graphics: Rotation transformations and angle calculations.",
+        "application": "3D graphics rendering and animation systems"
+    },
+    {
+        "context": "Navigation and GPS: Bearing and heading calculations.",
+        "application": "Converting between angular measurement systems"
+    },
+    {
+        "context": "Astronomy: Measuring celestial coordinates and angular distances.",
+        "application": "Celestial mechanics and star position calculations"
+    },
+]
+
 
 def generate_unit_circle_radians(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -17,6 +41,7 @@ def generate_unit_circle_radians(difficulty: int = 1) -> Dict[str, Any]:
     """
     if difficulty == 1:
         # Easy: Convert degrees to radians (common angles)
+        use_word_problem = random.random() < 0.4
         common_angles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360]
         degrees = random.choice(common_angles)
 
@@ -47,21 +72,39 @@ def generate_unit_circle_radians(difficulty: int = 1) -> Dict[str, Any]:
                 radian_str = f"\\frac{{{num}\\pi}}{{{den}}}"
                 answer_numeric = (num * math.pi) / den
 
-        question = f"Convert ${degrees}°$ to radians in terms of $\\pi$."
+        if use_word_problem:
+            question = f"**Rotational Motion:** A wheel rotates through an angle of ${degrees}°$. Express this rotation in radians, which is the standard unit in physics and engineering for angular measurements."
+        else:
+            question = f"Convert ${degrees}°$ to radians in terms of $\\pi$."
 
         steps = [
-            "Use the conversion formula: radians = degrees $\\times \\frac{\\pi}{180}$",
-            f"Substitute: radians = ${degrees} \\times \\frac{{\\pi}}{{180}}$",
-            f"Multiply: radians = $\\frac{{{degrees}\\pi}}{{180}}$",
+            f"**Understanding radians:**",
+            f"Radians are an alternative way to measure angles, based on arc length.",
+            f"The conversion formula is: radians = degrees $\\times \\frac{{\\pi}}{{180°}}$",
+            "",
+            f"**Why this formula?**",
+            f"There are exactly $360°$ in a full circle, which equals $2\\pi$ radians.",
+            f"So: $360° = 2\\pi$ radians, which gives us our conversion factor.",
+            "",
+            f"**Apply the conversion formula:**",
+            f"radians = ${degrees}° \\times \\frac{{\\pi}}{{180°}}$",
+            f"radians = $\\frac{{{degrees}\\pi}}{{180}}$",
+            "",
         ]
 
         if radians_num != 0:
             g = gcd(radians_num, radians_den)
             if g > 1:
-                steps.append(f"Simplify by dividing numerator and denominator by ${g}$: radians = ${radian_str}$")
+                steps.append(f"**Simplify the fraction:**")
+                steps.append(f"Find the GCD of ${degrees}$ and $180$: GCD = ${g}$")
+                steps.append(f"Divide both numerator and denominator by ${g}$:")
+                steps.append(f"radians = $\\frac{{{num}\\pi}}{{{den}}}$")
             else:
-                steps.append(f"The fraction is already simplified: ${radian_str}$")
+                steps.append(f"**Check if simplified:**")
+                steps.append(f"The fraction $\\frac{{{degrees}}}{{180}}$ is already in simplest form.")
+                steps.append(f"radians = ${radian_str}$")
 
+        steps.append("")
         steps.append(f"**Final Answer:** ${radian_str}$ radians")
 
     elif difficulty == 2:

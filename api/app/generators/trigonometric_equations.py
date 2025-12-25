@@ -4,6 +4,30 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world contexts for trigonometric equations
+WORD_PROBLEMS = [
+    {
+        "context": "Oscillatory motion: Finding when a pendulum reaches maximum height or returns to equilibrium.",
+        "application": "Timing analysis in mechanical and physics systems"
+    },
+    {
+        "context": "Electrical engineering: AC circuit analysis where voltage/current follows sinusoidal patterns.",
+        "application": "Finding when voltage reaches specific values"
+    },
+    {
+        "context": "Astronomy: Predicting planetary positions and celestial events.",
+        "application": "Orbital calculations and eclipse predictions"
+    },
+    {
+        "context": "Climate science: Modeling seasonal temperature and precipitation patterns.",
+        "application": "Predicting extreme weather timing"
+    },
+    {
+        "context": "Music and acoustics: Finding frequencies and harmonics that produce specific notes.",
+        "application": "Instrument tuning and sound synthesis"
+    },
+]
+
 
 def generate_trigonometric_equations(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -17,6 +41,7 @@ def generate_trigonometric_equations(difficulty: int = 1) -> Dict[str, Any]:
     """
     if difficulty == 1:
         # Easy: Basic trigonometric equations like sin(x) = value
+        use_word_problem = random.random() < 0.4
         equation_types = [
             ("sin", 0.5, 30, "\\frac{1}{2}"),
             ("sin", math.sqrt(2)/2, 45, "\\frac{\\sqrt{2}}{2}"),
@@ -38,24 +63,42 @@ def generate_trigonometric_equations(difficulty: int = 1) -> Dict[str, Any]:
         else:  # tan
             angle2 = 180 + angle
 
-        question = f"Solve for $x$ in the interval $[0°, 360°)$: $\\{func}(x) = {value_str}$"
+        if use_word_problem:
+            question = f"**Oscillating Motion:** A pendulum's position follows $\\{func}(x) = {value_str}$, where $x$ is the angle in degrees. Find all solutions in the interval $[0°, 360°)$ (one complete cycle of motion)."
+        else:
+            question = f"Solve for $x$ in the interval $[0°, 360°)$: $\\{func}(x) = {value_str}$"
 
         steps = [
-            f"Find where $\\{func}(x) = {value_str}$",
-            f"From the unit circle, $\\{func}({angle}°) = {value_str}$",
-            f"So one solution is $x = {angle}°$",
+            f"**Step 1 - Understand what we're solving:**",
+            f"We need to find all angles $x$ where $\\{func}(x) = {value_str}$ in the range $[0°, 360°)$.",
+            "",
+            f"**Step 2 - Find the primary solution using the unit circle:**",
+            f"From the unit circle, we know that $\\{func}({angle}°) = {value_str}$",
+            f"So one solution is: $x = {angle}°$",
+            "",
+            f"**Step 3 - Find additional solutions based on function properties:**",
         ]
 
         if func == "sin":
-            steps.append(f"Since sine is positive in Quadrants I and II:")
-            steps.append(f"The second solution is $x = 180° - {angle}° = {angle2}°$")
+            steps.append(f"Sine is positive in both Quadrant I and Quadrant II.")
+            steps.append(f"In Quadrant II, if the reference angle is ${angle}°$, then:")
+            steps.append(f"$x = 180° - {angle}° = {angle2}°$")
+            steps.append("")
+            steps.append(f"We can verify: $\\sin({angle2}°) = {value_str}$ ✓")
         elif func == "cos":
-            steps.append(f"Since cosine is positive in Quadrants I and IV:")
-            steps.append(f"The second solution is $x = 360° - {angle}° = {angle2}°$")
+            steps.append(f"Cosine is positive in both Quadrant I and Quadrant IV.")
+            steps.append(f"In Quadrant IV, if the reference angle is ${angle}°$, then:")
+            steps.append(f"$x = 360° - {angle}° = {angle2}°$")
+            steps.append("")
+            steps.append(f"We can verify: $\\cos({angle2}°) = {value_str}$ ✓")
         else:  # tan
-            steps.append(f"Since tangent has period $180°$:")
-            steps.append(f"The second solution is $x = {angle}° + 180° = {angle2}°$")
+            steps.append(f"Tangent has a period of $180°$ (it repeats every 180°).")
+            steps.append(f"If $\\tan({angle}°) = {value_str}$, then the next solution is:")
+            steps.append(f"$x = {angle}° + 180° = {angle2}°$")
+            steps.append("")
+            steps.append(f"We can verify: $\\tan({angle2}°) = {value_str}$ ✓")
 
+        steps.append("")
         steps.append(f"**Final Answer:** $x = {angle}°$ or $x = {angle2}°$")
 
         answer_numeric = angle  # Return the first solution

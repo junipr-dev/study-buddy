@@ -4,6 +4,26 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world contexts for Pythagorean identities
+WORD_PROBLEMS = [
+    {
+        "context": "In physics and engineering, oscillatory motion (waves, vibrations) can be decomposed into sine and cosine components that always sum to maintain constant energy.",
+        "application": "The fundamental identity sin²(θ) + cos²(θ) = 1 ensures energy conservation in wave mechanics"
+    },
+    {
+        "context": "In signal processing and telecommunications, signals are often represented as combinations of sine and cosine waves (Fourier analysis). The Pythagorean identity ensures signal power remains constant.",
+        "application": "Quality assurance in digital signal transmission depends on this fundamental relationship"
+    },
+    {
+        "context": "In navigation systems (GPS, radar), the position of an object can be represented in both rectangular (x, y) and polar (r, θ) coordinates. The conversion relies on the Pythagorean identity.",
+        "application": "Converting between coordinate systems while maintaining accuracy"
+    },
+    {
+        "context": "In structural engineering, forces acting on a beam can be decomposed into horizontal and vertical components. The total force magnitude must satisfy the Pythagorean relationship.",
+        "application": "Calculating resultant forces in bridge and building design"
+    },
+]
+
 
 def generate_pythagorean_identities(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -17,6 +37,7 @@ def generate_pythagorean_identities(difficulty: int = 1) -> Dict[str, Any]:
     """
     if difficulty == 1:
         # Easy: Verify basic Pythagorean identity at standard angle
+        use_word_problem = random.random() < 0.4
         angles = [
             (30, "\\frac{\\pi}{6}", 0.5, math.sqrt(3)/2, "\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"),
             (45, "\\frac{\\pi}{4}", math.sqrt(2)/2, math.sqrt(2)/2, "\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"),
@@ -25,16 +46,25 @@ def generate_pythagorean_identities(difficulty: int = 1) -> Dict[str, Any]:
 
         degrees, radian_str, sin_val, cos_val, sin_str, cos_str = random.choice(angles)
 
-        question = f"Verify that $\\sin^2({degrees}°) + \\cos^2({degrees}°) = 1$ using exact values."
+        if use_word_problem:
+            question = f"**Physics Application:** In oscillatory motion at angle ${degrees}°$, the vertical and horizontal components must conserve energy. Verify that $\\sin^2({degrees}°) + \\cos^2({degrees}°) = 1$ using exact values. This fundamental identity ensures energy is neither created nor destroyed."
+        else:
+            question = f"Verify that $\\sin^2({degrees}°) + \\cos^2({degrees}°) = 1$ using exact values."
 
         steps = [
-            f"Recall: $\\sin({degrees}°) = {sin_str}$ and $\\cos({degrees}°) = {cos_str}$",
-            f"Calculate $\\sin^2({degrees}°)$:",
+            f"**Step 1 - Recall the exact values:**",
+            f"$\\sin({degrees}°) = {sin_str}$ and $\\cos({degrees}°) = {cos_str}$",
+            "",
+            f"**Step 2 - Square the sine value:**",
             f"$\\sin^2({degrees}°) = ({sin_str})^2 = {round(sin_val**2, 4)}$",
-            f"Calculate $\\cos^2({degrees}°)$:",
+            "",
+            f"**Step 3 - Square the cosine value:**",
             f"$\\cos^2({degrees}°) = ({cos_str})^2 = {round(cos_val**2, 4)}$",
-            f"Add them together:",
+            "",
+            f"**Step 4 - Add the squared components together:**",
             f"$\\sin^2({degrees}°) + \\cos^2({degrees}°) = {round(sin_val**2, 4)} + {round(cos_val**2, 4)} = 1$",
+            "",
+            "This demonstrates that the identity holds perfectly at this angle, confirming the fundamental relationship between sine and cosine.",
             "**Final Answer:** Identity verified: $1$"
         ]
 
@@ -43,6 +73,7 @@ def generate_pythagorean_identities(difficulty: int = 1) -> Dict[str, Any]:
     elif difficulty == 2:
         # Medium: Given sin, find cos (or vice versa) using Pythagorean identity
         # Use fractions for exact values
+        use_word_problem = random.random() < 0.4
         trig_values = [
             ("sin", 3, 5, 4, 5, "\\frac{3}{5}", "\\frac{4}{5}"),  # sin=3/5, cos=4/5
             ("sin", 5, 13, 12, 13, "\\frac{5}{13}", "\\frac{12}{13}"),  # sin=5/13, cos=12/13
@@ -66,29 +97,49 @@ def generate_pythagorean_identities(difficulty: int = 1) -> Dict[str, Any]:
             given_val = other_num / other_den
             find_val = num / den
 
-        question = f"If $\\{given_func}(\\theta) = {given_str}$ and $\\theta$ is in Quadrant I, find $\\{find_func}(\\theta)$."
+        if use_word_problem:
+            question = f"**GPS Navigation:** A satellite's position requires both sine and cosine components. If $\\{given_func}(\\theta) = {given_str}$ and $\\theta$ is in Quadrant I (first quadrant), find $\\{find_func}(\\theta)$ using the fundamental identity. This is essential for accurate position calculation."
+        else:
+            question = f"If $\\{given_func}(\\theta) = {given_str}$ and $\\theta$ is in Quadrant I, find $\\{find_func}(\\theta)$."
 
         steps = [
-            f"Use the Pythagorean identity: $\\sin^2(\\theta) + \\cos^2(\\theta) = 1$",
+            f"**Step 1 - Apply the Pythagorean identity:**",
+            f"The fundamental identity is: $\\sin^2(\\theta) + \\cos^2(\\theta) = 1$",
+            "",
         ]
 
         if given_func == "sin":
-            steps.append(f"Substitute: $({given_str})^2 + \\cos^2(\\theta) = 1$")
-            steps.append(f"Calculate: $\\frac{{{num**2}}}{{{den**2}}} + \\cos^2(\\theta) = 1$")
-            steps.append(f"Simplify: $\\cos^2(\\theta) = 1 - \\frac{{{num**2}}}{{{den**2}}}$")
-            steps.append(f"$\\cos^2(\\theta) = \\frac{{{den**2}}}{{{den**2}}} - \\frac{{{num**2}}}{{{den**2}}} = \\frac{{{den**2 - num**2}}}{{{den**2}}}$")
-            steps.append(f"Take the square root: $\\cos(\\theta) = \\pm\\sqrt{{\\frac{{{den**2 - num**2}}}{{{den**2}}}}}$")
-            steps.append(f"Since $\\theta$ is in Quadrant I, $\\cos(\\theta) > 0$")
-            steps.append(f"$\\cos(\\theta) = \\frac{{\\sqrt{{{den**2 - num**2}}}}}{{{den}}} = \\frac{{{other_num}}}{{{other_den}}}$")
+            steps.append(f"**Step 2 - Substitute the known sine value:**")
+            steps.append(f"$({given_str})^2 + \\cos^2(\\theta) = 1$")
+            steps.append(f"$\\frac{{{num**2}}}{{{den**2}}} + \\cos^2(\\theta) = 1$")
+            steps.append("")
+            steps.append(f"**Step 3 - Isolate the cosine squared term:**")
+            steps.append(f"$\\cos^2(\\theta) = 1 - \\frac{{{num**2}}}{{{den**2}}}$")
+            steps.append(f"$\\cos^2(\\theta) = \\frac{{{den**2}}}{{{den**2}}} - \\frac{{{num**2}}}{{{den**2}}}$")
+            steps.append(f"$\\cos^2(\\theta) = \\frac{{{den**2 - num**2}}}{{{den**2}}}$")
+            steps.append("")
+            steps.append(f"**Step 4 - Take the square root of both sides:**")
+            steps.append(f"$\\cos(\\theta) = \\pm\\sqrt{{\\frac{{{den**2 - num**2}}}{{{den**2}}}}} = \\pm\\frac{{\\sqrt{{{den**2 - num**2}}}}}{{{den}}}$")
+            steps.append("")
+            steps.append(f"**Step 5 - Determine the sign based on quadrant:**")
+            steps.append(f"Since $\\theta$ is in Quadrant I, both sine and cosine are positive")
+            steps.append(f"$\\cos(\\theta) = \\frac{{{other_num}}}{{{other_den}}}$ (taking the positive root)")
         else:
-            steps.append(f"Substitute: $\\sin^2(\\theta) + ({given_str})^2 = 1$")
-            steps.append(f"Calculate: $\\sin^2(\\theta) + \\frac{{{other_num**2}}}{{{other_den**2}}} = 1$")
-            steps.append(f"Simplify: $\\sin^2(\\theta) = 1 - \\frac{{{other_num**2}}}{{{other_den**2}}}$")
-            steps.append(f"$\\sin^2(\\theta) = \\frac{{{other_den**2}}}{{{other_den**2}}} - \\frac{{{other_num**2}}}{{{other_den**2}}} = \\frac{{{other_den**2 - other_num**2}}}{{{other_den**2}}}$")
-            steps.append(f"Take the square root: $\\sin(\\theta) = \\pm\\sqrt{{\\frac{{{other_den**2 - other_num**2}}}{{{other_den**2}}}}}$")
-            steps.append(f"Since $\\theta$ is in Quadrant I, $\\sin(\\theta) > 0$")
-            steps.append(f"$\\sin(\\theta) = \\frac{{\\sqrt{{{other_den**2 - other_num**2}}}}}{{{other_den}}} = \\frac{{{num}}}{{{den}}}$")
+            steps.append(f"**Step 2 - Substitute the known cosine value:**")
+            steps.append(f"$\\sin^2(\\theta) + ({given_str})^2 = 1$")
+            steps.append(f"$\\sin^2(\\theta) + \\frac{{{other_num**2}}}{{{other_den**2}}} = 1$")
+            steps.append("")
+            steps.append(f"**Step 3 - Isolate the sine squared term:**")
+            steps.append(f"$\\sin^2(\\theta) = 1 - \\frac{{{other_num**2}}}{{{other_den**2}}}$")
+            steps.append(f"$\\sin^2(\\theta) = \\frac{{{other_den**2 - other_num**2}}}{{{other_den**2}}}$")
+            steps.append("")
+            steps.append(f"**Step 4 - Take the square root:**")
+            steps.append(f"$\\sin(\\theta) = \\pm\\frac{{\\sqrt{{{other_den**2 - other_num**2}}}}}{{{other_den}}}$")
+            steps.append("")
+            steps.append(f"**Step 5 - Determine the sign (Quadrant I is positive):**")
+            steps.append(f"$\\sin(\\theta) = \\frac{{{num}}}{{{den}}}$")
 
+        steps.append("")
         steps.append(f"**Final Answer:** $\\{find_func}(\\theta) = {find_str}$")
 
         answer_numeric = round(find_val, 4)

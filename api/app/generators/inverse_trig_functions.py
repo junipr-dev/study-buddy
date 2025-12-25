@@ -4,6 +4,30 @@ import random
 import math
 from typing import Dict, Any
 
+# Real-world contexts for inverse trigonometric functions
+WORD_PROBLEMS = [
+    {
+        "context": "Navigation and surveying: Given a known distance and angle measurement, you need to find the original angle of elevation.",
+        "application": "Calculating angles from known sine/cosine/tangent values in land surveying"
+    },
+    {
+        "context": "Robotics and mechanical engineering: Joint angles must be calculated from position coordinates.",
+        "application": "Inverse kinematics - finding joint angles from end-effector positions"
+    },
+    {
+        "context": "Signal processing: Converting signal magnitudes back to phase angles.",
+        "application": "Phase angle recovery in digital signal processing"
+    },
+    {
+        "context": "Astronomy: Finding the angle of celestial objects from their coordinates.",
+        "application": "Calculating astronomical position angles"
+    },
+    {
+        "context": "Architecture and construction: Converting measured ratios back to angles for structural designs.",
+        "application": "Determining roof pitches and ramp angles from known dimensions"
+    },
+]
+
 
 def generate_inverse_trig_functions(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -17,6 +41,7 @@ def generate_inverse_trig_functions(difficulty: int = 1) -> Dict[str, Any]:
     """
     if difficulty == 1:
         # Easy: Evaluate inverse trig functions at standard values
+        use_word_problem = random.random() < 0.4
         inv_values = [
             ("arcsin", 0, 0, "0"),
             ("arcsin", 0.5, 30, "\\frac{1}{2}"),
@@ -37,25 +62,52 @@ def generate_inverse_trig_functions(difficulty: int = 1) -> Dict[str, Any]:
 
         func, value, degrees, value_str = random.choice(inv_values)
 
-        question = f"Evaluate $\\{func}({value_str})$ in degrees."
+        func_name = func[3:]  # "sin", "cos", or "tan"
+
+        if use_word_problem:
+            question = f"**Surveying Problem:** A land surveyor measures that the vertical-to-horizontal ratio is {value_str}. They need to find the angle of elevation. Evaluate $\\{func}({value_str})$ in degrees."
+        else:
+            question = f"Evaluate $\\{func}({value_str})$ in degrees."
 
         steps = [
-            f"$\\{func}(x)$ asks: 'What angle has a {func[3:]} of $x$?'",
+            f"**Understanding the inverse function:**",
+            f"$\\{func}(x)$ asks: 'What angle has a {func_name} of $x$?'",
+            f"In other words: $\\{func}({value_str})$ means: Find $\\theta$ where $\\{func_name}(\\theta) = {value_str}$",
+            "",
         ]
 
         if func == "arcsin":
-            steps.append(f"We need the angle $\\theta$ where $\\sin(\\theta) = {value_str}$")
-            steps.append(f"From the unit circle, $\\sin({degrees}°) = {value_str}$")
-            steps.append(f"Since arcsin has range $[-90°, 90°]$, the answer is ${degrees}°$")
+            steps.append(f"**Setting up the equation:**")
+            steps.append(f"We need: $\\sin(\\theta) = {value_str}$")
+            steps.append("")
+            steps.append(f"**Looking up the unit circle:**")
+            steps.append(f"From memory or the unit circle, $\\sin({degrees}°) = {value_str}$")
+            steps.append("")
+            steps.append(f"**Checking the range:**")
+            steps.append(f"Arcsin has a range of $[-90°, 90°]$ (also written as $[-\\frac{{\\pi}}{{2}}, \\frac{{\\pi}}{{2}}]$)")
+            steps.append(f"Since ${degrees}°$ is in this range, it's our answer.")
         elif func == "arccos":
-            steps.append(f"We need the angle $\\theta$ where $\\cos(\\theta) = {value_str}$")
-            steps.append(f"From the unit circle, $\\cos({degrees}°) = {value_str}$")
-            steps.append(f"Since arccos has range $[0°, 180°]$, the answer is ${degrees}°$")
+            steps.append(f"**Setting up the equation:**")
+            steps.append(f"We need: $\\cos(\\theta) = {value_str}$")
+            steps.append("")
+            steps.append(f"**Looking up the unit circle:**")
+            steps.append(f"From memory or the unit circle, $\\cos({degrees}°) = {value_str}$")
+            steps.append("")
+            steps.append(f"**Checking the range:**")
+            steps.append(f"Arccos has a range of $[0°, 180°]$ (also written as $[0, \\pi]$)")
+            steps.append(f"Since ${degrees}°$ is in this range, it's our answer.")
         else:  # arctan
-            steps.append(f"We need the angle $\\theta$ where $\\tan(\\theta) = {value_str}$")
-            steps.append(f"From the unit circle, $\\tan({degrees}°) = {value_str}$")
-            steps.append(f"Since arctan has range $(-90°, 90°)$, the answer is ${degrees}°$")
+            steps.append(f"**Setting up the equation:**")
+            steps.append(f"We need: $\\tan(\\theta) = {value_str}$")
+            steps.append("")
+            steps.append(f"**Looking up the unit circle:**")
+            steps.append(f"From memory or the unit circle, $\\tan({degrees}°) = {value_str}$")
+            steps.append("")
+            steps.append(f"**Checking the range:**")
+            steps.append(f"Arctan has a range of $(-90°, 90°)$ (also written as $(-\\frac{{\\pi}}{{2}}, \\frac{{\\pi}}{{2}})$)")
+            steps.append(f"Since ${degrees}°$ is in this range, it's our answer.")
 
+        steps.append("")
         steps.append(f"**Final Answer:** ${degrees}°$")
 
         answer_numeric = degrees
