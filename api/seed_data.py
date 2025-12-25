@@ -5,7 +5,8 @@ import os
 from pathlib import Path
 
 from app.database import SessionLocal, engine, Base
-from app.models import Skill, QuestionTemplate, SkillPrerequisite
+from app.models import Skill, QuestionTemplate, SkillPrerequisite, Badge
+from app.services.badges import seed_badges
 
 
 def load_skills_json():
@@ -172,10 +173,16 @@ def seed_database():
         db.commit()
         print(f"✅ Created {len(templates)} question templates!")
 
+        # Seed badges
+        print("Creating badges...")
+        badge_count = seed_badges(db)
+        print(f"✅ Created {badge_count} badges!")
+
         print("\n🎉 Database seeded successfully!")
         print(f"   - {db.query(Skill).count()} skills")
         print(f"   - {db.query(SkillPrerequisite).count()} prerequisites")
         print(f"   - {db.query(QuestionTemplate).count()} question templates")
+        print(f"   - {db.query(Badge).count()} badges")
 
         # Show skills by subject
         print("\n📚 Skills by subject:")

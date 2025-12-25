@@ -19,10 +19,16 @@ class User(Base):
     admin_level = Column(String(20), default=None, nullable=True)  # 'full' or 'readonly'
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    # Streak tracking
+    current_streak = Column(Integer, default=0)  # Consecutive correct answers
+    longest_streak = Column(Integer, default=0)  # Personal best streak
+    total_questions_answered = Column(Integer, default=0)  # Lifetime question count
+
     # Relationships
     mastery = relationship("UserMastery", back_populates="user")
     question_history = relationship("QuestionHistory", back_populates="user")
     evaluations = relationship("Evaluation", back_populates="user", order_by="desc(Evaluation.completed_at)")
+    badges = relationship("UserBadge", back_populates="user")
 
 
 class Skill(Base):
@@ -149,3 +155,36 @@ class EvaluationSkillResult(Base):
     # Relationships
     evaluation = relationship("Evaluation", back_populates="skill_results")
     skill = relationship("Skill")
+
+
+class Badge(Base):
+    """Achievement badge definitions."""
+
+    __tablename__ = "badges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    slug = Column(String(50), unique=True, nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(String(255), nullable=False)
+    icon_emoji = Column(String(10), nullable=False)  # Emoji icon for the badge
+    category = Column(String(30), nullable=False)  # milestone, streak, mastery, evaluation
+    tier = Column(String(20), nullable=False, default="bronze")  # bronze, silver, gold, platinum
+    unlock_criteria = Column(JSON, nullable=False)  # {"type": "streak", "value": 10}
+
+    # Relationships
+    user_badges = relationship("UserBadge", back_populates="badge")
+
+
+class UserBadge(Base):
+    """User's earned badges."""
+
+    __tablename__ = "user_badges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    badge_id = Column(Integer, ForeignKey("badges.id"), nullable=False)
+    earned_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    user = relationship("User", back_populates="badges")
+    badge = relationship("Badge", back_populates="user_badges")

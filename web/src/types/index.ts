@@ -90,3 +90,15 @@ export interface WeakArea {
   is_prerequisite_gap: boolean;
   dependent_skills: string[];
 }
+
+export interface Badge {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  icon_emoji: string;
+  category: 'milestone' | 'streak' | 'mastery' | 'evaluation';
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum';
+  earned: boolean;
+  earned_at?: string;
+}

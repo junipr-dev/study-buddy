@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import get_settings, engine, Base
-from app.routes import auth, questions, progress, skills, evaluation, admin
+from app.routes import auth, questions, progress, skills, evaluation, admin, badges
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -36,6 +36,7 @@ app.include_router(progress.router, prefix=settings.api_prefix)
 app.include_router(skills.router, prefix=settings.api_prefix)
 app.include_router(evaluation.router, prefix=settings.api_prefix)
 app.include_router(admin.router, prefix=settings.api_prefix)
+app.include_router(badges.router, prefix=settings.api_prefix)
 
 
 @app.get("/")
