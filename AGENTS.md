@@ -1,4 +1,6 @@
-# Study Buddy - Project Context (Codex)
+# Project Agent Instructions (Codex)
+
+This file provides project-specific guidance to Codex.
 
 ## Debugging & Screenshots
 

@@ -1,4 +1,6 @@
-# Study Buddy - Project Context (Gemini)
+# Project Agent Instructions (Gemini)
+
+This file provides project-specific guidance to Gemini.
 
 ## Debugging & Screenshots
 
