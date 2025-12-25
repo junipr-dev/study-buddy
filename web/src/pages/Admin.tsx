@@ -23,12 +23,11 @@ export default function Admin() {
   const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
+    // App.tsx handles auth redirect, so if we're here, user exists
+    if (user) {
+      checkAdminAccess();
     }
-    checkAdminAccess();
-  }, [user, navigate]);
+  }, [user]);
 
   const checkAdminAccess = async () => {
     try {

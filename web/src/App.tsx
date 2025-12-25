@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import Login from './pages/Login';
 import Quiz from './pages/Quiz';
@@ -7,7 +7,20 @@ import Progress from './pages/Progress';
 import Admin from './pages/Admin';
 import './styles/globals.css';
 
-function App() {
+// Protected route wrapper that remembers where user was trying to go
+function RequireAuth({ children }: { children: React.ReactElement }) {
+  const { user } = useAuthStore();
+  const location = useLocation();
+
+  if (!user) {
+    // Redirect to login but save the attempted location
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+
+  return children;
+}
+
+function AppRoutes() {
   const { checkAuth, user, isLoading } = useAuthStore();
 
   useEffect(() => {
@@ -24,26 +37,32 @@ function App() {
   }
 
   return (
+    <Routes>
+      <Route path="/login" element={user ? <Navigate to="/quiz" replace /> : <Login />} />
+      <Route
+        path="/quiz"
+        element={<RequireAuth><Quiz /></RequireAuth>}
+      />
+      <Route
+        path="/progress"
+        element={<RequireAuth><Progress /></RequireAuth>}
+      />
+      <Route
+        path="/admin"
+        element={<RequireAuth><Admin /></RequireAuth>}
+      />
+      <Route
+        path="/"
+        element={<Navigate to={user ? "/quiz" : "/login"} replace />}
+      />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/quiz"
-          element={user ? <Quiz /> : <Navigate to="/login" replace />}
-        />
-        <Route
-          path="/progress"
-          element={user ? <Progress /> : <Navigate to="/login" replace />}
-        />
-        <Route
-          path="/admin"
-          element={user ? <Admin /> : <Navigate to="/login" replace />}
-        />
-        <Route
-          path="/"
-          element={<Navigate to={user ? "/quiz" : "/login"} replace />}
-        />
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
