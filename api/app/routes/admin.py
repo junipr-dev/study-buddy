@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, Integer, case
 from typing import List, Optional
 from datetime import datetime, timedelta
 
@@ -179,7 +179,7 @@ def get_user_detail(
         Skill.name,
         Skill.subject,
         func.count(QuestionHistory.id).label('attempts'),
-        func.sum(func.cast(QuestionHistory.is_correct, db.bind.dialect.name == 'sqlite' and 'INTEGER' or 'INT')).label('correct'),
+        func.sum(case((QuestionHistory.is_correct == True, 1), else_=0)).label('correct'),
     ).join(QuestionHistory, QuestionHistory.skill_id == Skill.id).filter(
         QuestionHistory.user_id == user_id
     ).group_by(Skill.id).all()
@@ -280,8 +280,8 @@ def get_skill_performance(
         EvaluationSkillResult.subject,
         func.count(EvaluationSkillResult.id).label('times_tested'),
         func.avg(EvaluationSkillResult.proficiency_score).label('avg_score'),
-        func.sum(func.cast(EvaluationSkillResult.proficiency_level == 'mastered', db.bind.dialect.name == 'sqlite' and 'INTEGER' or 'INT')).label('mastery_count'),
-        func.sum(func.cast(EvaluationSkillResult.proficiency_level == 'study', db.bind.dialect.name == 'sqlite' and 'INTEGER' or 'INT')).label('study_count'),
+        func.sum(case((EvaluationSkillResult.proficiency_level == 'mastered', 1), else_=0)).label('mastery_count'),
+        func.sum(case((EvaluationSkillResult.proficiency_level == 'study', 1), else_=0)).label('study_count'),
     ).group_by(EvaluationSkillResult.skill_name, EvaluationSkillResult.subject).all()
 
     return {
