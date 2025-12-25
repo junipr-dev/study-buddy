@@ -3,6 +3,30 @@
 import random
 from typing import Dict, Any, List, Tuple
 
+# Real-world contexts for polynomial operations
+POLYNOMIAL_OPERATION_CONTEXTS = [
+    {
+        "setup": "Combining profit functions from multiple stores: add/subtract polynomials.",
+        "domain": "finance"
+    },
+    {
+        "setup": "Area calculations: multiply polynomial expressions for length × width.",
+        "domain": "geometry"
+    },
+    {
+        "setup": "Temperature variations: add morning and afternoon temperature polynomials.",
+        "domain": "meteorology"
+    },
+    {
+        "setup": "Network growth: multiply growth rates gives overall expansion.",
+        "domain": "technology"
+    },
+    {
+        "setup": "Species populations: combine growth rates of predator and prey.",
+        "domain": "biology"
+    },
+]
+
 
 def generate_polynomial_operation(difficulty: int = 1) -> Dict[str, Any]:
     """

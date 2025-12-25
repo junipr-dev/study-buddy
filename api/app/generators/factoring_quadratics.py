@@ -4,6 +4,26 @@ import random
 from math import gcd
 from typing import Dict, Any
 
+# Real-world contexts for factoring quadratics
+FACTORING_CONTEXTS = [
+    {
+        "setup": "A volleyball player's jump height is h(t) = -16t² + 32t. Factor to find when she lands.",
+        "domain": "sports"
+    },
+    {
+        "setup": "Revenue from selling x items: R(x) = -2x² + 100x. Factor to find break-even points.",
+        "domain": "finance"
+    },
+    {
+        "setup": "Area of a rectangular photo frame with border: A = x² + 10x + 21. Factor to find dimensions.",
+        "domain": "geometry"
+    },
+    {
+        "setup": "A water fountain's spray path: h = -x² + 6x + 8. Factor to find where it touches ground.",
+        "domain": "physics"
+    },
+]
+
 
 def generate_factoring_quadratics(difficulty: int = 1) -> Dict[str, Any]:
     """

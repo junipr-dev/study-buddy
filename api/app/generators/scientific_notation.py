@@ -3,6 +3,34 @@
 import random
 from typing import Dict, Any, List
 
+# Real-world contexts for scientific notation
+SCIENTIFIC_NOTATION_CONTEXTS = [
+    {
+        "context": "Distance to nearest star: 4.24 light-years = 4 × 10^16 meters",
+        "domain": "astronomy"
+    },
+    {
+        "context": "Diameter of atom: 0.0000001 mm = 1 × 10^-7 mm (nanometers)",
+        "domain": "chemistry"
+    },
+    {
+        "context": "Cloud storage: 5 × 10^12 bytes of data centers",
+        "domain": "technology"
+    },
+    {
+        "context": "National debt: 3.3 × 10^12 dollars (trillions)",
+        "domain": "finance"
+    },
+    {
+        "context": "Speed of light: 3 × 10^8 m/s in vacuum",
+        "domain": "physics"
+    },
+    {
+        "context": "Red blood cells in human body: 2.5 × 10^13 cells",
+        "domain": "biology"
+    },
+]
+
 
 def generate_scientific_notation(difficulty: int = 1) -> Dict[str, Any]:
     """

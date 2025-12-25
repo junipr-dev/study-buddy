@@ -3,6 +3,30 @@
 import random
 from typing import Dict, Any
 
+# Real-world applications of inverse functions
+INVERSE_FUNCTION_CONTEXTS = [
+    {
+        "context": "Decryption: encode/decode messages using inverse cipher functions",
+        "domain": "cryptography"
+    },
+    {
+        "context": "Temperature conversion: F = 9C/5 + 32, find C given F (inverse)",
+        "domain": "physics"
+    },
+    {
+        "context": "Loan interest: compound interest forward, find principal inverse",
+        "domain": "finance"
+    },
+    {
+        "context": "Sound waves: frequency to wavelength and back (inverse relationship)",
+        "domain": "acoustics"
+    },
+    {
+        "context": "Medical imaging: CT scan reconstruction uses inverse transforms",
+        "domain": "medicine"
+    },
+]
+
 
 def generate_inverse_functions(difficulty: int = 1) -> Dict[str, Any]:
     """

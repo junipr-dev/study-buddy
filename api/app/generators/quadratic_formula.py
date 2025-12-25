@@ -4,6 +4,30 @@ import random
 from typing import Dict, Any, List
 from math import sqrt, gcd
 
+# Engaging word problems for quadratic formula
+QUADRATIC_FORMULA_PROBLEMS = [
+    {
+        "context": "A drone is launched from ground level at 24 m/s. Its height is h(t) = -4.9t² + 24t.",
+        "question": "When does it return to ground level?",
+        "domain": "technology"
+    },
+    {
+        "context": "A bridge arch is described by h = -0.1x² + 2x where h is height in meters.",
+        "question": "At what horizontal distances is the arch 4 meters high?",
+        "domain": "engineering"
+    },
+    {
+        "context": "An animal population follows P(t) = -t² + 8t + 20 (in hundreds).",
+        "question": "When will the population reach 32 hundred?",
+        "domain": "biology"
+    },
+    {
+        "context": "A video game player's score over time is S(t) = t² - 8t + 15.",
+        "question": "At what times is the score zero (reset events)?",
+        "domain": "gaming"
+    },
+]
+
 
 def generate_quadratic_formula(difficulty: int = 1) -> Dict[str, Any]:
     """

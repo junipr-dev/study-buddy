@@ -3,6 +3,30 @@
 import random
 from typing import Dict, Any
 
+# Real-world applications of function composition
+COMPOSITION_CONTEXTS = [
+    {
+        "context": "Converting temperature: Celsius → Fahrenheit → Rankine scale",
+        "domain": "physics"
+    },
+    {
+        "context": "Price adjustments: apply discount then add tax - nested functions",
+        "domain": "finance"
+    },
+    {
+        "context": "Unit conversion chains: km → m → cm → mm",
+        "domain": "engineering"
+    },
+    {
+        "context": "Signal processing: input → amplify → filter → output",
+        "domain": "technology"
+    },
+    {
+        "context": "Dosage calculations: weight in lbs → kg → mg per kg → total dose",
+        "domain": "medicine"
+    },
+]
+
 
 def generate_function_composition(difficulty: int = 1) -> Dict[str, Any]:
     """

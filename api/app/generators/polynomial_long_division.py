@@ -3,6 +3,26 @@
 import random
 from typing import Dict, Any, List, Tuple
 
+# Contextual word problems for polynomial division
+POLYNOMIAL_DIVISION_CONTEXTS = [
+    {
+        "setup": "Rate of water flow: dividing a polynomial volume by time gives flow rate.",
+        "domain": "engineering"
+    },
+    {
+        "setup": "Breaking down cost functions: total cost divided by units gives unit cost.",
+        "domain": "finance"
+    },
+    {
+        "setup": "Mechanical efficiency: power output divided by power input efficiency.",
+        "domain": "physics"
+    },
+    {
+        "setup": "Data compression: total data size divided by compression factor.",
+        "domain": "technology"
+    },
+]
+
 
 def generate_polynomial_long_division(difficulty: int = 1) -> Dict[str, Any]:
     """

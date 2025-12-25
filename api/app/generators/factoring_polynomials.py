@@ -4,6 +4,30 @@ import random
 from typing import Dict, Any
 import math
 
+# Word problems for polynomial factoring
+POLYNOMIAL_WORD_PROBLEMS = [
+    {
+        "context": "Volume of a box with cut corners: V = 2x³ + 8x² (cubic inches)",
+        "question": "Factor to find the base dimensions",
+        "domain": "geometry"
+    },
+    {
+        "context": "Growth model for bacteria: N(t) = 3t³ - 12t (population in thousands)",
+        "question": "Factor to find when population changes",
+        "domain": "biology"
+    },
+    {
+        "context": "Profit function: P(x) = 4x³ - 16x (in thousands of dollars)",
+        "question": "Factor to analyze profit at different production levels",
+        "domain": "finance"
+    },
+    {
+        "context": "Motion equation: s(t) = 5t³ - 20t (distance in meters)",
+        "question": "Factor to find when object returns to starting position",
+        "domain": "physics"
+    },
+]
+
 
 def generate_factoring_polynomials(difficulty: int = 1) -> Dict[str, Any]:
     """

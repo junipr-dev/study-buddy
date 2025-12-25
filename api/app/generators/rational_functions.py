@@ -3,6 +3,30 @@
 import random
 from typing import Dict, Any
 
+# Real-world applications of rational functions
+RATIONAL_FUNCTION_CONTEXTS = [
+    {
+        "context": "Concentration of medicine: C(t) = 50t/(t²+1) (mg/liter over hours)",
+        "domain": "pharmacology"
+    },
+    {
+        "context": "Spread of rumors: P(t) = t/(t+2) (proportion of population at time t)",
+        "domain": "sociology"
+    },
+    {
+        "context": "Efficiency of solar panel: E(x) = (100x)/(x²+10) (efficiency vs hours of sun)",
+        "domain": "engineering"
+    },
+    {
+        "context": "Average cost per unit: C(x) = (500+2x)/x (total cost ÷ units produced)",
+        "domain": "finance"
+    },
+    {
+        "context": "Light intensity: I(d) = 1000/d² (lumens at distance d meters from source)",
+        "domain": "physics"
+    },
+]
+
 
 def generate_rational_functions(difficulty: int = 1) -> Dict[str, Any]:
     """

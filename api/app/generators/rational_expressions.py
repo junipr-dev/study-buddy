@@ -4,6 +4,30 @@ import random
 from typing import Dict, Any, List
 from math import gcd
 
+# Real-world word problems for rational expressions
+RATIONAL_EXPRESSION_PROBLEMS = [
+    {
+        "context": "Average speed: combined distance/combined time = rational expression",
+        "domain": "physics"
+    },
+    {
+        "context": "Work rates: two workers together: 1/t1 + 1/t2 = 1/t_combined",
+        "domain": "work"
+    },
+    {
+        "context": "Drug concentration in blood: C(t) = dose/(V·e^kt) - rational decay",
+        "domain": "medicine"
+    },
+    {
+        "context": "Lens formula: 1/f = 1/do + 1/di (object and image distances)",
+        "domain": "optics"
+    },
+    {
+        "context": "Electrical circuits: resistors in parallel: 1/R_total = 1/R1 + 1/R2",
+        "domain": "engineering"
+    },
+]
+
 
 def generate_rational_expressions(difficulty: int = 1) -> Dict[str, Any]:
     """

@@ -4,6 +4,46 @@ import random
 from math import sqrt, gcd
 from typing import Dict, Any, Tuple
 
+# Real-world word problems for quadratic equations
+QUADRATIC_WORD_PROBLEMS = [
+    {
+        "context": "A ball is thrown upward with initial velocity {v} ft/s from a height of {h} feet.",
+        "equation_hint": "Use: h(t) = -16t² + vt + h",
+        "question": "When will the ball reach the ground (h = 0)?",
+        "domain": "physics"
+    },
+    {
+        "context": "A rectangular garden has a perimeter of {p} feet. If the length is {x} feet more than the width, find the dimensions.",
+        "equation_hint": "Width: w, Length: w + x",
+        "question": "What are the dimensions of the garden?",
+        "domain": "geometry"
+    },
+    {
+        "context": "A company's profit in thousands of dollars is P(x) = -2x² + 12x - 10, where x is items sold.",
+        "equation_hint": "Profit function",
+        "question": "At what production levels does the company break even (P = 0)?",
+        "domain": "finance"
+    },
+    {
+        "context": "A splash happens when a stone is thrown. The height h = -5t² + 20t + 3 in meters.",
+        "equation_hint": "Find when height = 0",
+        "question": "How long before the stone hits the water?",
+        "domain": "physics"
+    },
+    {
+        "context": "An archer shoots an arrow. Path equation: h = -4.9t² + 35t + 2 (height in meters, t in seconds)",
+        "equation_hint": "Projectile motion",
+        "question": "When does the arrow hit a target at height h = 15 meters?",
+        "domain": "sports"
+    },
+    {
+        "context": "A rectangular enclosure made from 100 meters of fencing has area A = x(50 - x).",
+        "equation_hint": "Area function with perimeter constraint",
+        "question": "What dimensions give area = 400 m²?",
+        "domain": "geometry"
+    }
+]
+
 
 def _gcd_pair(a: int, b: int) -> int:
     """Calculate GCD of two numbers."""
@@ -31,6 +71,9 @@ def generate_quadratic_equation(difficulty: int = 1) -> Dict[str, Any]:
         Dict with question, answer, and solution steps
     """
     steps = []
+
+    # Use word problem 40% of the time
+    use_word_problem = random.random() < 0.4 and difficulty <= 3
 
     if difficulty == 1:
         # Easy: Simple factoring (x + p)(x + q) = 0

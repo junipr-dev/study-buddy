@@ -4,6 +4,30 @@ import random
 from typing import Dict, Any, List
 from math import sqrt, gcd
 
+# Real-world applications of radicals
+RADICAL_WORD_PROBLEMS = [
+    {
+        "context": "Free fall distance: d = √(2h) where h is height. Simplify radical solutions.",
+        "domain": "physics"
+    },
+    {
+        "context": "Pythagorean theorem in construction: diagonal = √(length² + width²)",
+        "domain": "engineering"
+    },
+    {
+        "context": "Standard deviation in statistics: σ = √(variance). Rationalize denominators.",
+        "domain": "statistics"
+    },
+    {
+        "context": "Pendulum period: T = 2π√(L/g). Simplify radical expressions.",
+        "domain": "physics"
+    },
+    {
+        "context": "Circuit impedance: Z = √(R² + X²). Combine radical terms.",
+        "domain": "technology"
+    },
+]
+
 
 def generate_radical_expressions(difficulty: int = 1) -> Dict[str, Any]:
     """

@@ -3,6 +3,34 @@
 import random
 from typing import Dict, Any
 
+# Real-world applications of piecewise functions
+PIECEWISE_CONTEXTS = [
+    {
+        "context": "Tax brackets: income tax is calculated differently at different income levels",
+        "domain": "finance"
+    },
+    {
+        "context": "Postage rates: shipping cost depends on package weight (different tiers)",
+        "domain": "logistics"
+    },
+    {
+        "context": "Cellphone plans: overage charges apply after certain data usage threshold",
+        "domain": "technology"
+    },
+    {
+        "context": "Speed zones: urban speed limit 25 mph, highway 65 mph - changes at city boundary",
+        "domain": "transportation"
+    },
+    {
+        "context": "Parking fees: free for 1st hour, then 2/hour (common at lots and garages)",
+        "domain": "commerce"
+    },
+    {
+        "context": "Water billing: base fee + tiered rates for consumption levels",
+        "domain": "utilities"
+    },
+]
+
 
 def generate_piecewise_functions(difficulty: int = 1) -> Dict[str, Any]:
     """
