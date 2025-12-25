@@ -62,28 +62,61 @@ def load_explainer(skill_slug, subject):
     return f"Learn about {skill_slug.replace('-', ' ')}"
 
 
-def create_admin_user(db):
-    """Create default admin user if none exists."""
-    existing_admin = db.query(User).filter(User.is_admin == True).first()
-    if existing_admin:
-        print(f"Admin user already exists: {existing_admin.username}")
-        return existing_admin
+def create_admin_users(db):
+    """Create admin users if they don't exist."""
+    created = []
 
-    # Create admin user with default credentials
-    # Password: admin123 (change in production!)
-    admin_user = User(
-        username="admin",
-        first_name="Admin",
-        password_hash=hash_password("admin123"),
-        is_admin=True,
-        admin_level="full",
-    )
-    db.add(admin_user)
-    db.commit()
-    db.refresh(admin_user)
-    print("✅ Created admin user: admin / admin123")
-    print("   ⚠️  Change this password in production!")
-    return admin_user
+    # Full admin - can make changes
+    existing_admin = db.query(User).filter(User.username == "admin").first()
+    if existing_admin:
+        # Ensure existing admin has full access
+        if existing_admin.admin_level != "full":
+            existing_admin.is_admin = True
+            existing_admin.admin_level = "full"
+            db.commit()
+            print(f"Updated admin user to full access")
+        else:
+            print(f"Admin user already exists: admin")
+    else:
+        admin_user = User(
+            username="admin",
+            first_name="Admin",
+            password_hash=hash_password("admin123"),
+            is_admin=True,
+            admin_level="full",
+        )
+        db.add(admin_user)
+        created.append("admin")
+        print("✅ Created admin user: admin / admin123 (full access)")
+
+    # Guest admin - readonly access for demos
+    existing_guest = db.query(User).filter(User.username == "guestAdmin").first()
+    if existing_guest:
+        # Ensure guest admin has readonly access
+        if existing_guest.admin_level != "readonly":
+            existing_guest.is_admin = True
+            existing_guest.admin_level = "readonly"
+            db.commit()
+            print(f"Updated guestAdmin to readonly access")
+        else:
+            print(f"Guest admin already exists: guestAdmin")
+    else:
+        guest_admin = User(
+            username="guestAdmin",
+            first_name="Guest",
+            password_hash=hash_password("guest123"),
+            is_admin=True,
+            admin_level="readonly",
+        )
+        db.add(guest_admin)
+        created.append("guestAdmin")
+        print("✅ Created guest admin: guestAdmin / guest123 (readonly)")
+
+    if created:
+        db.commit()
+        print("   ⚠️  Change passwords in production!")
+
+    return created
 
 
 def seed_database():
@@ -96,8 +129,8 @@ def seed_database():
     db = SessionLocal()
 
     try:
-        # Create admin user first (always needed)
-        create_admin_user(db)
+        # Create admin users first (always needed)
+        create_admin_users(db)
 
         # Check if already seeded
         existing_skills = db.query(Skill).count()
@@ -229,13 +262,13 @@ def seed_database():
 
 
 def create_admin_only():
-    """Create admin user only, without seeding other data."""
+    """Create admin users only, without seeding other data."""
     print("Creating database tables if needed...")
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
-        create_admin_user(db)
+        create_admin_users(db)
     finally:
         db.close()
 
