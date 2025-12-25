@@ -1,8 +1,24 @@
-"""Exponent rules question generator."""
+"""Exponent rules question generator with scientific contexts."""
 
 import random
 from typing import Dict, Any
 from math import gcd
+
+# Scientific/computing contexts for exponents
+EXPONENT_CONTEXTS = {
+    "product": [
+        "Bacteria double every hour. If you start with $x^{a}$ bacteria and wait for them to multiply by $x^{b}$, how many do you have?",
+        "A computer processes $x^{a}$ operations per second. If speed increases by factor $x^{b}$, what's the new rate?",
+    ],
+    "quotient": [
+        "A file is $x^{a}$ bytes. After compression by factor $x^{b}$, how large is it?",
+        "A population of $x^{a}$ cells divides by $x^{b}$ groups. How many per group?",
+    ],
+    "power": [
+        "If a quantity triples (grows by $x^{a}$) and this happens {b} times, what's the total growth?",
+        "Each level of a video game requires $(x^{a})^{b}$ experience points. Simplify this.",
+    ],
+}
 
 
 def generate_exponent_rules(difficulty: int = 1) -> Dict[str, Any]:

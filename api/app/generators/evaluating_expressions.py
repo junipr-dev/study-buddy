@@ -1,7 +1,20 @@
-"""Evaluating algebraic expressions question generator."""
+"""Evaluating algebraic expressions question generator with real-world contexts."""
 
 import random
 from typing import Dict, Any
+
+# Real-world contexts for evaluating expressions
+EXPRESSION_CONTEXTS = [
+    {"formula": "{a}x + {b}", "context": "cost", "question": "A phone plan costs ${b} per month plus ${a} per gigabyte of data. If you use {x} GB, what's your total bill?"},
+    {"formula": "{a}x + {b}", "context": "earning", "question": "You earn ${a} per hour plus a ${b} bonus. How much do you make working {x} hours?"},
+    {"formula": "{a}x + {b}", "context": "taxi", "question": "A taxi charges ${b} flat fee plus ${a} per mile. What's the cost for a {x}-mile trip?"},
+    {"formula": "{a}x + {b}", "context": "temperature", "question": "To convert Celsius to Fahrenheit-ish, multiply by {a} and add {b}. What's {x}°C in this scale?"},
+]
+
+TWO_VAR_CONTEXTS = [
+    {"formula": "{a}x + {b}y", "context": "shopping", "question": "Apples cost ${a} each and oranges cost ${b} each. How much for {x} apples and {y} oranges?"},
+    {"formula": "{a}x + {b}y", "context": "points", "question": "In a game, goals are worth {a} points and assists are worth {b} points. What's the score with {x} goals and {y} assists?"},
+]
 
 
 def generate_evaluating_expressions(difficulty: int = 1) -> Dict[str, Any]:
@@ -18,6 +31,7 @@ def generate_evaluating_expressions(difficulty: int = 1) -> Dict[str, Any]:
         Dict with question, answer, and solution steps
     """
     steps = []
+    use_context = random.random() < 0.5
 
     if difficulty == 1:
         # Easy: Single variable with simple operations
@@ -27,7 +41,15 @@ def generate_evaluating_expressions(difficulty: int = 1) -> Dict[str, Any]:
         x_val = random.randint(1, 10)
 
         expression = f"{a}x + {b}"
-        steps.append(f"Evaluate the expression: ${expression}$ when $x = {x_val}$")
+
+        if use_context:
+            ctx = random.choice(EXPRESSION_CONTEXTS)
+            question = ctx["question"].format(a=a, b=b, x=x_val)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Expression:** ${expression}$ where $x = {x_val}$")
+        else:
+            steps.append(f"Evaluate the expression: ${expression}$ when $x = {x_val}$")
+
         steps.append("**Rule:** Substitute the given value for the variable, then simplify")
         steps.append(f"Substitute $x = {x_val}$ into the expression:")
         steps.append(f"${a}({x_val}) + {b}$")
@@ -50,7 +72,15 @@ def generate_evaluating_expressions(difficulty: int = 1) -> Dict[str, Any]:
             y_val = random.randint(1, 8)
 
             expression = f"{a}x + {b}y"
-            steps.append(f"Evaluate the expression: ${expression}$ when $x = {x_val}$ and $y = {y_val}$")
+
+            if use_context:
+                ctx = random.choice(TWO_VAR_CONTEXTS)
+                question = ctx["question"].format(a=a, b=b, x=x_val, y=y_val)
+                steps.append(f"**Problem:** {question}")
+                steps.append(f"**Expression:** ${expression}$ where $x = {x_val}$, $y = {y_val}$")
+            else:
+                steps.append(f"Evaluate the expression: ${expression}$ when $x = {x_val}$ and $y = {y_val}$")
+
             steps.append("**Rule:** Substitute the given values for each variable, then simplify")
             steps.append(f"Substitute $x = {x_val}$ and $y = {y_val}$:")
             steps.append(f"${a}({x_val}) + {b}({y_val})$")

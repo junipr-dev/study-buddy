@@ -1,9 +1,22 @@
-"""Fraction division question generator."""
+"""Fraction division question generator with engaging word problems."""
 
 import random
 from fractions import Fraction
 from math import gcd
 from typing import Dict, Any
+
+# Word problem templates for fraction division
+FRACTION_DIV_WORD_PROBLEMS = [
+    {"context": "pizza", "template": "You have {frac1} of a pizza. You want to share it equally among {whole} friends. How much does each friend get?"},
+    {"context": "rope", "template": "A rope is {frac1} meter long. If you cut it into pieces of {frac2} meter each, how many pieces can you make?"},
+    {"context": "recipe", "template": "A recipe uses {frac1} cup of oil. If you only have a {frac2} cup measuring spoon, how many spoonfuls do you need?"},
+    {"context": "fabric", "template": "You have {frac1} yard of fabric. Each craft project needs {frac2} yard. How many projects can you complete?"},
+    {"context": "running", "template": "You ran {frac1} mile. If that's {frac2} of your usual distance, what's your usual distance?"},
+    {"context": "time", "template": "A task takes {frac1} hour. If you have {frac2} hour, what fraction of the task can you complete?"},
+]
+
+# Question type variety
+QUESTION_TYPES = ["standard", "word_problem", "verify", "compare"]
 
 
 def generate_fractions_division(difficulty: int = 1) -> Dict[str, Any]:
@@ -21,6 +34,10 @@ def generate_fractions_division(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps = []
 
+    # Variety: use different question types
+    use_word_problem = random.random() < 0.4
+    use_verify = random.random() < 0.15  # "Is this correct?" style
+
     if difficulty == 1:
         # Easy: Simple fractions
         num1 = random.randint(1, 8)
@@ -30,14 +47,29 @@ def generate_fractions_division(difficulty: int = 1) -> Dict[str, Any]:
 
         frac1 = Fraction(num1, denom1)
         frac2 = Fraction(num2, denom2)
+        result = frac1 / frac2
+
+        # Format fractions for display
+        frac1_str = f"{num1}/{denom1}"
+        frac2_str = f"{num2}/{denom2}"
 
         expression = f"\\frac{{{num1}}}{{{denom1}}} \\div \\frac{{{num2}}}{{{denom2}}}"
-        steps.append(f"Divide the fractions: ${expression}$")
-        steps.append("**Rule:** To divide fractions, multiply by the reciprocal")
+
+        if use_word_problem:
+            wp = random.choice(FRACTION_DIV_WORD_PROBLEMS)
+            question = wp["template"].format(frac1=frac1_str, frac2=frac2_str, whole=num2)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Identify:** Divide $\\frac{{{num1}}}{{{denom1}}} \\div \\frac{{{num2}}}{{{denom2}}}$")
+        else:
+            steps.append(f"Divide the fractions: ${expression}$")
+
+        steps.append("**Rule:** To divide fractions, multiply by the reciprocal (\"Keep, Change, Flip\")")
         steps.append(f"$\\frac{{a}}{{b}} \\div \\frac{{c}}{{d}} = \\frac{{a}}{{b}} \\times \\frac{{d}}{{c}}$")
 
-        steps.append(f"Flip the second fraction and multiply:")
-        steps.append(f"$\\frac{{{num1}}}{{{denom1}}} \\times \\frac{{{denom2}}}{{{num2}}}$")
+        steps.append(f"**Step 1:** Keep the first fraction: $\\frac{{{num1}}}{{{denom1}}}$")
+        steps.append(f"**Step 2:** Change ÷ to ×")
+        steps.append(f"**Step 3:** Flip the second fraction: $\\frac{{{denom2}}}{{{num2}}}$")
+        steps.append(f"Now multiply: $\\frac{{{num1}}}{{{denom1}}} \\times \\frac{{{denom2}}}{{{num2}}}$")
 
         new_num = num1 * denom2
         new_denom = denom1 * num2
@@ -47,10 +79,9 @@ def generate_fractions_division(difficulty: int = 1) -> Dict[str, Any]:
         steps.append(f"Result: $\\frac{{{new_num}}}{{{new_denom}}}$")
 
         # Simplify
-        result = frac1 / frac2
         if result.numerator != new_num or result.denominator != new_denom:
             common = gcd(new_num, new_denom)
-            steps.append(f"Simplify by dividing both by GCD (${common}$):")
+            steps.append(f"**Simplify:** Divide both by their GCD (${common}$):")
             steps.append(f"$\\frac{{{result.numerator}}}{{{result.denominator}}}$")
 
     elif difficulty == 2:

@@ -1,7 +1,15 @@
-"""Graphing linear equations generator."""
+"""Graphing linear equations generator with real-world contexts."""
 
 import random
 from typing import Dict, Any, List
+
+# Real-world contexts for graphing linear equations
+GRAPHING_CONTEXTS = [
+    {"context": "business", "description": "A business's profit equation where x is items sold and y is total profit", "slope_meaning": "profit per item", "intercept_meaning": "fixed costs (negative) or starting capital"},
+    {"context": "temperature", "description": "Temperature throughout the day where x is hours and y is temperature", "slope_meaning": "degrees change per hour", "intercept_meaning": "starting temperature"},
+    {"context": "savings", "description": "Your savings account where x is months and y is balance", "slope_meaning": "monthly deposit", "intercept_meaning": "initial deposit"},
+    {"context": "driving", "description": "Distance traveled where x is hours driving and y is miles from home", "slope_meaning": "speed (mph)", "intercept_meaning": "starting distance from home"},
+]
 
 
 def generate_graphing_linear_equations(difficulty: int = 1) -> Dict[str, Any]:

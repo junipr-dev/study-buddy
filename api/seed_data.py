@@ -5,8 +5,9 @@ import os
 from pathlib import Path
 
 from app.database import SessionLocal, engine, Base
-from app.models import Skill, QuestionTemplate, SkillPrerequisite, Badge
+from app.models import Skill, QuestionTemplate, SkillPrerequisite, Badge, User
 from app.services.badges import seed_badges
+from app.utils.security import hash_password
 
 
 def load_skills_json():
@@ -61,6 +62,30 @@ def load_explainer(skill_slug, subject):
     return f"Learn about {skill_slug.replace('-', ' ')}"
 
 
+def create_admin_user(db):
+    """Create default admin user if none exists."""
+    existing_admin = db.query(User).filter(User.is_admin == True).first()
+    if existing_admin:
+        print(f"Admin user already exists: {existing_admin.username}")
+        return existing_admin
+
+    # Create admin user with default credentials
+    # Password: admin123 (change in production!)
+    admin_user = User(
+        username="admin",
+        first_name="Admin",
+        password_hash=hash_password("admin123"),
+        is_admin=True,
+        admin_level="full",
+    )
+    db.add(admin_user)
+    db.commit()
+    db.refresh(admin_user)
+    print("✅ Created admin user: admin / admin123")
+    print("   ⚠️  Change this password in production!")
+    return admin_user
+
+
 def seed_database():
     """Seed the database with skills from JSON file."""
     # Create tables
@@ -71,6 +96,9 @@ def seed_database():
     db = SessionLocal()
 
     try:
+        # Create admin user first (always needed)
+        create_admin_user(db)
+
         # Check if already seeded
         existing_skills = db.query(Skill).count()
         if existing_skills > 0:
@@ -200,5 +228,21 @@ def seed_database():
         db.close()
 
 
+def create_admin_only():
+    """Create admin user only, without seeding other data."""
+    print("Creating database tables if needed...")
+    Base.metadata.create_all(bind=engine)
+
+    db = SessionLocal()
+    try:
+        create_admin_user(db)
+    finally:
+        db.close()
+
+
 if __name__ == "__main__":
-    seed_database()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--admin-only":
+        create_admin_only()
+    else:
+        seed_database()

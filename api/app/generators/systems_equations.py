@@ -1,8 +1,16 @@
-"""Systems of equations question generator."""
+"""Systems of equations question generator with real-world contexts."""
 
 import random
 from fractions import Fraction
 from typing import Dict, Any, Tuple
+
+# Real-world contexts for systems of equations
+SYSTEMS_CONTEXTS = [
+    {"context": "tickets", "template": "Adult tickets cost ${a1} and child tickets cost ${b1}. {x_sol} adults and {y_sol} children spent ${c1} total. Verify this and find if {x2_adj} adults and {y2_adj} children would spend ${c2}.", "var1": "adults", "var2": "children"},
+    {"context": "coins", "template": "You have nickels (5¢) and dimes (10¢). If you have {sum_coins} coins worth ${total_cents/100}, how many of each?", "var1": "nickels", "var2": "dimes"},
+    {"context": "mixture", "template": "A store mixes nuts at ${a1}/lb with raisins at ${b1}/lb. They make a {sum_lbs}lb mix worth ${c1}. How much of each?", "var1": "lbs of nuts", "var2": "lbs of raisins"},
+    {"context": "age", "template": "The sum of two ages is {age_sum}. In {years} years, one person will be twice as old as the other. What are their ages now?", "var1": "age1", "var2": "age2"},
+]
 
 
 def generate_system_of_equations(difficulty: int = 1) -> Dict[str, Any]:

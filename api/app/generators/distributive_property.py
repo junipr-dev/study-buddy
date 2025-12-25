@@ -1,7 +1,19 @@
-"""Distributive property question generator."""
+"""Distributive property question generator with real-world contexts."""
 
 import random
 from typing import Dict, Any
+
+# Real-world contexts for distributive property
+DISTRIBUTIVE_CONTEXTS = [
+    {"template": "A group of {a} friends each buy a drink (${b}) and a snack (${c}). What's the total cost?", "format": "{a}({b} + {c})"},
+    {"template": "You buy {a} gift bags. Each bag contains a toy worth ${b} and candy worth ${c}. What's the total?", "format": "{a}({b} + {c})"},
+    {"template": "A classroom has {a} rows of desks. Each row has {b} students plus {c} empty chairs. How many spots total?", "format": "{a}({b} + {c})"},
+]
+
+# Mental math tip contexts
+MENTAL_MATH_CONTEXTS = [
+    {"expression": "{a}({b} + {c})", "tip": "Mental math trick: Instead of multiplying {a} × {total}, break it into {a} × {b} + {a} × {c}"},
+]
 
 
 def generate_distributive_property(difficulty: int = 1) -> Dict[str, Any]:
@@ -18,6 +30,7 @@ def generate_distributive_property(difficulty: int = 1) -> Dict[str, Any]:
         Dict with question, answer, and solution steps
     """
     steps = []
+    use_context = random.random() < 0.4
 
     if difficulty == 1:
         # Easy: a(b + c) with positive integers
@@ -26,7 +39,15 @@ def generate_distributive_property(difficulty: int = 1) -> Dict[str, Any]:
         c = random.randint(1, 10)
 
         expression = f"{a}({b} + {c})"
-        steps.append(f"Start with the expression: ${a}({b} + {c})$")
+
+        if use_context:
+            ctx = random.choice(DISTRIBUTIVE_CONTEXTS)
+            question = ctx["template"].format(a=a, b=b, c=c)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Expression:** ${expression}$")
+        else:
+            steps.append(f"Start with the expression: ${a}({b} + {c})$")
+
         steps.append("**Rule:** Distribute the outside term to each term inside the parentheses")
         steps.append(f"Multiply ${a}$ by each term inside: ${a} \\times {b}$ and ${a} \\times {c}$")
 

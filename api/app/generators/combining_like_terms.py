@@ -1,7 +1,14 @@
-"""Combining like terms question generator."""
+"""Combining like terms question generator with real-world contexts."""
 
 import random
 from typing import Dict, Any, List
+
+# Real-world contexts for combining like terms
+LIKE_TERMS_CONTEXTS = [
+    {"context": "inventory", "template": "A store has {c1} boxes of item X, receives {c2} more, then {action} {c3}. Write the simplified inventory.", "vars": ["boxes"]},
+    {"context": "points", "template": "In a game, you score {c1}x points, then {c2}x points, then lose {c3}x points. What's your total score expression?", "vars": ["x"]},
+    {"context": "money", "template": "You have {c1} dollar bills, your friend gives you {c2} more, you spend {c3}. How many do you have?", "vars": ["bills"]},
+]
 
 
 def generate_combining_like_terms(difficulty: int = 1) -> Dict[str, Any]:

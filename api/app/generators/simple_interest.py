@@ -1,7 +1,19 @@
-"""Simple interest question generator (I = PRT)."""
+"""Simple interest question generator (I = PRT) with engaging scenarios."""
 
 import random
 from typing import Dict, Any, List
+
+# Engaging financial scenarios
+INVESTMENT_SCENARIOS = [
+    {"name": "college fund", "goal": "saving for college"},
+    {"name": "car savings", "goal": "saving for a car"},
+    {"name": "vacation fund", "goal": "saving for a trip"},
+    {"name": "emergency fund", "goal": "building an emergency fund"},
+    {"name": "gaming PC fund", "goal": "saving for a new computer"},
+]
+
+# Bank names for variety
+BANK_NAMES = ["First National Bank", "Credit Union", "Online Savings", "Community Bank"]
 
 
 def generate_simple_interest(difficulty: int = 1) -> Dict[str, Any]:
@@ -16,6 +28,9 @@ def generate_simple_interest(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps: List[str] = []
 
+    # Use engaging scenario 50% of the time
+    use_scenario = random.random() < 0.5
+
     if difficulty == 1:
         # Find interest: I = PRT
         principal = random.randint(5, 50) * 100  # 500-5000 in increments of 100
@@ -24,17 +39,27 @@ def generate_simple_interest(difficulty: int = 1) -> Dict[str, Any]:
 
         interest = (principal * rate * time) / 100
 
-        question = (
-            f"Calculate the simple interest on ${principal} "
-            f"at {rate}% per year for {time} years."
-        )
+        if use_scenario:
+            scenario = random.choice(INVESTMENT_SCENARIOS)
+            bank = random.choice(BANK_NAMES)
+            question = (
+                f"You deposit ${principal} in your {scenario['name']} at {bank}, "
+                f"earning {rate}% simple interest per year. "
+                f"How much interest will you earn after {time} years?"
+            )
+            steps.append(f"**Problem:** {question}")
+        else:
+            question = (
+                f"Calculate the simple interest on ${principal} "
+                f"at {rate}% per year for {time} years."
+            )
 
-        steps.append("Use the simple interest formula: $I = PRT$")
-        steps.append("Where:")
-        steps.append(f"- P = ${principal} (principal)")
+        steps.append("**Use the simple interest formula:** $I = PRT$")
+        steps.append("**Where:**")
+        steps.append(f"- P = ${principal} (principal - amount deposited)")
         steps.append(f"- R = {rate}% = {rate/100} (rate as decimal)")
-        steps.append(f"- T = {time} years (time)")
-        steps.append("Substitute values:")
+        steps.append(f"- T = {time} years (time period)")
+        steps.append("**Substitute and calculate:**")
         steps.append(f"$I = {principal} \\times {rate/100} \\times {time}$")
         steps.append(f"$I = {principal * rate * time / 100}$")
         steps.append(f"**Final Answer:** ${interest:.2f}")

@@ -1,7 +1,27 @@
-"""Linear inequalities question generator."""
+"""Linear inequalities question generator with real-world contexts."""
 
 import random
 from typing import Dict, Any
+
+# Real-world contexts for inequalities
+INEQUALITY_CONTEXTS = {
+    "<": [
+        {"template": "A roller coaster requires riders to be under {c} inches tall. If the height requirement is {a}x + {b} ≤ limit, what values of x work?", "context": "height"},
+        {"template": "You need to spend less than ${c} on lunch. If each item costs ${a}, what's the maximum you can buy?", "context": "budget"},
+    ],
+    ">": [
+        {"template": "You need at least ${c} in your account. If you save ${a} per week plus ${b} starting bonus, how many weeks minimum?", "context": "savings"},
+        {"template": "A game requires more than {c} points to level up. If you earn {a} points per quest, how many quests minimum?", "context": "gaming"},
+    ],
+    ">=": [
+        {"template": "You need at least a {c}% to pass. If the grade formula is {a}x + {b}, what's the minimum x?", "context": "grades"},
+        {"template": "A pizza party needs at least {c} slices. If each pizza has {a} slices, how many pizzas minimum?", "context": "pizza"},
+    ],
+    "<=": [
+        {"template": "Your data plan allows at most {c} GB. If you use {a} GB per day, how many days can you go?", "context": "data"},
+        {"template": "A bag can hold at most {c} lbs. If each book weighs {a} lbs, how many can you carry?", "context": "weight"},
+    ],
+}
 
 
 def generate_inequality(difficulty: int = 1) -> Dict[str, Any]:

@@ -1,7 +1,34 @@
-"""Unit conversions question generator."""
+"""Unit conversions question generator with real-world contexts."""
 
 import random
 from typing import Dict, Any, List, Tuple
+
+# Engaging real-world contexts for conversions
+CONVERSION_CONTEXTS = {
+    "height": [
+        "NBA player {name} is {value} {from_unit} tall. How tall is that in {to_unit}?",
+        "The Statue of Liberty is {value} {from_unit} tall. Convert to {to_unit}.",
+    ],
+    "weight": [
+        "A newborn puppy weighs {value} {from_unit}. How many {to_unit} is that?",
+        "Your luggage weighs {value} {from_unit}. What's that in {to_unit}?",
+    ],
+    "distance": [
+        "The school is {value} {from_unit} away. How many {to_unit} is that?",
+        "A marathon is {value} {from_unit}. Express this in {to_unit}.",
+    ],
+    "cooking": [
+        "The recipe needs {value} {from_unit} of milk. How many {to_unit} is that?",
+        "You have {value} {from_unit} of flour. Convert to {to_unit}.",
+    ],
+    "speed": [
+        "A cheetah runs at {value} {from_unit}. What's that in {to_unit}?",
+        "The speed limit is {value} {from_unit}. Convert to {to_unit}.",
+    ],
+}
+
+# Famous names for height problems
+FAMOUS_HEIGHTS = ["LeBron James", "Shaq", "Michael Jordan", "Kevin Durant", "Yao Ming"]
 
 
 def generate_unit_conversions(difficulty: int = 1) -> Dict[str, Any]:
@@ -16,37 +43,54 @@ def generate_unit_conversions(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps: List[str] = []
 
+    # Use engaging context 50% of the time
+    use_context = random.random() < 0.5
+
     if difficulty == 1:
-        # Basic conversions
-        conversions: List[Tuple[str, str, float, str]] = [
-            ("inches", "feet", 12, "in to ft"),
-            ("feet", "yards", 3, "ft to yd"),
-            ("ounces", "pounds", 16, "oz to lb"),
-            ("cups", "pints", 2, "cups to pt"),
-            ("pints", "quarts", 2, "pt to qt"),
-            ("centimeters", "meters", 100, "cm to m"),
-            ("grams", "kilograms", 1000, "g to kg"),
+        # Basic conversions with categories for context matching
+        conversions: List[Tuple[str, str, float, str, str]] = [
+            ("inches", "feet", 12, "in to ft", "height"),
+            ("feet", "yards", 3, "ft to yd", "distance"),
+            ("ounces", "pounds", 16, "oz to lb", "weight"),
+            ("cups", "pints", 2, "cups to pt", "cooking"),
+            ("pints", "quarts", 2, "pt to qt", "cooking"),
+            ("centimeters", "meters", 100, "cm to m", "height"),
+            ("grams", "kilograms", 1000, "g to kg", "weight"),
         ]
 
-        from_unit, to_unit, factor, name = random.choice(conversions)
+        from_unit, to_unit, factor, name, category = random.choice(conversions)
 
         if from_unit in ["inches", "ounces", "cups", "pints", "centimeters", "grams"]:
             # Convert from smaller to larger
             value = random.randint(2, 10) * int(factor)
             answer = value / factor
-            question = f"Convert ${value}$ {from_unit} to {to_unit}"
 
-            steps.append(f"Conversion: $1$ {to_unit} $= {int(factor)}$ {from_unit}")
-            steps.append(f"Divide ${value}$ by ${int(factor)}$:")
+            if use_context and category in CONVERSION_CONTEXTS:
+                template = random.choice(CONVERSION_CONTEXTS[category])
+                name = random.choice(FAMOUS_HEIGHTS) if category == "height" else ""
+                question = template.format(value=value, from_unit=from_unit, to_unit=to_unit, name=name)
+                steps.append(f"**Problem:** {question}")
+            else:
+                question = f"Convert ${value}$ {from_unit} to {to_unit}"
+
+            steps.append(f"**Conversion factor:** $1$ {to_unit} $= {int(factor)}$ {from_unit}")
+            steps.append(f"**Method:** Since we're going from smaller to larger units, divide")
             steps.append(f"${value} \\div {int(factor)} = {answer:.2f}$ {to_unit}")
         else:
             # Convert from larger to smaller
             value = random.randint(2, 10)
             answer = value * factor
-            question = f"Convert ${value}$ {from_unit} to {to_unit}"
 
-            steps.append(f"Conversion: $1$ {from_unit} $= {int(factor)}$ {to_unit}")
-            steps.append(f"Multiply ${value}$ by ${int(factor)}$:")
+            if use_context and category in CONVERSION_CONTEXTS:
+                template = random.choice(CONVERSION_CONTEXTS[category])
+                name = random.choice(FAMOUS_HEIGHTS) if category == "height" else ""
+                question = template.format(value=value, from_unit=from_unit, to_unit=to_unit, name=name)
+                steps.append(f"**Problem:** {question}")
+            else:
+                question = f"Convert ${value}$ {from_unit} to {to_unit}"
+
+            steps.append(f"**Conversion factor:** $1$ {from_unit} $= {int(factor)}$ {to_unit}")
+            steps.append(f"**Method:** Since we're going from larger to smaller units, multiply")
             steps.append(f"${value} \\times {int(factor)} = {int(answer)}$ {to_unit}")
 
     elif difficulty == 2:

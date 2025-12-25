@@ -1,7 +1,21 @@
-"""Absolute value question generator."""
+"""Absolute value question generator with word problems."""
 
 import random
 from typing import Dict, Any
+
+# Word problem templates for absolute value
+ABSOLUTE_VALUE_WORD_PROBLEMS = {
+    "simple": [
+        {"context": "temperature", "template": "The temperature is {num}°F. How far is this from 0°F?"},
+        {"context": "debt", "template": "Your bank account shows {num}. What is the absolute value of your balance?"},
+        {"context": "golf", "template": "In golf, a score of {num} means {abs_meaning}. What is the absolute value of this score?"},
+        {"context": "elevator", "template": "An elevator is at floor {num} (negative = basement). How many floors is it from ground level?"},
+    ],
+    "operations": [
+        {"context": "target", "template": "A dart lands {result} points from the bullseye. If the deviation was calculated as {a} + {b}, what is the distance?"},
+        {"context": "temperature_change", "template": "The temperature changed by ({a} + {b})°F. What is the absolute temperature change?"},
+    ],
+}
 
 
 def generate_absolute_value(difficulty: int = 1) -> Dict[str, Any]:
@@ -19,12 +33,42 @@ def generate_absolute_value(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps = []
 
+    # Use word problems 50% of the time
+    use_word_problem = random.random() < 0.5
+
     if difficulty == 1:
         # Easy: Simple absolute value
         num = random.randint(-50, 50)
+        while num == 0:  # Avoid zero for more interesting problems
+            num = random.randint(-50, 50)
 
         expression = f"|{num}|"
-        steps.append(f"Find the absolute value: ${expression}$")
+
+        if use_word_problem:
+            if num < 0:
+                # Negative number contexts
+                contexts = ["debt", "elevator", "temperature"]
+                context = random.choice(contexts)
+                if context == "debt":
+                    question = f"Your bank account shows ${num}. What is the absolute value of your balance?"
+                    steps.append(f"**Problem:** {question}")
+                    steps.append(f"**Identify:** Find $|{num}|$")
+                elif context == "elevator":
+                    question = f"An elevator is at floor {num} (basement level). How many floors from ground level?"
+                    steps.append(f"**Problem:** {question}")
+                    steps.append(f"**Identify:** Find the distance from 0: $|{num}|$")
+                else:  # temperature
+                    question = f"The temperature is {num}°F. How far is this from 0°F?"
+                    steps.append(f"**Problem:** {question}")
+                    steps.append(f"**Identify:** Find $|{num}|$")
+            else:
+                # Positive number - distance interpretation
+                question = f"A target is {num} meters away. Express this distance as an absolute value."
+                steps.append(f"**Problem:** {question}")
+                steps.append(f"**Identify:** Find $|{num}|$")
+        else:
+            steps.append(f"Find the absolute value: ${expression}$")
+
         steps.append("**Rule:** Absolute value is the distance from zero (always non-negative)")
 
         if num >= 0:

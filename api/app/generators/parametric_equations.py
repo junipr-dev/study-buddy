@@ -3,6 +3,45 @@
 import random
 from typing import Dict, Any
 
+# Word problem templates for engaging, real-world contexts
+PARAMETRIC_WORD_PROBLEMS = [
+    {
+        "context": "An animation system uses parametric equations to move an object. Time $t$ (in seconds) determines the position.",
+        "difficulty": 1,
+        "type": "evaluate"
+    },
+    {
+        "context": "A roller coaster's path can be described using parametric equations, where $t$ represents time in seconds.",
+        "difficulty": 1,
+        "type": "evaluate"
+    },
+    {
+        "context": "A projectile is launched with initial velocity. The parametric equations describe its horizontal and vertical position over time $t$.",
+        "difficulty": 1,
+        "type": "evaluate"
+    },
+    {
+        "context": "A camera follows a predetermined path in a video game using parametric equations, where $t$ is the animation frame number.",
+        "difficulty": 2,
+        "type": "eliminate"
+    },
+    {
+        "context": "A satellite follows an elliptical orbit described by parametric equations. The parameter $t$ eliminates to a standard ellipse equation.",
+        "difficulty": 2,
+        "type": "eliminate"
+    },
+    {
+        "context": "A bouncing ball's trajectory can be modeled with parametric equations. Find the ball's position at a specific time.",
+        "difficulty": 3,
+        "type": "find_t"
+    },
+    {
+        "context": "A pendulum's swing is tracked with parametric equations. At what time does it reach a specific point?",
+        "difficulty": 3,
+        "type": "find_t"
+    }
+]
+
 
 def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
     """
@@ -21,23 +60,30 @@ def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
         c = random.randint(2, 5)
         d = random.randint(-5, 5)
         t_val = random.randint(1, 4)
+        use_word_problem = random.random() < 0.4
 
         # Choose whether to ask for x or y
         if random.choice([True, False]):
             # Ask for x
             x_result = a * t_val + b
 
-            question = f"Given the parametric equations $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$, find the value of $x$ when $t = {t_val}$."
+            if use_word_problem:
+                context = random.choice([p for p in PARAMETRIC_WORD_PROBLEMS if p["difficulty"] == 1])
+                question = f"{context['context']}\n\n"
+                question += f"The parametric equations are $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$.\n\n"
+                question += f"Find the value of $x$ when $t = {t_val}$."
+            else:
+                question = f"Given the parametric equations $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$, find the value of $x$ when $t = {t_val}$."
 
             steps = [
-                f"We have $x = {a}t {b:+d}$",
+                f"We have the equation $x = {a}t {b:+d}$",
                 "",
-                f"Substitute $t = {t_val}$:",
+                f"To find the position at $t = {t_val}$, substitute this value:",
                 f"$x = {a}({t_val}) {b:+d}$",
                 f"$x = {a * t_val} {b:+d}$",
                 f"$x = {x_result}$",
                 "",
-                f"**Final Answer:** ${x_result}$"
+                f"**Final Answer:** ${x_result}$ units"
             ]
 
             answer_numeric = x_result
@@ -45,17 +91,23 @@ def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
             # Ask for y
             y_result = c * t_val + d
 
-            question = f"Given the parametric equations $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$, find the value of $y$ when $t = {t_val}$."
+            if use_word_problem:
+                context = random.choice([p for p in PARAMETRIC_WORD_PROBLEMS if p["difficulty"] == 1])
+                question = f"{context['context']}\n\n"
+                question += f"The parametric equations are $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$.\n\n"
+                question += f"Find the value of $y$ when $t = {t_val}$."
+            else:
+                question = f"Given the parametric equations $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$, find the value of $y$ when $t = {t_val}$."
 
             steps = [
-                f"We have $y = {c}t {d:+d}$",
+                f"We have the equation $y = {c}t {d:+d}$",
                 "",
-                f"Substitute $t = {t_val}$:",
+                f"To find the position at $t = {t_val}$, substitute this value:",
                 f"$y = {c}({t_val}) {d:+d}$",
                 f"$y = {c * t_val} {d:+d}$",
                 f"$y = {y_result}$",
                 "",
-                f"**Final Answer:** ${y_result}$"
+                f"**Final Answer:** ${y_result}$ units"
             ]
 
             answer_numeric = y_result
@@ -70,6 +122,7 @@ def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
         b = random.randint(-3, 3)
         c = random.randint(2, 6)
         d = random.randint(-3, 3)
+        use_word_problem = random.random() < 0.4
 
         slope = c / a
         if slope == int(slope):
@@ -78,7 +131,13 @@ def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
         else:
             answer_numeric = round(slope, 2)
 
-        question = f"Eliminate the parameter $t$ from the parametric equations $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$ to find the slope of the resulting line."
+        if use_word_problem:
+            context = random.choice([p for p in PARAMETRIC_WORD_PROBLEMS if p["difficulty"] == 2])
+            question = f"{context['context']}\n\n"
+            question += f"The parametric equations are $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$.\n\n"
+            question += "Eliminate the parameter $t$ to find the slope of the path."
+        else:
+            question = f"Eliminate the parameter $t$ from the parametric equations $x = {a}t {b:+d}$ and $y = {c}t {d:+d}$ to find the slope of the resulting line."
 
         steps = [
             "**Step 1:** Solve for $t$ from the $x$ equation:",
@@ -86,13 +145,13 @@ def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
             f"$x {-b:+d} = {a}t$",
             f"$t = \\frac{{x {-b:+d}}}{{{a}}}$",
             "",
-            "**Step 2:** Substitute into the $y$ equation:",
+            "**Step 2:** Substitute this expression for $t$ into the $y$ equation:",
             f"$y = {c}t {d:+d}$",
             f"$y = {c} \\cdot \\frac{{x {-b:+d}}}{{{a}}} {d:+d}$",
             f"$y = \\frac{{{c}}}{{{a}}}x - \\frac{{{c * b}}}{{{a}}} {d:+d}$",
             "",
-            "**Step 3:** Identify the slope:",
-            f"The equation is in the form $y = mx + b$ where $m = \\frac{{{c}}}{{{a}}}$",
+            "**Step 3:** Identify the slope from the equation $y = mx + b$:",
+            f"The slope is $m = \\frac{{{c}}}{{{a}}}$",
         ]
 
         if slope == int(slope):
@@ -110,23 +169,32 @@ def generate_parametric_equations(difficulty: int = 1) -> Dict[str, Any]:
         a = random.randint(2, 4)
         b = random.randint(1, 3)
         t_val = random.randint(2, 4)
+        use_word_problem = random.random() < 0.4
 
         # x = at, y = t²
         x_point = a * t_val
         y_point = t_val ** 2
 
-        question = f"Given the parametric equations $x = {a}t$ and $y = t^2$, find the value of $t$ when the point is $({x_point}, {y_point})$."
+        if use_word_problem:
+            context = random.choice([p for p in PARAMETRIC_WORD_PROBLEMS if p["difficulty"] == 3])
+            question = f"{context['context']}\n\n"
+            question += f"The parametric equations are $x = {a}t$ and $y = t^2$.\n\n"
+            question += f"At what value of $t$ is the object at point $({x_point}, {y_point})$?"
+        else:
+            question = f"Given the parametric equations $x = {a}t$ and $y = t^2$, find the value of $t$ when the point is $({x_point}, {y_point})$."
 
         steps = [
-            f"We need to find $t$ such that $x = {x_point}$ and $y = {y_point}$.",
+            f"We need to find $t$ such that both coordinates match: $x = {x_point}$ and $y = {y_point}$.",
             "",
-            "**Method 1: Use the $x$ equation**",
+            "**Method: Use the $x$ equation to solve for $t$**",
             f"$x = {a}t = {x_point}$",
             f"$t = \\frac{{{x_point}}}{{{a}}}$",
             f"$t = {t_val}$",
             "",
             "**Verify with the $y$ equation:**",
             f"$y = t^2 = ({t_val})^2 = {y_point}$ ✓",
+            "",
+            f"Both equations check out, so the parameter value is correct.",
             "",
             f"**Final Answer:** ${t_val}$"
         ]

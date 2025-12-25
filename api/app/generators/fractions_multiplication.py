@@ -1,9 +1,19 @@
-"""Fraction multiplication question generator."""
+"""Fraction multiplication question generator with word problems."""
 
 import random
 from fractions import Fraction
 from math import gcd
 from typing import Dict, Any
+
+# Word problem templates for fraction multiplication
+FRACTION_MULT_WORD_PROBLEMS = [
+    {"context": "recipe", "template": "A recipe calls for {frac1} cup of milk. If you make {frac2} of the recipe, how much milk do you need?"},
+    {"context": "distance", "template": "A trail is {frac1} mile long. If you walk {frac2} of it, how far did you walk?"},
+    {"context": "fabric", "template": "You have {frac1} yard of fabric. You use {frac2} of it. How much fabric did you use?"},
+    {"context": "pizza", "template": "There is {frac1} of a pizza left. You eat {frac2} of what's left. How much pizza did you eat?"},
+    {"context": "garden", "template": "Your garden is {frac1} acre. You plant flowers in {frac2} of it. How much area has flowers?"},
+    {"context": "book", "template": "A book chapter is {frac1} of the book. You've read {frac2} of the chapter. What fraction of the book have you read?"},
+]
 
 
 def generate_fractions_multiplication(difficulty: int = 1) -> Dict[str, Any]:
@@ -21,6 +31,9 @@ def generate_fractions_multiplication(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps = []
 
+    # Use word problems 50% of the time
+    use_word_problem = random.random() < 0.5
+
     if difficulty == 1:
         # Easy: Simple fractions
         num1 = random.randint(1, 8)
@@ -31,8 +44,20 @@ def generate_fractions_multiplication(difficulty: int = 1) -> Dict[str, Any]:
         frac1 = Fraction(num1, denom1)
         frac2 = Fraction(num2, denom2)
 
+        # Format fractions for display
+        frac1_str = f"{num1}/{denom1}"
+        frac2_str = f"{num2}/{denom2}"
+
         expression = f"\\frac{{{num1}}}{{{denom1}}} \\times \\frac{{{num2}}}{{{denom2}}}"
-        steps.append(f"Multiply the fractions: ${expression}$")
+
+        if use_word_problem:
+            wp = random.choice(FRACTION_MULT_WORD_PROBLEMS)
+            question = wp["template"].format(frac1=frac1_str, frac2=frac2_str)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Identify:** Multiply $\\frac{{{num1}}}{{{denom1}}} \\times \\frac{{{num2}}}{{{denom2}}}$")
+        else:
+            steps.append(f"Multiply the fractions: ${expression}$")
+
         steps.append("**Rule:** Multiply numerators together and denominators together")
         steps.append(f"$\\frac{{a}}{{b}} \\times \\frac{{c}}{{d}} = \\frac{{a \\times c}}{{b \\times d}}$")
 

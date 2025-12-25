@@ -1,8 +1,16 @@
-"""Slope-intercept form question generator."""
+"""Slope-intercept form question generator with real-world contexts."""
 
 import random
 from typing import Dict, Any
 from fractions import Fraction
+
+# Real-world contexts for slope-intercept form
+SLOPE_INTERCEPT_CONTEXTS = [
+    {"context": "phone_plan", "template": "A phone plan costs ${b} per month plus ${m} per gigabyte of data. Write the equation for total cost y based on data x.", "slope": "cost per GB", "intercept": "monthly base fee"},
+    {"context": "taxi", "template": "A taxi charges ${b} initial fee plus ${m} per mile. Write the equation for fare y based on miles x.", "slope": "cost per mile", "intercept": "initial fee"},
+    {"context": "pool", "template": "A pool is draining at {m} gallons per minute. It started with {b} gallons. Write the equation for water remaining y after x minutes.", "slope": "rate of draining", "intercept": "starting amount"},
+    {"context": "salary", "template": "You earn ${m} per hour plus a ${b} bonus. Write the equation for total earnings y based on hours x.", "slope": "hourly rate", "intercept": "bonus"},
+]
 
 
 def generate_slope_intercept(difficulty: int = 1) -> Dict[str, Any]:
