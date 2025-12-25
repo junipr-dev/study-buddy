@@ -13,6 +13,8 @@ export interface EvaluationProgress {
   section_completed: number;
   section_total: number;
   section_percent: number;
+  section_index?: number;
+  total_sections?: number;
 }
 
 export interface EvaluationStartResponse {

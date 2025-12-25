@@ -1,14 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BlockMath, InlineMath } from 'react-katex';
 import type { AnswerFeedback } from '../types';
+import { correctAnswerSparkle } from '../utils/confetti';
 
 interface FeedbackModalProps {
   feedback: AnswerFeedback;
   onContinue: () => void;
+  streak?: number;
 }
 
-export default function FeedbackModal({ feedback, onContinue }: FeedbackModalProps) {
+export default function FeedbackModal({ feedback, onContinue, streak = 0 }: FeedbackModalProps) {
+  const [showConfetti, setShowConfetti] = useState(false);
   const hasLatex = feedback.correct_answer.includes('$') || feedback.correct_answer.includes('\\');
+
+  // Trigger confetti on correct answer
+  useEffect(() => {
+    if (feedback.is_correct && !showConfetti) {
+      setShowConfetti(true);
+      correctAnswerSparkle();
+    }
+  }, [feedback.is_correct, showConfetti]);
 
   // Render a step that may contain mixed text and LaTeX
   const renderStep = (step: string) => {
@@ -78,10 +89,38 @@ export default function FeedbackModal({ feedback, onContinue }: FeedbackModalPro
   if (feedback.is_correct) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 animate-correctFlash">
-        <div className="bg-success bg-opacity-20 border-4 border-success rounded-2xl p-12">
-          <h2 className="text-6xl font-bold text-success text-center">
-            ✓ Correct!
-          </h2>
+        <div className="bg-success bg-opacity-20 border-4 border-success rounded-2xl p-8 sm:p-12 animate-bounceIn">
+          {/* Animated checkmark */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="success-checkmark-container">
+              <div className="success-checkmark-circle" />
+              <svg
+                className="success-checkmark-icon animate-checkmark"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+
+            <h2 className="text-4xl sm:text-6xl font-bold text-success text-center">
+              Correct!
+            </h2>
+
+            {/* Show streak if active */}
+            {streak >= 2 && (
+              <div className="flex items-center gap-2 animate-slideUp">
+                <span className="text-2xl">🔥</span>
+                <span className="text-xl font-bold text-orange-400">{streak} in a row!</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );

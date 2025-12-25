@@ -8,6 +8,8 @@ import FeedbackModal from '../components/FeedbackModal';
 import SkillSelector from '../components/SkillSelector';
 import ReportCard from '../components/ReportCard';
 import Tutorial from '../components/Tutorial';
+import EvaluationProgress from '../components/EvaluationProgress';
+import StreakIndicator from '../components/StreakIndicator';
 
 type Mode = 'practice' | 'evaluation';
 
@@ -23,6 +25,7 @@ export default function Quiz() {
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showNewEvalConfirm, setShowNewEvalConfirm] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Practice mode store
@@ -156,6 +159,12 @@ export default function Quiz() {
   // Practice mode handlers
   const handlePracticeSubmit = async (answer: string) => {
     await quizStore.submitAnswer(answer);
+    // Update streak based on answer result
+    if (quizStore.feedback?.is_correct) {
+      setCurrentStreak(prev => prev + 1);
+    } else {
+      setCurrentStreak(0);
+    }
   };
 
   const handlePracticeContinue = () => {
@@ -203,6 +212,10 @@ export default function Quiz() {
               data-tutorial="logo"
             />
             <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-4">
+              {/* Streak indicator - show in practice mode */}
+              {mode === 'practice' && currentStreak > 0 && (
+                <StreakIndicator streak={currentStreak} showLabel={false} />
+              )}
               <button
                 onClick={handleShowTutorial}
                 className="p-2 text-sm text-gray-500 hover:text-gray-300 hover:bg-white/5 rounded-lg transition-all outline-none no-select"
@@ -284,37 +297,15 @@ export default function Quiz() {
           )}
 
           {mode === 'evaluation' && evaluationStore.isActive && evaluationStore.progress ? (
-            <div className="w-full space-y-4">
-              {/* Overall Progress */}
-              <div>
-                <div className="flex items-center justify-between text-sm text-gray-400 mb-1.5">
-                  <span>Overall Progress</span>
-                  <span>{Math.round(evaluationStore.progress.overall_percent)}%</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2.5">
-                  <div
-                    className="bg-gradient-to-r from-[#6B4FFF] to-[#FF6EC7] h-2.5 rounded-full transition-all duration-500"
-                    style={{ width: `${evaluationStore.progress.overall_percent}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Section Progress */}
-              <div>
-                <div className="flex items-center justify-between text-sm text-gray-400 mb-1.5">
-                  <span className="font-medium text-gray-300">{evaluationStore.progress.section_name}</span>
-                  <span>
-                    {evaluationStore.progress.section_completed} / {evaluationStore.progress.section_total} skills
-                  </span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div
-                    className="bg-primary h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${evaluationStore.progress.section_percent}%` }}
-                  />
-                </div>
-              </div>
-            </div>
+            <EvaluationProgress
+              currentSection={evaluationStore.progress.section_name}
+              sectionIndex={evaluationStore.progress.section_index || 0}
+              totalSections={evaluationStore.progress.total_sections || 6}
+              questionsInSection={evaluationStore.progress.section_total}
+              questionsCompletedInSection={evaluationStore.progress.section_completed}
+              overallProgress={evaluationStore.progress.overall_percent}
+              estimatedMinutesRemaining={Math.max(1, Math.ceil((100 - evaluationStore.progress.overall_percent) / 10))}
+            />
           ) : mode === 'practice' ? (
             <div className="w-full">
               <SkillSelector
@@ -375,7 +366,11 @@ export default function Quiz() {
 
         {/* Feedback Modal - Only in Practice Mode */}
         {mode === 'practice' && quizStore.feedback && (
-          <FeedbackModal feedback={quizStore.feedback} onContinue={handlePracticeContinue} />
+          <FeedbackModal
+            feedback={quizStore.feedback}
+            onContinue={handlePracticeContinue}
+            streak={quizStore.feedback.is_correct ? currentStreak : 0}
+          />
         )}
 
         {/* Report Card - Only in Evaluation Mode */}

@@ -93,6 +93,7 @@ def seed_database():
                 subject=skill_data['subject'],
                 description=skill_data['description'],
                 khan_url=skill_data['khan_url'],
+                youtube_id=skill_data.get('youtube_id'),
                 explanation=explanation,
                 difficulty_base=skill_data['difficulty_base'],
             )

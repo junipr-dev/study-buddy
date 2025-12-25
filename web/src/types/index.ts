@@ -31,6 +31,7 @@ export interface Skill {
   subject: string;
   description: string;
   khan_url?: string;
+  youtube_id?: string;
   explanation?: string;
   difficulty_base: number;
 }

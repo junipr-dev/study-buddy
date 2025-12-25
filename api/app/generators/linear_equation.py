@@ -1,7 +1,39 @@
-"""Linear equation question generator (ax + b = c)."""
+"""Linear equation question generator (ax + b = c) with word problems."""
 
 import random
 from typing import Dict, Any
+
+# Word problem templates for linear equations
+LINEAR_EQUATION_WORD_PROBLEMS = [
+    {
+        "context": "age",
+        "template": "In {b} years, Alex will be {c} years old. How old is Alex now?",
+        "equation": "x + {b} = {c}",
+        "a": 1,
+    },
+    {
+        "context": "money",
+        "template": "After saving ${b} per week for {a} weeks, you have ${c}. How much did you start with?",
+        "equation": "x + {a}*{b} = {c}",
+        "uses_ab": True,
+    },
+    {
+        "context": "perimeter",
+        "template": "A rectangle's length is {a} times its width. If the perimeter is {c} units, find the width.",
+        "equation": "2w + 2*{a}w = {c}",
+        "uses_a": True,
+    },
+    {
+        "context": "tickets",
+        "template": "Concert tickets cost ${a} each. With a ${b_abs} {fee_or_discount}, the total is ${c}. How many tickets were bought?",
+        "equation": "{a}x + {b} = {c}",
+    },
+    {
+        "context": "temperature",
+        "template": "The temperature rose {a} degrees per hour. After starting at {b}°F, it reached {c}°F. How many hours passed?",
+        "equation": "{a}x + {b} = {c}",
+    },
+]
 
 
 def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
@@ -14,6 +46,9 @@ def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
     Returns:
         Dict with question, answer, and solution steps
     """
+    # Use word problems 40% of the time for easier difficulties
+    use_word_problem = difficulty <= 2 and random.random() < 0.4
+
     # Adjust ranges based on difficulty
     if difficulty == 1:
         # Easy: small coefficients, integer solutions
@@ -40,22 +75,44 @@ def generate_linear_equation(difficulty: int = 1) -> Dict[str, Any]:
     abs_b = abs(b)
 
     if a == 1:
-        question = f"x {sign_b} {abs_b} = {c}"
+        equation = f"x {sign_b} {abs_b} = {c}"
     elif a == -1:
-        question = f"-x {sign_b} {abs_b} = {c}"
+        equation = f"-x {sign_b} {abs_b} = {c}"
     else:
-        question = f"{a}x {sign_b} {abs_b} = {c}"
+        equation = f"{a}x {sign_b} {abs_b} = {c}"
 
-    question = question.replace("+ 0", "").replace("- 0", "").strip()
-
-    # Wrap in LaTeX
-    latex_question = f"${question}$"
+    equation = equation.replace("+ 0", "").replace("- 0", "").strip()
 
     # Generate solution steps with LaTeX
     steps = []
 
-    # Step 0: Show the original equation
-    steps.append(f"Start with the equation: ${question}$")
+    # Word problem version or standard equation
+    if use_word_problem and b != 0:
+        # Pick a suitable word problem
+        if a == 1 and b > 0:
+            # Age problem: x + b = c
+            question = f"In {b} years, Alex will be {c} years old. How old is Alex now?"
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Set up equation:** Let $x$ = Alex's current age")
+            steps.append(f"${equation}$")
+        elif b > 0:
+            # Temperature problem: ax + b = c
+            question = f"The temperature rose {a} degrees per hour. After starting at {b}°F, it reached {c}°F. How many hours passed?"
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Set up equation:** Let $x$ = hours passed")
+            steps.append(f"${equation}$")
+        else:
+            # Ticket problem with discount: ax - b = c
+            question = f"Movie tickets cost ${a} each. After a ${abs_b} discount, the total was ${c}. How many tickets were bought?"
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Set up equation:** Let $x$ = number of tickets")
+            steps.append(f"${equation}$")
+    else:
+        question = equation
+        steps.append(f"Start with the equation: ${equation}$")
+
+    # Wrap in LaTeX for display
+    latex_question = f"${equation}$"
 
     # Step 1: Isolate ax
     if b != 0:

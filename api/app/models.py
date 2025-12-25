@@ -36,6 +36,7 @@ class Skill(Base):
     subject = Column(String(50), nullable=False, index=True)
     description = Column(Text)
     khan_url = Column(String(500))
+    youtube_id = Column(String(20))  # YouTube video ID for embedded lessons
     explanation = Column(Text)
     difficulty_base = Column(Integer, default=1)
 

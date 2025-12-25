@@ -1,7 +1,20 @@
-"""Order of operations question generator (PEMDAS/BODMAS)."""
+"""Order of operations question generator (PEMDAS/BODMAS) with word problems."""
 
 import random
 from typing import Dict, Any, List
+
+# Word problem templates for order of operations
+ORDER_OF_OPS_WORD_PROBLEMS = {
+    "difficulty_1": [
+        {"template": "You buy {c} packs of cards. Each pack has ({a} + {b}) cards. How many cards total?", "format": "({a} + {b}) * {c}"},
+        {"template": "You have ${a}. You earn ${b} per hour for {c} hours. How much money do you have now?", "format": "{a} + {b} * {c}"},
+        {"template": "A movie ticket costs ${b}. You buy {c} tickets and have ${a} left over. How much did you start with?", "format": "{a} + {b} * {c}"},
+    ],
+    "difficulty_2": [
+        {"template": "You have {a} boxes. You add {b} more items per box, then square the result and remove {c}. What's the answer?", "format": "(a + b)^2 - c"},
+        {"template": "A square room has sides of ({a} + {b}) feet. You remove {c} square feet for a closet. What's the remaining area?", "format": "(a + b)^2 - c"},
+    ],
+}
 
 
 def generate_order_of_operations(difficulty: int = 1) -> Dict[str, Any]:
@@ -19,6 +32,9 @@ def generate_order_of_operations(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps = []
 
+    # Use word problems 40% of the time for easier difficulties
+    use_word_problem = difficulty <= 2 and random.random() < 0.4
+
     if difficulty == 1:
         # Easy: Simple operations with parentheses
         # Format: (a + b) * c or a + b * c
@@ -26,10 +42,20 @@ def generate_order_of_operations(difficulty: int = 1) -> Dict[str, Any]:
         b = random.randint(1, 10)
         c = random.randint(2, 5)
 
-        if random.choice([True, False]):
+        use_parentheses = random.choice([True, False])
+
+        if use_parentheses:
             # With parentheses
             expression = f"({a} + {b}) \\times {c}"
-            steps.append(f"Start with the expression: $({a} + {b}) \\times {c}$")
+
+            if use_word_problem:
+                wp = ORDER_OF_OPS_WORD_PROBLEMS["difficulty_1"][0]  # Cards problem
+                question = wp["template"].format(a=a, b=b, c=c)
+                steps.append(f"**Problem:** {question}")
+                steps.append(f"**Identify:** Calculate $({a} + {b}) \\times {c}$")
+            else:
+                steps.append(f"Start with the expression: $({a} + {b}) \\times {c}$")
+
             steps.append("**Rule:** Evaluate operations inside **parentheses** first (P in PEMDAS)")
             steps.append(f"Calculate inside parentheses: ${a} + {b} = {a + b}$")
             result = a + b
@@ -38,7 +64,15 @@ def generate_order_of_operations(difficulty: int = 1) -> Dict[str, Any]:
         else:
             # Without parentheses (multiplication first)
             expression = f"{a} + {b} \\times {c}"
-            steps.append(f"Start with the expression: ${a} + {b} \\times {c}$")
+
+            if use_word_problem:
+                wp = ORDER_OF_OPS_WORD_PROBLEMS["difficulty_1"][1]  # Money problem
+                question = wp["template"].format(a=a, b=b, c=c)
+                steps.append(f"**Problem:** {question}")
+                steps.append(f"**Identify:** Calculate ${a} + {b} \\times {c}$")
+            else:
+                steps.append(f"Start with the expression: ${a} + {b} \\times {c}$")
+
             steps.append("**Rule:** Multiplication comes before addition (MD before AS in PEMDAS)")
             steps.append(f"First multiply: ${b} \\times {c} = {b * c}$")
             result = b * c

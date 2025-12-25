@@ -292,6 +292,11 @@ def get_next_evaluation_question(
     subject_total = session["skills_per_subject"].get(current_subject, 1)
     subject_completed = session["subject_skills_completed"]
 
+    # Calculate section index
+    subject_order = session.get("subject_order", [])
+    section_index = subject_order.index(current_subject) if current_subject in subject_order else 0
+    total_sections = len(subject_order)
+
     return {
         "question_id": question_id,
         "skill_id": skill_id,
@@ -309,6 +314,8 @@ def get_next_evaluation_question(
             "section_completed": subject_completed,
             "section_total": subject_total,
             "section_percent": round((subject_completed / subject_total) * 100) if subject_total > 0 else 0,
+            "section_index": section_index,
+            "total_sections": total_sections,
         },
         "section_changed": session["last_completed_subject"] is not None and session["last_completed_subject"] != current_subject,
         "completed_section": session["last_completed_subject"],
@@ -401,6 +408,11 @@ def submit_evaluation_answer(
     subject_total = session["skills_per_subject"].get(current_subject, 1)
     subject_completed = session["subject_skills_completed"]
 
+    # Calculate section index
+    subject_order = session.get("subject_order", [])
+    section_index = subject_order.index(current_subject) if current_subject in subject_order else 0
+    total_sections = len(subject_order)
+
     return {
         "is_correct": is_correct,
         "correct_answer": question["correct_answer"],
@@ -420,6 +432,8 @@ def submit_evaluation_answer(
             "section_completed": subject_completed,
             "section_total": subject_total,
             "section_percent": round((subject_completed / subject_total) * 100) if subject_total > 0 else 0,
+            "section_index": section_index,
+            "total_sections": total_sections,
         },
     }
 

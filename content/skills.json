@@ -6,6 +6,7 @@
       "subject": "Pre-Algebra",
       "description": "Add, subtract, multiply, and divide positive and negative integers",
       "khan_url": "https://www.khanacademy.org/math/pre-algebra/pre-algebra-negative-numbers",
+      "youtube_id": "BqfDKV0gPRE",
       "prerequisites": [],
       "difficulty_base": 1
     },
@@ -24,6 +25,7 @@
       "subject": "Pre-Algebra",
       "description": "Add and subtract fractions with different denominators",
       "khan_url": "https://www.khanacademy.org/math/pre-algebra/pre-algebra-fractions/pre-algebra-add-sub-fractions",
+      "youtube_id": "zkJ1gOrYhEg",
       "prerequisites": ["integers-operations"],
       "difficulty_base": 2
     },
@@ -33,6 +35,7 @@
       "subject": "Pre-Algebra",
       "description": "Multiply fractions and simplify the results",
       "khan_url": "https://www.khanacademy.org/math/pre-algebra/pre-algebra-fractions/pre-algebra-multiply-fractions",
+      "youtube_id": "QDvKqUc7Mj4",
       "prerequisites": ["fraction-addition"],
       "difficulty_base": 2
     },
@@ -42,6 +45,7 @@
       "subject": "Pre-Algebra",
       "description": "Divide fractions using the reciprocal method",
       "khan_url": "https://www.khanacademy.org/math/pre-algebra/pre-algebra-fractions/pre-algebra-divide-fractions",
+      "youtube_id": "m-pRnFIeoNA",
       "prerequisites": ["fractions-multiplication"],
       "difficulty_base": 2
     },
@@ -105,6 +109,7 @@
       "subject": "Algebra Basics",
       "description": "Apply PEMDAS/BODMAS to evaluate expressions",
       "khan_url": "https://www.khanacademy.org/math/algebra-basics/alg-basics-expressions-with-exponents/alg-basics-order-of-operations",
+      "youtube_id": "eoYThjIAhOc",
       "prerequisites": ["integers-operations"],
       "difficulty_base": 1
     },

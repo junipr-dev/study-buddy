@@ -1,7 +1,30 @@
-"""Percentages question generator."""
+"""Percentages question generator with engaging word problems."""
 
 import random
 from typing import Dict, Any
+
+# Word problem templates for percentages
+PERCENTAGE_WORD_PROBLEMS = {
+    "find_percent": [
+        {"context": "shopping", "template": "A shirt originally costs ${number}. It's on sale for {percent}% off. How much will you save?"},
+        {"context": "tips", "template": "Your restaurant bill is ${number}. You want to leave a {percent}% tip. How much should the tip be?"},
+        {"context": "sales_tax", "template": "You're buying a game for ${number}. If sales tax is {percent}%, how much tax will you pay?"},
+        {"context": "grades", "template": "You got {percent}% correct on a test with {number} questions. How many did you get right?"},
+        {"context": "battery", "template": "Your phone has {number} mAh battery capacity. At {percent}% charge, how many mAh remain?"},
+    ],
+    "increase": [
+        {"context": "population", "template": "A town has {original} people. If the population grows by {percent}%, what will the new population be?"},
+        {"context": "salary", "template": "You earn ${original} per month. After a {percent}% raise, what will your new salary be?"},
+        {"context": "followers", "template": "A social media account has {original} followers. After growing {percent}%, how many followers does it have?"},
+        {"context": "price", "template": "A stock is worth ${original}. If it increases by {percent}%, what is the new price?"},
+    ],
+    "decrease": [
+        {"context": "sale", "template": "A laptop costs ${original}. During a {percent}% off sale, what is the sale price?"},
+        {"context": "weight_loss", "template": "A person weighs {original} pounds. After losing {percent}% of their weight, what do they weigh?"},
+        {"context": "depreciation", "template": "A car is worth ${original}. After depreciating {percent}%, what is it worth?"},
+        {"context": "discount", "template": "Concert tickets cost ${original}. With a {percent}% student discount, what do you pay?"},
+    ],
+}
 
 
 def generate_percentages(difficulty: int = 1) -> Dict[str, Any]:
@@ -19,6 +42,9 @@ def generate_percentages(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps = []
 
+    # Use word problems 50% of the time
+    use_word_problem = random.random() < 0.5
+
     if difficulty == 1:
         # Easy: What is X% of Y?
         percent = random.choice([10, 20, 25, 30, 40, 50, 60, 75, 80, 90])
@@ -30,15 +56,25 @@ def generate_percentages(difficulty: int = 1) -> Dict[str, Any]:
         elif percent == 75:
             number = random.choice([20, 40, 60, 80, 100, 120, 140, 160, 180, 200])
 
-        steps.append(f"What is ${percent}\\%$ of ${number}$?")
+        # Calculate answer
+        decimal = percent / 100
+        answer = (percent * number) / 100
+
+        # Generate word problem
+        if use_word_problem:
+            wp = random.choice(PERCENTAGE_WORD_PROBLEMS["find_percent"])
+            question = wp["template"].format(number=number, percent=percent)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Identify:** Find ${percent}\\%$ of ${number}$")
+        else:
+            question = f"What is ${percent}\\%$ of ${number}$?"
+            steps.append(f"What is ${percent}\\%$ of ${number}$?")
+
         steps.append("**Rule:** To find a percentage of a number, convert the percentage to a decimal and multiply")
         steps.append(f"**Step 1:** Convert ${percent}\\%$ to a decimal:")
-
-        decimal = percent / 100
         steps.append(f"${percent}\\% = {percent} \\div 100 = {decimal}$")
 
         steps.append(f"**Step 2:** Multiply by ${number}$:")
-        answer = (percent * number) / 100
         steps.append(f"${decimal} \\times {number} = {answer}$")
 
     elif difficulty == 2:
@@ -48,7 +84,16 @@ def generate_percentages(difficulty: int = 1) -> Dict[str, Any]:
         percent = random.choice([10, 15, 20, 25, 30, 40, 50])
 
         if operation == 'increase':
-            steps.append(f"Increase ${original}$ by ${percent}\\%$")
+            # Generate word problem
+            if use_word_problem:
+                wp = random.choice(PERCENTAGE_WORD_PROBLEMS["increase"])
+                question = wp["template"].format(original=original, percent=percent)
+                steps.append(f"**Problem:** {question}")
+                steps.append(f"**Identify:** Increase ${original}$ by ${percent}\\%$")
+            else:
+                question = f"Increase ${original}$ by ${percent}\\%$"
+                steps.append(f"Increase ${original}$ by ${percent}\\%$")
+
             steps.append("**Rule:** For percentage increase, find the percentage amount and add it to the original")
 
             steps.append(f"**Step 1:** Find ${percent}\\%$ of ${original}$:")
@@ -66,7 +111,16 @@ def generate_percentages(difficulty: int = 1) -> Dict[str, Any]:
             multiplier = 1 + (percent / 100)
             steps.append(f"${original} \\times {multiplier} = {answer}$")
         else:
-            steps.append(f"Decrease ${original}$ by ${percent}\\%$")
+            # Generate word problem
+            if use_word_problem:
+                wp = random.choice(PERCENTAGE_WORD_PROBLEMS["decrease"])
+                question = wp["template"].format(original=original, percent=percent)
+                steps.append(f"**Problem:** {question}")
+                steps.append(f"**Identify:** Decrease ${original}$ by ${percent}\\%$")
+            else:
+                question = f"Decrease ${original}$ by ${percent}\\%$"
+                steps.append(f"Decrease ${original}$ by ${percent}\\%$")
+
             steps.append("**Rule:** For percentage decrease, find the percentage amount and subtract it from the original")
 
             steps.append(f"**Step 1:** Find ${percent}\\%$ of ${original}$:")

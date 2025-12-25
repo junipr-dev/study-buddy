@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import type { EvaluationReport, SkillResult } from '../api/evaluation';
+import { reportCardReveal, celebrationBurst } from '../utils/confetti';
 
 interface ReportCardProps {
   report: EvaluationReport;
@@ -36,6 +38,7 @@ function SkillItem({ skill, showScore = true }: { skill: SkillResult; showScore?
 
 export default function ReportCard({ report, onClose }: ReportCardProps) {
   const navigate = useNavigate();
+  const [displayScore, setDisplayScore] = useState(0);
 
   const studyCount = report.study?.length || 0;
   const developingCount = report.developing?.length || 0;
@@ -43,6 +46,40 @@ export default function ReportCard({ report, onClose }: ReportCardProps) {
   const masteredCount = report.mastered?.length || 0;
 
   const allMastered = studyCount === 0 && developingCount === 0;
+
+  // Animated score reveal and confetti
+  useEffect(() => {
+    // Trigger confetti based on score
+    const timer = setTimeout(() => {
+      reportCardReveal(report.overall_score);
+    }, 500);
+
+    // Animate score counting up
+    const targetScore = report.overall_score;
+    const duration = 1500;
+    const startTime = Date.now();
+
+    const animateScore = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayScore(Math.round(targetScore * eased));
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScore);
+      } else {
+        // Extra celebration for all mastered
+        if (allMastered) {
+          celebrationBurst();
+        }
+      }
+    };
+
+    animateScore();
+
+    return () => clearTimeout(timer);
+  }, [report.overall_score, allMastered]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-2 sm:p-4 z-50 safe-area-inset">
@@ -57,15 +94,15 @@ export default function ReportCard({ report, onClose }: ReportCardProps) {
           </div>
 
           {/* Overall Score */}
-          <div className="bg-background rounded-xl p-6 mb-6 border-2 border-primary border-opacity-30">
+          <div className="bg-background rounded-xl p-6 mb-6 border-2 border-primary border-opacity-30 animate-bounceIn">
             <div className="text-center">
-              <div className="text-6xl font-bold mb-2">
-                <span className={report.overall_score >= 80 ? 'text-success' : report.overall_score >= 50 ? 'text-yellow-400' : 'text-red-400'}>
-                  {report.overall_score}%
+              <div className="text-6xl sm:text-7xl font-bold mb-2">
+                <span className={`${displayScore >= 80 ? 'text-success' : displayScore >= 50 ? 'text-yellow-400' : 'text-red-400'} transition-colors duration-300`}>
+                  {displayScore}%
                 </span>
               </div>
               <p className="text-xl text-gray-300 mb-1">
-                {allMastered ? 'Outstanding!' : `${report.total_correct} of ${report.total_questions} questions correct`}
+                {allMastered ? '🎉 Outstanding! 🎉' : `${report.total_correct} of ${report.total_questions} questions correct`}
               </p>
               <p className="text-sm text-gray-500">
                 {report.total_skills_tested} skills tested

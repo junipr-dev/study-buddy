@@ -118,3 +118,205 @@
 .animate-correctFlash {
   animation: correctFlash 1.3s ease-in-out forwards;
 }
+
+/* New engagement animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes ringFill {
+  0% {
+    stroke-dashoffset: var(--ring-circumference);
+  }
+  100% {
+    stroke-dashoffset: var(--ring-offset);
+  }
+}
+
+@keyframes firePulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.2);
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes celebrationBurst {
+  0% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dashoffset: 50;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-countUp {
+  animation: countUp 0.5s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-ringFill {
+  animation: ringFill 1s ease-out forwards;
+}
+
+.animate-firePulse {
+  animation: firePulse 0.5s ease-in-out;
+}
+
+.animate-celebrationBurst {
+  animation: celebrationBurst 0.8s ease-out forwards;
+}
+
+.animate-checkmark {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: checkmarkDraw 0.4s ease-out forwards;
+}
+
+.animate-floatUp {
+  animation: floatUp 1s ease-out forwards;
+}
+
+/* Gradient text for celebrations */
+.gradient-text {
+  background: linear-gradient(135deg, #6B4FFF 0%, #FF6EC7 50%, #00E6F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Tier badge colors */
+.badge-bronze {
+  background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%);
+}
+
+.badge-silver {
+  background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+}
+
+.badge-gold {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+}
+
+.badge-platinum {
+  background: linear-gradient(135deg, #6B4FFF 0%, #FF6EC7 100%);
+}
+
+/* Success checkmark animation */
+.success-checkmark-container {
+  @apply relative w-16 h-16 flex items-center justify-center;
+}
+
+.success-checkmark-circle {
+  @apply absolute inset-0 rounded-full;
+  background: linear-gradient(135deg, #B3FF00 0%, #7ACC00 100%);
+  animation: bounceIn 0.5s ease-out;
+}
+
+.success-checkmark-icon {
+  @apply relative z-10 w-8 h-8 text-background;
+}

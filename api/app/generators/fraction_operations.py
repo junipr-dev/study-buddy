@@ -1,9 +1,20 @@
-"""Fraction operations question generator."""
+"""Fraction operations question generator with word problems."""
 
 import random
 from fractions import Fraction
 from math import gcd
 from typing import Dict, Any
+
+# Word problem templates for fractions
+FRACTION_WORD_PROBLEMS = {
+    "addition": [
+        {"context": "pizza", "template": "You ate {frac1} of a pizza. Your friend ate {frac2} of the same pizza. How much pizza was eaten in total?"},
+        {"context": "recipe", "template": "A recipe calls for {frac1} cup of flour. You want to add {frac2} cup more. How much flour will you use?"},
+        {"context": "distance", "template": "You walked {frac1} of a mile to school. After school, you walked {frac2} of a mile to the store. How far did you walk in total?"},
+        {"context": "time", "template": "You spent {frac1} of an hour on homework. Then you spent {frac2} of an hour reading. How much time did you spend?"},
+        {"context": "garden", "template": "Your garden is {frac1} full of tomatoes and {frac2} full of peppers. What fraction of your garden has vegetables?"},
+    ],
+}
 
 
 def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
@@ -18,6 +29,9 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
     """
     steps = []
 
+    # Use word problems 50% of the time
+    use_word_problem = random.random() < 0.5
+
     if difficulty == 1:
         # Easy: Same denominator
         denominator = random.choice([2, 3, 4, 5, 6, 8, 10])
@@ -27,8 +41,21 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         frac1 = Fraction(num1, denominator)
         frac2 = Fraction(num2, denominator)
 
-        question = f"$\\frac{{{num1}}}{{{denominator}}} + \\frac{{{num2}}}{{{denominator}}}$"
-        steps.append(f"Start with the expression: {question}")
+        # Format fractions for display
+        frac1_str = f"{num1}/{denominator}"
+        frac2_str = f"{num2}/{denominator}"
+        frac1_latex = f"$\\frac{{{num1}}}{{{denominator}}}$"
+        frac2_latex = f"$\\frac{{{num2}}}{{{denominator}}}$"
+
+        if use_word_problem:
+            wp = random.choice(FRACTION_WORD_PROBLEMS["addition"])
+            question = wp["template"].format(frac1=frac1_str, frac2=frac2_str)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Identify:** Add {frac1_latex} + {frac2_latex}")
+        else:
+            question = f"$\\frac{{{num1}}}{{{denominator}}} + \\frac{{{num2}}}{{{denominator}}}$"
+            steps.append(f"Start with the expression: {question}")
+
         steps.append(f"Both fractions have the same denominator (${denominator}$), so we can add the numerators directly")
         steps.append(f"$\\frac{{{num1} + {num2}}}{{{denominator}}} = \\frac{{{num1 + num2}}}{{{denominator}}}$")
 
@@ -53,9 +80,20 @@ def generate_fraction_addition(difficulty: int = 1) -> Dict[str, Any]:
         frac1 = Fraction(num1, denom1)
         frac2 = Fraction(num2, denom2)
 
-        question = f"$\\frac{{{num1}}}{{{denom1}}} + \\frac{{{num2}}}{{{denom2}}}$"
+        # Format fractions for display
+        frac1_str = f"{num1}/{denom1}"
+        frac2_str = f"{num2}/{denom2}"
+        frac1_latex = f"$\\frac{{{num1}}}{{{denom1}}}$"
+        frac2_latex = f"$\\frac{{{num2}}}{{{denom2}}}$"
 
-        steps.append(f"Start with the expression: {question}")
+        if use_word_problem:
+            wp = random.choice(FRACTION_WORD_PROBLEMS["addition"])
+            question = wp["template"].format(frac1=frac1_str, frac2=frac2_str)
+            steps.append(f"**Problem:** {question}")
+            steps.append(f"**Identify:** Add {frac1_latex} + {frac2_latex}")
+        else:
+            question = f"$\\frac{{{num1}}}{{{denom1}}} + \\frac{{{num2}}}{{{denom2}}}$"
+            steps.append(f"Start with the expression: {question}")
 
         # Find LCD
         lcm = (denom1 * denom2) // gcd(denom1, denom2)
