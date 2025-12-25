@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import Login from './pages/Login';
 import Quiz from './pages/Quiz';
@@ -7,14 +7,12 @@ import Progress from './pages/Progress';
 import Admin from './pages/Admin';
 import './styles/globals.css';
 
-// Protected route wrapper that remembers where user was trying to go
+// Protected route wrapper
 function RequireAuth({ children }: { children: React.ReactElement }) {
   const { user } = useAuthStore();
-  const location = useLocation();
 
   if (!user) {
-    // Redirect to login but save the attempted location
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;

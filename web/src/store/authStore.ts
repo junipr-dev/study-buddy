@@ -11,8 +11,8 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
+  register: (data: RegisterData) => Promise<User>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   clearError: () => void;
@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await authAPI.login(credentials);
       const user = await authAPI.getCurrentUser();
       set({ user, isLoading: false });
+      return user;
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Login failed',
@@ -45,6 +46,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Auto-login after registration
       await authAPI.login({ username: data.username, password: data.password });
       set({ user, isLoading: false });
+      return user;
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Registration failed',

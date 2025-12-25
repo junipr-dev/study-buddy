@@ -42,6 +42,7 @@ class UserResponse(BaseModel):
     username: str
     first_name: str
     created_at: datetime
+    is_admin: bool = False
 
     class Config:
         from_attributes = True

@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-
-interface LocationState {
-  from?: string;
-}
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -15,23 +11,20 @@ export default function Login() {
 
   const { login, register, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Get the page user was trying to access (default to /quiz for regular users)
-  const from = (location.state as LocationState)?.from || '/quiz';
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     clearError();
 
     try {
+      let user;
       if (isRegistering) {
-        await register({ username, first_name: firstName, password });
+        user = await register({ username, first_name: firstName, password });
       } else {
-        await login({ username, password });
+        user = await login({ username, password });
       }
-      // Navigate to where user was trying to go, or /quiz by default
-      navigate(from, { replace: true });
+      // Redirect based on user type: admins → /admin, regular users → /quiz
+      navigate(user.is_admin ? '/admin' : '/quiz', { replace: true });
     } catch (err) {
       // Error is handled by the store
     }
